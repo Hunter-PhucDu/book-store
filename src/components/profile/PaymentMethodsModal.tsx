@@ -9,10 +9,9 @@ import {
   FiAlertTriangle,
   FiTrash2,
 } from "react-icons/fi";
-import { User } from "@/types/user";
 
 interface PaymentMethodsModalProps {
-  user: User;
+  userId: string;
   onClose: () => void;
 }
 
@@ -51,7 +50,7 @@ const mockPaymentMethods: PaymentMethod[] = [
 ];
 
 export default function PaymentMethodsModal({
-  user,
+  userId,
   onClose,
 }: PaymentMethodsModalProps) {
   const [paymentMethods, setPaymentMethods] =
@@ -479,8 +478,9 @@ export default function PaymentMethodsModal({
                   <input
                     id="set-as-default"
                     type="checkbox"
-                    checked={Boolean(currentPaymentMethod.isDefault)}
+                    checked={Boolean(currentPaymentMethod?.isDefault)}
                     onChange={(e) =>
+                      currentPaymentMethod &&
                       setCurrentPaymentMethod({
                         ...currentPaymentMethod,
                         isDefault: e.target.checked,

@@ -4,16 +4,12 @@ import { useState } from "react";
 import {
   FiX,
   FiMapPin,
-  FiHome,
   FiPlus,
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { User } from "@/types/user";
-import { useStore } from "@/store/index";
 
 interface AddressBookModalProps {
-  user: User;
   onClose: () => void;
 }
 
@@ -55,11 +51,7 @@ const mockAddresses: Address[] = [
   },
 ];
 
-export default function AddressBookModal({
-  user,
-  onClose,
-}: AddressBookModalProps) {
-  const updateUser = useStore((state) => state.updateUser);
+export default function AddressBookModal({ onClose }: AddressBookModalProps) {
   const [addresses, setAddresses] = useState<Address[]>(mockAddresses);
   const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
   const [isEditing, setIsEditing] = useState(false);

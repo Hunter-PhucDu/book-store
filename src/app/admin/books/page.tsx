@@ -27,7 +27,7 @@ export default function AdminBooksPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/signin?callbackUrl=/admin/books");
+      router.push("/signin?callbackUrl=/admin/books");
     } else if (status === "authenticated") {
       if (session?.user?.role !== UserRole.ADMIN) {
         router.push("/");

@@ -12,10 +12,16 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import MainLayout from "@/components/layout/MainLayout";
-import { useStore } from "@/store/index";
 import BookCard from "@/components/BookCard";
 import BookCover from "@/components/BookCover";
 import { Book } from "@/types/book";
+import { initialBooks } from "@/store/bookData";
+
+// Mock cart function
+const mockAddToCart = (bookId: string, quantity: number) => {
+  console.log(`Added book ${bookId} with quantity ${quantity} to cart`);
+  // In a real app, this would update some state
+};
 
 export default function BookDetailsPage() {
   const params = useParams();
@@ -24,13 +30,12 @@ export default function BookDetailsPage() {
   const [quantity, setQuantity] = useState(1);
   const [showAddedToCart, setShowAddedToCart] = useState(false);
 
-  // Sử dụng selector riêng biệt để tránh re-render không cần thiết
-  const books = useStore((state: any) => state.books);
-  const addToCart = useStore((state: any) => state.addToCart);
+  // Use mock data instead of Zustand store
+  const books = initialBooks;
 
   const book = useMemo(
     () => books.find((b: Book) => b.id === bookId),
-    [books, bookId],
+    [bookId],
   );
 
   const relatedBooks = useMemo(() => {
@@ -42,14 +47,14 @@ export default function BookDetailsPage() {
           (b.category === book.category || b.author === book.author),
       )
       .slice(0, 3);
-  }, [books, bookId, book]);
+  }, [bookId, book]);
 
   if (!book) {
     return notFound();
   }
 
   const handleAddToCart = () => {
-    addToCart(book.id, quantity);
+    mockAddToCart(book.id, quantity);
     setShowAddedToCart(true);
     setTimeout(() => setShowAddedToCart(false), 3000);
   };

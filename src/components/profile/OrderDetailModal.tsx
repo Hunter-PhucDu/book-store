@@ -14,40 +14,16 @@ import { Order, OrderStatus } from "@/types/order";
 import { useStore } from "@/store/index";
 
 interface OrderDetailModalProps {
-  orderId: string;
+  order: Order;
   onClose: () => void;
 }
 
 export default function OrderDetailModal({
-  orderId,
+  order,
   onClose,
 }: OrderDetailModalProps) {
-  const getOrderById = useStore((state) => state.getOrderById);
   const getBookById = useStore((state) => state.getBookById);
-
-  const order = getOrderById(orderId);
   const [isDownloading, setIsDownloading] = useState(false);
-
-  if (!order) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg w-full max-w-3xl p-6">
-          <h2 className="text-lg font-medium text-red-700">Order Not Found</h2>
-          <p className="mt-2 text-gray-600">
-            The requested order could not be found.
-          </p>
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-200 rounded-md text-gray-800"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const getOrderStatusClass = (status: OrderStatus) => {
     switch (status) {
@@ -92,7 +68,7 @@ export default function OrderDetailModal({
               <div className="flex items-center">
                 <FiCalendar className="text-gray-400 mr-2" />
                 <span className="text-gray-600">
-                  Placed on {new Date(order.createdAt).toLocaleDateString()}
+                  Placed on {new Date(order.orderDate).toLocaleDateString()}
                 </span>
               </div>
             </div>
@@ -115,10 +91,10 @@ export default function OrderDetailModal({
                   <FiMapPin className="text-gray-400 mr-3 mt-1" />
                   <div>
                     <p className="text-gray-900">
-                      {order.shippingAddress.name}
+                      {order.shippingAddress.fullName}
                     </p>
                     <p className="text-gray-600">
-                      {order.shippingAddress.street}
+                      {order.shippingAddress.addressLine1}
                     </p>
                     <p className="text-gray-600">
                       {order.shippingAddress.city},{" "}
@@ -141,21 +117,10 @@ export default function OrderDetailModal({
                 <div className="flex items-start">
                   <FiCreditCard className="text-gray-400 mr-3 mt-1" />
                   <div>
-                    <p className="text-gray-900">
-                      {order.paymentMethod.type === "credit"
-                        ? "Credit Card"
-                        : order.paymentMethod.type === "paypal"
-                          ? "PayPal"
-                          : "Bank Transfer"}
-                    </p>
-                    {order.paymentMethod.type === "credit" && (
+                    <p className="text-gray-900">{order.payment.method}</p>
+                    {order.payment.transactionId && (
                       <p className="text-gray-600">
-                        •••• •••• •••• {order.paymentMethod.lastFour}
-                      </p>
-                    )}
-                    {order.paymentMethod.type === "paypal" && (
-                      <p className="text-gray-600">
-                        {order.paymentMethod.email}
+                        Transaction ID: {order.payment.transactionId}
                       </p>
                     )}
                     <p className="text-gray-600 mt-2">
@@ -229,13 +194,13 @@ export default function OrderDetailModal({
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                          ${item.price.toFixed(2)}
+                          ${item.unitPrice.toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                           {item.quantity}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ${item.totalPrice.toFixed(2)}
                         </td>
                       </tr>
                     );
@@ -251,7 +216,7 @@ export default function OrderDetailModal({
                       Subtotal
                     </th>
                     <td className="px-6 py-3 text-right text-sm text-gray-900">
-                      ${order.total.toFixed(2)}
+                      ${order.subtotal.toFixed(2)}
                     </td>
                   </tr>
                   <tr>
@@ -263,7 +228,19 @@ export default function OrderDetailModal({
                       Shipping
                     </th>
                     <td className="px-6 py-3 text-right text-sm text-gray-900">
-                      $0.00
+                      ${order.shippingCost.toFixed(2)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th
+                      colSpan={3}
+                      scope="row"
+                      className="px-6 py-3 text-left text-sm font-medium text-gray-500"
+                    >
+                      Tax
+                    </th>
+                    <td className="px-6 py-3 text-right text-sm text-gray-900">
+                      ${order.tax.toFixed(2)}
                     </td>
                   </tr>
                   <tr>
@@ -295,8 +272,7 @@ export default function OrderDetailModal({
                   </h3>
                   <div className="mt-2 text-sm text-blue-700">
                     <p>
-                      Your order has been shipped via{" "}
-                      {order.shippingMethod || "Standard Shipping"}.
+                      Your order has been shipped via {order.shippingMethod}.
                     </p>
                     {order.trackingNumber && (
                       <p className="mt-1">

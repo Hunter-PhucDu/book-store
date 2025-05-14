@@ -35,7 +35,7 @@ export default function Home() {
                 Browse Books
               </Link>
               <Link
-                href="/auth/signup"
+                href="/signup"
                 className="bg-transparent border-2 border-white hover:bg-white hover:text-blue-600 px-6 py-3 rounded-lg font-semibold transition-colors"
               >
                 Sign Up
@@ -275,7 +275,7 @@ export default function Home() {
               Browse Books
             </Link>
             <Link
-              href="/auth/signup"
+              href="/signup"
               className="bg-transparent border-2 border-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg font-semibold transition-colors"
             >
               Create Account

@@ -7,6 +7,31 @@ import { getInitialBooks } from "./bookData";
 import { getInitialUsers } from "./userData";
 import { getInitialOrders } from "./orderData";
 
+// Define the address type
+interface Address {
+  id: string;
+  userId: string;
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault: boolean;
+}
+
+// Define the payment method type
+interface PaymentMethod {
+  id: string;
+  userId: string;
+  cardType: string;
+  last4: string;
+  expiryMonth: string;
+  expiryYear: string;
+  isDefault: boolean;
+}
+
 // Interface defining the store's state
 interface StoreState {
   // Books state
@@ -42,7 +67,19 @@ interface StoreState {
   updateCartItem: (bookId: string, quantity: number) => void;
   removeFromCart: (bookId: string) => void;
   clearCart: () => void;
-  cartTotal: number;
+  calculateCartTotal: () => number;
+
+  // Address state
+  addresses: Address[];
+  addAddress: (address: Address) => void;
+  updateAddress: (address: Address) => void;
+  deleteAddress: (addressId: string) => void;
+
+  // Payment method state
+  paymentMethods: PaymentMethod[];
+  addPaymentMethod: (paymentMethod: PaymentMethod) => void;
+  updatePaymentMethod: (paymentMethod: PaymentMethod) => void;
+  deletePaymentMethod: (paymentMethodId: string) => void;
 }
 
 // Create the store with Zustand
@@ -165,11 +202,7 @@ export const useStore = create<StoreState>()(
               ),
             };
           } else {
-            const book = get().books.find((b) => b.id === bookId);
-            if (book) {
-              return { cart: [...state.cart, { bookId, book, quantity }] };
-            }
-            return state;
+            return { cart: [...state.cart, { bookId, quantity }] };
           }
         }),
       updateCartItem: (bookId, quantity) =>
@@ -183,12 +216,90 @@ export const useStore = create<StoreState>()(
           cart: state.cart.filter((item) => item.bookId !== bookId),
         })),
       clearCart: () => set({ cart: [] }),
-      get cartTotal() {
-        return get().cart.reduce((total, item) => {
-          const book = get().books.find((b) => b.id === item.bookId);
+      calculateCartTotal: () => {
+        const { cart, books } = get();
+        return cart.reduce((total, item) => {
+          const book = books.find((b) => b.id === item.bookId);
           return total + (book?.price || 0) * item.quantity;
         }, 0);
       },
+
+      // Address implementation
+      addresses: [
+        {
+          id: "addr1",
+          userId: "user1",
+          fullName: "John Doe",
+          addressLine1: "123 Main St",
+          city: "Anytown",
+          state: "CA",
+          postalCode: "12345",
+          country: "USA",
+          isDefault: true,
+        },
+        {
+          id: "addr2",
+          userId: "user1",
+          fullName: "John Doe",
+          addressLine1: "456 Work Ave",
+          addressLine2: "Suite 500",
+          city: "Business City",
+          state: "NY",
+          postalCode: "67890",
+          country: "USA",
+          isDefault: false,
+        },
+      ],
+      addAddress: (address) =>
+        set((state) => ({ addresses: [...state.addresses, address] })),
+      updateAddress: (address) =>
+        set((state) => ({
+          addresses: state.addresses.map((a) =>
+            a.id === address.id ? address : a,
+          ),
+        })),
+      deleteAddress: (addressId) =>
+        set((state) => ({
+          addresses: state.addresses.filter((a) => a.id !== addressId),
+        })),
+
+      // Payment method implementation
+      paymentMethods: [
+        {
+          id: "pm1",
+          userId: "user1",
+          cardType: "Visa",
+          last4: "4242",
+          expiryMonth: "12",
+          expiryYear: "2025",
+          isDefault: true,
+        },
+        {
+          id: "pm2",
+          userId: "user1",
+          cardType: "Mastercard",
+          last4: "5678",
+          expiryMonth: "06",
+          expiryYear: "2024",
+          isDefault: false,
+        },
+      ],
+      addPaymentMethod: (paymentMethod) =>
+        set((state) => ({
+          paymentMethods: [...state.paymentMethods, paymentMethod],
+        })),
+      updatePaymentMethod: (paymentMethod) =>
+        set((state) => ({
+          paymentMethods: state.paymentMethods.map((p) =>
+            p.id === paymentMethod.id ? paymentMethod : p,
+          ),
+        })),
+      deletePaymentMethod: (paymentMethodId) =>
+        set((state) => ({
+          paymentMethods: state.paymentMethods.filter(
+            (p) => p.id !== paymentMethodId,
+          ),
+        })),
     }),
     {
       name: "book-store-storage",

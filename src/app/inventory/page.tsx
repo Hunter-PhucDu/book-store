@@ -44,7 +44,7 @@ export default function InventoryManagementPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/signin?callbackUrl=/inventory");
+      router.push("/signin?callbackUrl=/inventory");
     } else if (status === "authenticated") {
       if (
         session?.user?.role !== UserRole.INVENTORY_MANAGER &&

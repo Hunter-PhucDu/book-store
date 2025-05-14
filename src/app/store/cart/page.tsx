@@ -13,36 +13,29 @@ import {
 } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import MainLayout from "@/components/layout/MainLayout";
-import { useStore } from "@/store/index";
 import {
   Address,
   OrderStatus,
   PaymentMethod,
   PaymentStatus,
+  CartItem,
 } from "@/types/order";
+import { initialBooks } from "@/store/bookData";
+import { Book } from "@/types/book";
+
+// Mock cart data
+const mockCartItems: CartItem[] = [
+  { bookId: "1", quantity: 2 },
+  { bookId: "3", quantity: 1 },
+];
 
 export default function CartPage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const books = initialBooks;
 
-  const {
-    cart,
-    books,
-    updateCartItem,
-    removeFromCart,
-    clearCart,
-    cartTotal,
-    addOrder,
-  } = useStore((state) => ({
-    cart: state.cart,
-    books: state.books,
-    updateCartItem: state.updateCartItem,
-    removeFromCart: state.removeFromCart,
-    clearCart: state.clearCart,
-    cartTotal: state.cartTotal,
-    addOrder: state.addOrder,
-  }));
-
+  // Local state for cart
+  const [cart, setCart] = useState<CartItem[]>(mockCartItems);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [shippingInfo, setShippingInfo] = useState<Address>({
     fullName: session?.user?.name || "",
@@ -54,6 +47,16 @@ export default function CartPage() {
     phoneNumber: "",
   });
 
+  // Calculate cart total
+  const calculateCartTotal = () => {
+    return cart.reduce((total, item) => {
+      const book = books.find((b) => b.id === item.bookId);
+      return total + (book?.price || 0) * item.quantity;
+    }, 0);
+  };
+
+  const cartTotal = calculateCartTotal();
+
   const handleQuantityChange = (bookId: string, quantity: number) => {
     if (quantity < 1) {
       return;
@@ -61,12 +64,20 @@ export default function CartPage() {
 
     const book = books.find((book) => book.id === bookId);
     if (book && quantity <= book.stock) {
-      updateCartItem(bookId, quantity);
+      setCart(
+        cart.map((item) =>
+          item.bookId === bookId ? { ...item, quantity } : item,
+        ),
+      );
     }
   };
 
   const handleRemoveItem = (bookId: string) => {
-    removeFromCart(bookId);
+    setCart(cart.filter((item) => item.bookId !== bookId));
+  };
+
+  const clearCart = () => {
+    setCart([]);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,63 +85,28 @@ export default function CartPage() {
     setShippingInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+
     if (!session) {
-      router.push("/auth/signin?callbackUrl=/store/cart");
+      router.push("/signin?callbackUrl=/store/cart");
       return;
     }
 
-    setIsCheckingOut(true);
-  };
-
-  const handlePlaceOrder = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!session?.user?.id) {
-      return;
-    }
-
-    // Create order items
-    const orderItems = cart.map((item) => {
-      const book = books.find((b) => b.id === item.bookId);
-      return {
-        id: `item${Date.now()}${item.bookId}`,
-        bookId: item.bookId,
-        quantity: item.quantity,
-        unitPrice: book?.price || 0,
-        totalPrice: (book?.price || 0) * item.quantity,
-      };
-    });
-
-    // Calculate order totals
+    // Calculate totals
     const subtotal = cartTotal;
-    const tax = subtotal * 0.08; // 8% tax
-    const shippingCost = subtotal > 50 ? 0 : 4.99; // Free shipping over $50
-    const total = subtotal + tax + shippingCost;
+    const tax = cartTotal * 0.08;
+    const shipping = cartTotal > 50 ? 0 : 4.99;
+    const total = subtotal + tax + shipping;
 
-    // Create new order
-    const newOrderId = addOrder({
-      userId: session.user.id,
-      items: orderItems,
-      status: OrderStatus.PENDING,
-      shippingAddress: shippingInfo,
-      billingAddress: shippingInfo, // Using same address for billing
-      shippingMethod: "Standard Shipping",
-      subtotal,
-      tax,
-      shippingCost,
-      discount: 0,
-      total,
-      payment: {
-        method: PaymentMethod.CREDIT_CARD,
-        status: PaymentStatus.COMPLETED,
-        paidAt: new Date(),
-      },
-    });
-
-    // Clear cart and navigate to order confirmation
+    // In a real app, we would save the order to the database
+    // For now, just clear the cart and close the checkout modal
     clearCart();
-    router.push(`/account/orders/${newOrderId}?new=true`);
+    setIsCheckingOut(false);
+
+    // You could add a success message here
   };
 
   // Empty cart state
@@ -288,7 +264,7 @@ export default function CartPage() {
               {/* Cart Actions */}
               <div className="px-6 py-4 bg-gray-50 flex justify-between items-center">
                 <button
-                  onClick={() => clearCart()}
+                  onClick={clearCart}
                   className="text-sm text-red-600 hover:text-red-800 flex items-center"
                 >
                   <FiTrash2 className="mr-1 h-4 w-4" />
@@ -345,7 +321,7 @@ export default function CartPage() {
               </div>
 
               <button
-                onClick={handleCheckout}
+                onClick={() => setIsCheckingOut(true)}
                 className="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Proceed to Checkout
@@ -363,7 +339,7 @@ export default function CartPage() {
                   Complete Your Order
                 </h2>
 
-                <form onSubmit={handlePlaceOrder}>
+                <form onSubmit={handleCheckout}>
                   <div className="space-y-4">
                     <div>
                       <label

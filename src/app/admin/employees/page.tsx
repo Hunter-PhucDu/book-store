@@ -53,7 +53,7 @@ export default function EmployeeManagementPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/signin?callbackUrl=/admin/employees");
+      router.push("/signin?callbackUrl=/admin/employees");
     } else if (status === "authenticated") {
       if (session?.user?.role !== UserRole.ADMIN) {
         router.push("/");

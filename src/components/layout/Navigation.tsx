@@ -167,7 +167,7 @@ export default function Navigation() {
               </div>
             ) : (
               <Link
-                href="/auth/signin"
+                href="/signin"
                 className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <FiLogIn className="h-5 w-5" />
@@ -299,7 +299,7 @@ export default function Navigation() {
                 </>
               ) : (
                 <Link
-                  href="/auth/signin"
+                  href="/signin"
                   className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors"
                   onClick={closeMenu}
                 >

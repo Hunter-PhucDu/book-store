@@ -60,6 +60,7 @@ export const initialOrders: Order[] = [
       transactionId: "txn_123456789",
       paidAt: new Date("2024-03-15"),
     },
+    orderDate: new Date("2024-03-15").toISOString(),
   },
   {
     id: "order2",
@@ -106,6 +107,7 @@ export const initialOrders: Order[] = [
       transactionId: "txn_987654321",
       paidAt: new Date("2024-04-20"),
     },
+    orderDate: new Date("2024-04-20").toISOString(),
   },
   {
     id: "order3",
@@ -167,6 +169,7 @@ export const initialOrders: Order[] = [
       transactionId: "txn_567891234",
       paidAt: new Date("2024-04-25"),
     },
+    orderDate: new Date("2024-04-25").toISOString(),
   },
 ];
 

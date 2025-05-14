@@ -33,7 +33,7 @@ export default function OrdersManagementPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/signin?callbackUrl=/admin/orders");
+      router.push("/signin?callbackUrl=/admin/orders");
     } else if (status === "authenticated") {
       if (session?.user?.role !== UserRole.ADMIN) {
         router.push("/");

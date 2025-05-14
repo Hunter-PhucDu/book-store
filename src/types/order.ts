@@ -58,6 +58,7 @@ export interface Order {
     transactionId?: string;
     paidAt?: Date;
   };
+  orderDate: string;
 }
 
 export interface Address {
