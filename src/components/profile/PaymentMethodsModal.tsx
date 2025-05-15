@@ -11,7 +11,6 @@ import {
 } from "react-icons/fi";
 
 interface PaymentMethodsModalProps {
-  userId: string;
   onClose: () => void;
 }
 
@@ -50,7 +49,6 @@ const mockPaymentMethods: PaymentMethod[] = [
 ];
 
 export default function PaymentMethodsModal({
-  userId,
   onClose,
 }: PaymentMethodsModalProps) {
   const [paymentMethods, setPaymentMethods] =

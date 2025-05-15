@@ -13,15 +13,8 @@ import {
 } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import MainLayout from "@/components/layout/MainLayout";
-import {
-  Address,
-  OrderStatus,
-  PaymentMethod,
-  PaymentStatus,
-  CartItem,
-} from "@/types/order";
+import { Address, CartItem } from "@/types/order";
 import { initialBooks } from "@/store/bookData";
-import { Book } from "@/types/book";
 
 // Mock cart data
 const mockCartItems: CartItem[] = [
@@ -94,12 +87,6 @@ export default function CartPage() {
       router.push("/signin?callbackUrl=/store/cart");
       return;
     }
-
-    // Calculate totals
-    const subtotal = cartTotal;
-    const tax = cartTotal * 0.08;
-    const shipping = cartTotal > 50 ? 0 : 4.99;
-    const total = subtotal + tax + shipping;
 
     // In a real app, we would save the order to the database
     // For now, just clear the cart and close the checkout modal

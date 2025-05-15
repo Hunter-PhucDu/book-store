@@ -15,6 +15,7 @@ import {
 import { useStore } from "@/store/index";
 import { User, UserRole, Employee } from "@/types/user";
 import UserFormModal from "@/components/admin/UserFormModal";
+import Image from "next/image";
 
 export default function EmployeeManagementPage() {
   const { data: session, status } = useSession();
@@ -264,7 +265,7 @@ export default function EmployeeManagementPage() {
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10">
                               {staff.avatar ? (
-                                <img
+                                <Image
                                   src={staff.avatar}
                                   alt={staff.name}
                                   className="h-10 w-10 rounded-full object-cover"

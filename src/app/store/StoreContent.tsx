@@ -11,9 +11,16 @@ interface StoreContentProps {
 }
 
 export default function StoreContent({ books, categories }: StoreContentProps) {
+  const minPrice = books.length ? Math.min(...books.map((b) => b.price)) : 0;
+  const maxPrice = books.length
+    ? Math.max(...books.map((b) => b.price))
+    : 1000000;
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    minPrice,
+    maxPrice,
+  ]);
   const [sortBy, setSortBy] = useState<string>("title-asc");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -24,7 +31,7 @@ export default function StoreContent({ books, categories }: StoreContentProps) {
         book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         book.author.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory
-        ? book.category === selectedCategory
+        ? book.category.trim().toLowerCase() === selectedCategory
         : true;
       const matchesPrice =
         book.price >= priceRange[0] && book.price <= priceRange[1];

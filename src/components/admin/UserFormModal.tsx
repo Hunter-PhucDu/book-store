@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FiX } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { User, UserRole } from "@/types/user";
@@ -15,24 +16,27 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
   const updateUser = useStore((state) => state.updateUser);
 
   // Default form values
-  const defaultFormData = {
-    name: "",
-    email: "",
-    role: UserRole.CUSTOMER,
-    password: "",
-    confirmPassword: "",
-    avatar: "",
-    // Employee/Inventory Manager specific fields
-    department: "",
-    hireDate: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
-    salary: 0,
-    warehouseId: "",
-    // Admin specific fields
-    permissions: [] as string[],
-    // Customer specific fields
-    address: "",
-    phoneNumber: "",
-  };
+  const defaultFormData = useMemo(
+    () => ({
+      name: "",
+      email: "",
+      role: UserRole.CUSTOMER,
+      password: "",
+      confirmPassword: "",
+      avatar: "",
+      // Employee/Inventory Manager specific fields
+      department: "",
+      hireDate: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
+      salary: 0,
+      warehouseId: "",
+      // Admin specific fields
+      permissions: [] as string[],
+      // Customer specific fields
+      address: "",
+      phoneNumber: "",
+    }),
+    [],
+  );
 
   const [formData, setFormData] = useState<typeof defaultFormData>({
     ...defaultFormData,
@@ -110,7 +114,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
     } else {
       setFormData({ ...defaultFormData });
     }
-  }, [user]);
+  }, [user, defaultFormData]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -178,7 +182,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
 
     try {
       // Prepare user data based on role
-      const userData: any = {
+      const userData: Record<string, unknown> = {
         name: formData.name,
         email: formData.email,
         role: formData.role,
