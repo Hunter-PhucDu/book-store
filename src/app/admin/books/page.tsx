@@ -3,7 +3,14 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { FiPlus, FiEdit, FiTrash, FiSearch } from "react-icons/fi";
+import {
+  FiPlus,
+  FiEdit,
+  FiTrash,
+  FiSearch,
+  FiDownload,
+  FiPrinter,
+} from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { Book } from "@/types/book";
 import { UserRole } from "@/types/user";
@@ -59,6 +66,131 @@ export default function AdminBooksPage() {
     setShowDeleteConfirm(null);
   };
 
+  // Hàm xuất danh sách sách ra Excel
+  const exportAllBooksToExcel = () => {
+    // Tạo header cho file CSV
+    const headers = [
+      "ID",
+      "Title",
+      "Author",
+      "ISBN",
+      "Category",
+      "Price",
+      "Stock",
+      "Publish Year",
+    ];
+
+    // Tạo nội dung CSV
+    const csvContent = [
+      headers.join(","),
+      ...filteredBooks.map((book) =>
+        [
+          book.id,
+          `"${book.title.replace(/"/g, '""')}"`, // Escape quotes
+          `"${book.author.replace(/"/g, '""')}"`,
+          book.isbn,
+          `"${book.category.replace(/"/g, '""')}"`,
+          book.price,
+          book.stock,
+          book.publishYear,
+        ].join(","),
+      ),
+    ].join("\n");
+
+    // Tạo blob và download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `books-list-${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Hàm in danh sách sách
+  const printBooksList = () => {
+    const printContent = `
+      <html>
+        <head>
+          <title>Books List</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; text-align: center; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+            .text-center { text-align: center; }
+            .text-right { text-align: right; }
+            .stock-high { color: green; }
+            .stock-medium { color: orange; }
+            .stock-low { color: red; }
+            .print-date { text-align: right; font-size: 12px; margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="print-date">Printed on: ${new Date().toLocaleString()}</div>
+          <h1>Books Inventory List</h1>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Category</th>
+                <th class="text-right">Price</th>
+                <th class="text-center">Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredBooks
+                .map(
+                  (book) => `
+                <tr>
+                  <td>${book.id}</td>
+                  <td>${book.title}</td>
+                  <td>${book.author}</td>
+                  <td>${book.isbn}</td>
+                  <td>${book.category}</td>
+                  <td class="text-right">$${book.price.toFixed(2)}</td>
+                  <td class="text-center ${
+                    book.stock > 10
+                      ? "stock-high"
+                      : book.stock > 0
+                        ? "stock-medium"
+                        : "stock-low"
+                  }">${book.stock}</td>
+                </tr>
+              `,
+                )
+                .join("")}
+            </tbody>
+          </table>
+          <div style="margin-top: 30px;">
+            <p><strong>Total Books:</strong> ${filteredBooks.length}</p>
+            <p><strong>Total Stock:</strong> ${filteredBooks.reduce((sum, book) => sum + book.stock, 0)}</p>
+            <p><strong>Total Value:</strong> $${filteredBooks.reduce((sum, book) => sum + book.price * book.stock, 0).toFixed(2)}</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -76,12 +208,28 @@ export default function AdminBooksPage() {
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-800">Book Management</h1>
-          <button
-            onClick={handleAddNewBook}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            <FiPlus className="inline-block mr-1" /> Add New Book
-          </button>
+          <div className="flex space-x-2">
+            <button
+              onClick={exportAllBooksToExcel}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center"
+              title="Export to Excel"
+            >
+              <FiDownload className="mr-2" /> Export
+            </button>
+            <button
+              onClick={printBooksList}
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center"
+              title="Print Book List"
+            >
+              <FiPrinter className="mr-2" /> Print
+            </button>
+            <button
+              onClick={handleAddNewBook}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+            >
+              <FiPlus className="mr-2" /> Add New Book
+            </button>
+          </div>
         </div>
       </div>
 
@@ -132,13 +280,6 @@ export default function AdminBooksPage() {
                     <tr key={book.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <BookCover
-                              src={book.coverImage}
-                              alt={book.title}
-                              className="h-10 w-10 rounded-sm"
-                            />
-                          </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
                               {book.title}

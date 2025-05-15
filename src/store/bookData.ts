@@ -259,7 +259,7 @@ Calvino khéo sử dụng ngôn từ tinh tế, xây dựng bảy loạt thành 
   },
   {
     id: "22",
-    title: "Tuổi Thơ Đồ Rê Mi",
+    title: "Làm bạn với bầu trời",
     author: "Nguyễn Nhật Ánh",
     description: `Một chùm truyện ngắn kể về tuổi thơ giữa những ngày hè bất tận: những trò chơi bắn bi, chuyến xe đạp rong ruổi tới nhà bạn, và cuộc mơ mộng về tương lai. Mỗi câu chuyện là một lát cắt nhỏ, lột tả sự hồn nhiên, ngây thơ và đôi khi cả nỗi buồn man mác khi lần đầu biết đến nỗi chia ly. Nguyễn Nhật Ánh dùng giọng văn nhẹ nhàng, hài hước và đầy cảm xúc, khơi gợi ký ức tuổi thơ ngọt ngào cho người đọc mọi lứa tuổi.`,
     price: 95000,
@@ -272,7 +272,7 @@ Calvino khéo sử dụng ngôn từ tinh tế, xây dựng bảy loạt thành 
   {
     id: "23",
     title: "Chiến Tranh Giữa Các Vì Sao",
-    author: "Nguyễn Duy Chính",
+    author: "George Lucas",
     description: `Bối cảnh vũ trụ tương lai, khi nhân loại đã phát triển công nghệ vượt ánh sáng và phân tán khắp thiên hà. Trung úy Orion Lê – phi công hạng B – được giao nhiệm vụ hộ tống đoàn khoa học đến vùng không gian mới. Khi xâm nhập lãnh thổ kẻ thù, anh phát hiện âm mưu sử dụng vũ khí hủy diệt toàn cầu. Song song với các trận giao tranh vũ trụ nghẹt thở, Lê còn phải đương đầu với xung đột nội tâm: niềm tin vào chính nghĩa, tình đồng đội và nỗi ám ảnh mất mát người thân. Tác phẩm pha trộn yếu tố khoa học giả tưởng với triết lý về nhân tính và bản chất chiến tranh.`,
     price: 140000,
     coverImage: "/images/books/chien-tranh-giua-cac-vi-sao.jpg",
@@ -355,7 +355,7 @@ Calvino khéo sử dụng ngôn từ tinh tế, xây dựng bảy loạt thành 
   },
   {
     id: "30",
-    title: "Đời Thay Đổi Sau Một Đêm",
+    title: "Đảo mộng mơ",
     author: "Nguyễn Nhật Ánh",
     description: `Tác phẩm gồm những truyện ngắn tản mạn về tình yêu, tuổi trẻ và những khoảnh khắc định mệnh khiến cuộc đời con người rẽ sang trang. Từ cuộc hẹn hò vụng dại, lá thư tình để quên, đến nụ cười của người lạ trên chuyến xe về, Ánh khéo léo ghi lại những khoảnh khắc chợt đến và đi, nhưng đủ để làm trái tim rung động. Thông điệp về sự lạc quan, dám yêu và không ngại thay đổi khiến tác phẩm trở thành người bạn đồng hành của nhiều độc giả trẻ.`,
     price: 99000,
@@ -392,7 +392,7 @@ Calvino khéo sử dụng ngôn từ tinh tế, xây dựng bảy loạt thành 
   {
     id: "33",
     title: "Chiến Tranh Giữa Các Vì Sao",
-    author: "Nguyễn Duy Chính",
+    author: "George Lucas",
     description: `Bối cảnh vũ trụ tương lai, khi nhân loại đã phát triển công nghệ vượt ánh sáng và phân tán khắp thiên hà. Trung úy Orion Lê – phi công hạng B – được giao nhiệm vụ hộ tống đoàn khoa học đến vùng không gian mới. Khi xâm nhập lãnh thổ kẻ thù, anh phát hiện âm mưu sử dụng vũ khí hủy diệt toàn cầu. Song song với các trận giao tranh vũ trụ nghẹt thở, Lê còn phải đương đầu với xung đột nội tâm: niềm tin vào chính nghĩa, tình đồng đội và nỗi ám ảnh mất mát người thân. Tác phẩm pha trộn yếu tố khoa học giả tưởng với triết lý về nhân tính và bản chất chiến tranh.`,
     price: 140000,
     coverImage: "/images/books/chien-tranh-giua-cac-vi-sao.jpg",

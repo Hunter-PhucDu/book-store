@@ -68,6 +68,8 @@ interface StoreState {
   removeFromCart: (bookId: string) => void;
   clearCart: () => void;
   calculateCartTotal: () => number;
+  getCartItemCount: () => number;
+  getCartItemsWithDetails: () => (CartItem & { book: Book | undefined })[];
 
   // Address state
   addresses: Address[];
@@ -188,29 +190,62 @@ export const useStore = create<StoreState>()(
 
       // Cart implementation
       cart: [],
-      addToCart: (bookId, quantity) =>
+      addToCart: (bookId, quantity) => {
+        const book = get().getBookById(bookId);
+        if (!book) {
+          console.error("Book not found");
+          return;
+        }
+
+        // Kiểm tra số lượng tồn kho
+        if (book.stock < quantity) {
+          console.error("Not enough stock");
+          return;
+        }
+
         set((state) => {
           const existingItem = state.cart.find(
             (item) => item.bookId === bookId,
           );
           if (existingItem) {
+            // Kiểm tra nếu số lượng mới vượt quá tồn kho
+            const newQuantity = existingItem.quantity + quantity;
+            if (book.stock < newQuantity) {
+              console.error("Not enough stock for total quantity");
+              return state;
+            }
+
             return {
               cart: state.cart.map((item) =>
                 item.bookId === bookId
-                  ? { ...item, quantity: item.quantity + quantity }
+                  ? { ...item, quantity: newQuantity }
                   : item,
               ),
             };
           } else {
             return { cart: [...state.cart, { bookId, quantity }] };
           }
-        }),
-      updateCartItem: (bookId, quantity) =>
+        });
+      },
+      updateCartItem: (bookId, quantity) => {
+        const book = get().getBookById(bookId);
+        if (!book) {
+          console.error("Book not found");
+          return;
+        }
+
+        // Kiểm tra số lượng tồn kho
+        if (book.stock < quantity) {
+          console.error("Not enough stock");
+          return;
+        }
+
         set((state) => ({
           cart: state.cart.map((item) =>
             item.bookId === bookId ? { ...item, quantity } : item,
           ),
-        })),
+        }));
+      },
       removeFromCart: (bookId) =>
         set((state) => ({
           cart: state.cart.filter((item) => item.bookId !== bookId),
@@ -222,6 +257,19 @@ export const useStore = create<StoreState>()(
           const book = books.find((b) => b.id === item.bookId);
           return total + (book?.price || 0) * item.quantity;
         }, 0);
+      },
+      getCartItemCount: () => {
+        return get().cart.reduce((total, item) => total + item.quantity, 0);
+      },
+      getCartItemsWithDetails: () => {
+        const { cart, books } = get();
+        return cart.map((item) => {
+          const book = books.find((b) => b.id === item.bookId);
+          return {
+            ...item,
+            book,
+          };
+        });
       },
 
       // Address implementation

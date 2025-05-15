@@ -48,25 +48,25 @@ export default function Navigation() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               href="/store"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-gray-600 hover:text-blue-600 transition-colors relative after:absolute after:bottom-0 after:left-0 after:bg-blue-600 after:h-0.5 after:w-0 hover:after:w-full after:transition-all after:duration-300"
             >
               Browse Books
             </Link>
             <Link
               href="/store/categories"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-gray-600 hover:text-blue-600 transition-colors relative after:absolute after:bottom-0 after:left-0 after:bg-blue-600 after:h-0.5 after:w-0 hover:after:w-full after:transition-all after:duration-300"
             >
               Categories
             </Link>
             <Link
               href="/store/new-releases"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-gray-600 hover:text-blue-600 transition-colors relative after:absolute after:bottom-0 after:left-0 after:bg-blue-600 after:h-0.5 after:w-0 hover:after:w-full after:transition-all after:duration-300"
             >
               New Releases
             </Link>
             <Link
               href="/store/deals"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-gray-600 hover:text-blue-600 transition-colors relative after:absolute after:bottom-0 after:left-0 after:bg-blue-600 after:h-0.5 after:w-0 hover:after:w-full after:transition-all after:duration-300"
             >
               Deals
             </Link>
@@ -90,7 +90,7 @@ export default function Navigation() {
             {/* User Menu */}
             {session ? (
               <div className="relative group">
-                <button className="flex items-center space-x-2">
+                <button className="flex items-center space-x-2 group-hover:text-blue-600 transition-colors">
                   <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                     {session.user?.image ? (
                       <Image
@@ -101,20 +101,20 @@ export default function Navigation() {
                         className="object-cover"
                       />
                     ) : (
-                      <FiUser className="h-5 w-5 text-gray-600" />
+                      <FiUser className="h-5 w-5 text-gray-600 group-hover:text-blue-600" />
                     )}
                   </div>
-                  <span className="text-gray-700">
+                  <span className="text-gray-700 group-hover:text-blue-600 transition-colors">
                     {session.user?.name?.split(" ")[0]}
                   </span>
                 </button>
 
                 {/* Dropdown */}
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top scale-95 group-hover:scale-100 border border-gray-100">
                   {/* Profile */}
                   <Link
                     href="/account"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600 rounded-t-lg transition-colors"
                   >
                     My Account
                   </Link>
@@ -122,7 +122,7 @@ export default function Navigation() {
                   {/* Orders */}
                   <Link
                     href="/account/orders"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                   >
                     My Orders
                   </Link>
@@ -130,7 +130,7 @@ export default function Navigation() {
                   {session.user?.role === UserRole.ADMIN && (
                     <Link
                       href="/admin"
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                     >
                       Admin Dashboard
                     </Link>
@@ -140,7 +140,7 @@ export default function Navigation() {
                   {session.user?.role === UserRole.EMPLOYEE && (
                     <Link
                       href="/employee"
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                     >
                       Employee Dashboard
                     </Link>
@@ -150,7 +150,7 @@ export default function Navigation() {
                   {session.user?.role === UserRole.INVENTORY_MANAGER && (
                     <Link
                       href="/inventory"
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                     >
                       Inventory Dashboard
                     </Link>
@@ -159,9 +159,12 @@ export default function Navigation() {
                   {/* Sign Out */}
                   <button
                     onClick={handleSignOut}
-                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600 rounded-b-lg transition-colors"
                   >
-                    Sign Out
+                    <div className="flex items-center">
+                      <FiLogOut className="mr-2" />
+                      Sign Out
+                    </div>
                   </button>
                 </div>
               </div>
@@ -289,9 +292,10 @@ export default function Navigation() {
                     </Link>
                   )}
 
+                  {/* Sign Out */}
                   <button
                     onClick={handleSignOut}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors w-full text-left"
                   >
                     <FiLogOut className="h-5 w-5" />
                     <span>Sign Out</span>

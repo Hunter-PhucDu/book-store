@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { FiX } from "react-icons/fi";
-import { useStore } from "@/store/index";
+import { useState } from "react";
+import { FiX, FiDownload, FiPrinter } from "react-icons/fi";
 import { Book } from "@/types/book";
-import Image from "next/image";
+import { useStore } from "@/store/index";
+import BookCover from "@/components/BookCover";
 
 interface BookFormModalProps {
   book: Book | null;
@@ -15,26 +15,24 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
   const addBook = useStore((state) => state.addBook);
   const updateBook = useStore((state) => state.updateBook);
 
-  const [formData, setFormData] = useState<Omit<Book, "id"> | Book>({
-    title: "",
-    author: "",
-    description: "",
-    price: 0,
-    coverImage: "",
-    isbn: "",
-    category: "",
-    publishYear: new Date().getFullYear(),
-    stock: 0,
-  });
+  const [formData, setFormData] = useState<Partial<Book>>(
+    book
+      ? { ...book }
+      : {
+          title: "",
+          author: "",
+          description: "",
+          price: 0,
+          coverImage: "/images/books/book-placeholder.jpg",
+          isbn: "",
+          category: "",
+          publishYear: new Date().getFullYear(),
+          stock: 0,
+        },
+  );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (book) {
-      setFormData(book);
-    }
-  }, [book]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -42,86 +40,262 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
     >,
   ) => {
     const { name, value } = e.target;
+    let parsedValue: any = value;
 
+    // Parse numeric values
     if (name === "price" || name === "stock" || name === "publishYear") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: name === "publishYear" ? parseInt(value) : parseFloat(value),
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      parsedValue = value === "" ? 0 : Number(value);
+    }
+
+    setFormData({
+      ...formData,
+      [name]: parsedValue,
+    });
+
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: "",
+      });
     }
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.title.trim()) newErrors.title = "Title is required";
-    if (!formData.author.trim()) newErrors.author = "Author is required";
-    if (!formData.description.trim())
-      newErrors.description = "Description is required";
-    if (!formData.isbn.trim()) newErrors.isbn = "ISBN is required";
-    if (!formData.category.trim()) newErrors.category = "Category is required";
-    if (!formData.coverImage.trim())
-      newErrors.coverImage = "Cover image URL is required";
-    if (formData.price <= 0) newErrors.price = "Price must be greater than 0";
-    if (formData.stock < 0) newErrors.stock = "Stock cannot be negative";
+    if (!formData.title?.trim()) {
+      newErrors.title = "Tiêu đề là bắt buộc";
+    }
+
+    if (!formData.author?.trim()) {
+      newErrors.author = "Tác giả là bắt buộc";
+    }
+
+    if (!formData.isbn?.trim()) {
+      newErrors.isbn = "ISBN là bắt buộc";
+    }
+
+    if (!formData.category?.trim()) {
+      newErrors.category = "Thể loại là bắt buộc";
+    }
+
+    if (formData.price === undefined || formData.price < 0) {
+      newErrors.price = "Giá phải lớn hơn hoặc bằng 0";
+    }
+
+    if (formData.stock === undefined || formData.stock < 0) {
+      newErrors.stock = "Số lượng tồn kho phải lớn hơn hoặc bằng 0";
+    }
+
+    if (
+      formData.publishYear === undefined ||
+      formData.publishYear < 1000 ||
+      formData.publishYear > new Date().getFullYear() + 1
+    ) {
+      newErrors.publishYear = "Năm xuất bản không hợp lệ";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
 
     setIsSubmitting(true);
 
     try {
       if (book) {
         // Update existing book
-        updateBook(formData as Book);
+        updateBook(book.id, formData as Book);
       } else {
         // Add new book
-        addBook(formData);
+        addBook({
+          ...formData,
+          id: `book-${Date.now()}`,
+        } as Book);
       }
       onClose();
     } catch (error) {
       console.error("Error saving book:", error);
-    } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Xuất thông tin sách ra Excel
+  const exportToExcel = () => {
+    if (!book) return;
+
+    // Tạo dữ liệu CSV
+    const headers = [
+      "ID",
+      "Title",
+      "Author",
+      "ISBN",
+      "Category",
+      "Price",
+      "Stock",
+      "Publish Year",
+    ];
+    const data = [
+      book.id,
+      `"${book.title.replace(/"/g, '""')}"`, // Escape quotes
+      `"${book.author.replace(/"/g, '""')}"`,
+      book.isbn,
+      `"${book.category.replace(/"/g, '""')}"`,
+      book.price,
+      book.stock,
+      book.publishYear,
+    ];
+
+    const csvContent = `${headers.join(",")}\n${data.join(",")}`;
+
+    // Tạo blob và download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `book-${book.id}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // In thông tin sách
+  const printBookDetails = () => {
+    if (!book) return;
+
+    const printContent = `
+      <html>
+        <head>
+          <title>Book Details</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; margin-bottom: 10px; }
+            .book-details { margin-top: 20px; }
+            .book-detail { margin-bottom: 10px; }
+            .label { font-weight: bold; }
+            .description { margin-top: 20px; white-space: pre-wrap; }
+          </style>
+        </head>
+        <body>
+          <h1>${book.title}</h1>
+          <div class="book-details">
+            <div class="book-detail">
+              <span class="label">Author:</span> ${book.author}
+            </div>
+            <div class="book-detail">
+              <span class="label">ISBN:</span> ${book.isbn}
+            </div>
+            <div class="book-detail">
+              <span class="label">Category:</span> ${book.category}
+            </div>
+            <div class="book-detail">
+              <span class="label">Price:</span> ${book.price.toLocaleString("vi-VN")} đ
+            </div>
+            <div class="book-detail">
+              <span class="label">Stock:</span> ${book.stock}
+            </div>
+            <div class="book-detail">
+              <span class="label">Publish Year:</span> ${book.publishYear}
+            </div>
+            <div class="description">
+              <span class="label">Description:</span><br>
+              ${book.description}
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div className="modal-backdrop">
+      <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-fade-in animate-slide-up">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">
             {book ? "Edit Book" : "Add New Book"}
           </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-500"
-          >
-            <FiX className="h-6 w-6" />
-          </button>
+          <div className="flex items-center space-x-2">
+            {book && (
+              <>
+                <button
+                  onClick={exportToExcel}
+                  className="text-blue-600 hover:text-blue-800 p-2 transition-colors"
+                  title="Export to Excel"
+                >
+                  <FiDownload className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={printBookDetails}
+                  className="text-green-600 hover:text-green-800 p-2 transition-colors"
+                  title="Print Book Details"
+                >
+                  <FiPrinter className="h-5 w-5" />
+                </button>
+              </>
+            )}
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-500 transition-colors"
+            >
+              <FiX className="h-6 w-6" />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+            {/* Book Cover */}
+            <div className="md:col-span-2 flex flex-col md:flex-row items-center gap-4">
+              <div className="w-40 h-60 relative">
+                <BookCover
+                  src={
+                    formData.coverImage || "/images/books/book-placeholder.jpg"
+                  }
+                  alt={formData.title || "Book cover"}
+                  className="rounded-md"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Cover Image URL
+                </label>
+                <input
+                  type="text"
+                  name="coverImage"
+                  value={formData.coverImage || ""}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg"
+                />
+              </div>
+            </div>
+
+            {/* Title */}
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Title
               </label>
               <input
                 type="text"
                 name="title"
-                value={formData.title}
+                value={formData.title || ""}
                 onChange={handleChange}
                 className={`w-full p-2 border rounded-lg ${errors.title ? "border-red-500" : "border-gray-300"}`}
               />
@@ -130,6 +304,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               )}
             </div>
 
+            {/* Author */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Author
@@ -137,7 +312,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               <input
                 type="text"
                 name="author"
-                value={formData.author}
+                value={formData.author || ""}
                 onChange={handleChange}
                 className={`w-full p-2 border rounded-lg ${errors.author ? "border-red-500" : "border-gray-300"}`}
               />
@@ -146,24 +321,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               )}
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-                className={`w-full p-2 border rounded-lg ${errors.description ? "border-red-500" : "border-gray-300"}`}
-              ></textarea>
-              {errors.description && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.description}
-                </p>
-              )}
-            </div>
-
+            {/* ISBN */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 ISBN
@@ -171,7 +329,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               <input
                 type="text"
                 name="isbn"
-                value={formData.isbn}
+                value={formData.isbn || ""}
                 onChange={handleChange}
                 className={`w-full p-2 border rounded-lg ${errors.isbn ? "border-red-500" : "border-gray-300"}`}
               />
@@ -180,6 +338,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               )}
             </div>
 
+            {/* Category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Category
@@ -187,7 +346,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               <input
                 type="text"
                 name="category"
-                value={formData.category}
+                value={formData.category || ""}
                 onChange={handleChange}
                 className={`w-full p-2 border rounded-lg ${errors.category ? "border-red-500" : "border-gray-300"}`}
               />
@@ -196,16 +355,15 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               )}
             </div>
 
+            {/* Price */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Price ($)
+                Price
               </label>
               <input
                 type="number"
                 name="price"
-                step="0.01"
-                min="0"
-                value={formData.price}
+                value={formData.price || ""}
                 onChange={handleChange}
                 className={`w-full p-2 border rounded-lg ${errors.price ? "border-red-500" : "border-gray-300"}`}
               />
@@ -214,6 +372,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               )}
             </div>
 
+            {/* Stock */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Stock
@@ -221,8 +380,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               <input
                 type="number"
                 name="stock"
-                min="0"
-                value={formData.stock}
+                value={formData.stock || ""}
                 onChange={handleChange}
                 className={`w-full p-2 border rounded-lg ${errors.stock ? "border-red-500" : "border-gray-300"}`}
               />
@@ -231,6 +389,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               )}
             </div>
 
+            {/* Publish Year */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Publish Year
@@ -238,46 +397,29 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               <input
                 type="number"
                 name="publishYear"
-                min="1900"
-                max={new Date().getFullYear()}
-                value={formData.publishYear}
+                value={formData.publishYear || ""}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
+                className={`w-full p-2 border rounded-lg ${errors.publishYear ? "border-red-500" : "border-gray-300"}`}
               />
+              {errors.publishYear && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.publishYear}
+                </p>
+              )}
             </div>
 
+            {/* Description */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Cover Image URL
+                Description
               </label>
-              <input
-                type="text"
-                name="coverImage"
-                value={formData.coverImage}
+              <textarea
+                name="description"
+                value={formData.description || ""}
                 onChange={handleChange}
-                className={`w-full p-2 border rounded-lg ${errors.coverImage ? "border-red-500" : "border-gray-300"}`}
-              />
-              {errors.coverImage && (
-                <p className="mt-1 text-sm text-red-500">{errors.coverImage}</p>
-              )}
-
-              {formData.coverImage && (
-                <div className="mt-3">
-                  <p className="text-sm text-gray-500 mb-2">Preview:</p>
-                  <Image
-                    src={formData.coverImage}
-                    alt="Cover preview"
-                    className="h-40 object-cover rounded-lg border border-gray-300"
-                    width={160}
-                    height={240}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).onerror = null;
-                      (e.target as HTMLImageElement).src =
-                        "/images/book-placeholder.jpg";
-                    }}
-                  />
-                </div>
-              )}
+                rows={5}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              ></textarea>
             </div>
           </div>
 
@@ -285,14 +427,14 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+              className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm text-sm font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-400"
             >
               {isSubmitting ? "Saving..." : book ? "Update Book" : "Add Book"}
             </button>

@@ -12,6 +12,7 @@ import {
   FiBell,
   FiUpload,
   FiClock,
+  FiPrinter,
 } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { UserRole } from "@/types/user";
@@ -21,6 +22,19 @@ import BatchUpdateModal from "@/components/inventory/BatchUpdateModal";
 import StockAlertsModal from "@/components/inventory/StockAlertsModal";
 import InventoryHistoryModal from "@/components/inventory/InventoryHistoryModal";
 import { Book } from "@/types/book";
+
+// Thêm interface cho lịch sử nhập kho
+interface StockHistoryEntry {
+  id: string;
+  bookId: string;
+  bookTitle: string;
+  previousStock: number;
+  newStock: number;
+  change: number;
+  date: Date;
+  reason: string;
+  operationType: "add" | "subtract" | "set";
+}
 
 export default function InventoryManagementPage() {
   const { data: session, status } = useSession();
@@ -38,6 +52,43 @@ export default function InventoryManagementPage() {
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+
+  // Thêm state cho lịch sử nhập kho (mô phỏng)
+  const [stockHistory, setStockHistory] = useState<StockHistoryEntry[]>([
+    {
+      id: "hist1",
+      bookId: "1",
+      bookTitle: "The Great Gatsby",
+      previousStock: 35,
+      newStock: 40,
+      change: 5,
+      date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 ngày trước
+      reason: "Weekly stock replenishment",
+      operationType: "add",
+    },
+    {
+      id: "hist2",
+      bookId: "3",
+      bookTitle: "Invisible Cities",
+      previousStock: 35,
+      newStock: 30,
+      change: -5,
+      date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 ngày trước
+      reason: "Inventory correction",
+      operationType: "subtract",
+    },
+    {
+      id: "hist3",
+      bookId: "5",
+      bookTitle: "Crime and Punishment",
+      previousStock: 25,
+      newStock: 30,
+      change: 5,
+      date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 ngày trước
+      reason: "New shipment arrived",
+      operationType: "add",
+    },
+  ]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -99,6 +150,184 @@ export default function InventoryManagementPage() {
   const handleUpdateStock = (book: Book) => {
     setCurrentBook(book);
     setIsModalOpen(true);
+  };
+
+  // Hàm in hóa đơn nhập kho
+  const printStockReceipt = (entry: StockHistoryEntry) => {
+    const book = books.find((b) => b.id === entry.bookId);
+    if (!book) return;
+
+    const printContent = `
+      <html>
+        <head>
+          <title>Stock Receipt</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; text-align: center; margin-bottom: 20px; }
+            .receipt { border: 1px solid #ddd; padding: 20px; max-width: 800px; margin: 0 auto; }
+            .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+            .logo { font-size: 24px; font-weight: bold; }
+            .receipt-id { font-weight: bold; }
+            .details { margin-bottom: 20px; }
+            .details p { margin: 5px 0; }
+            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+            th { background-color: #f2f2f2; }
+            .total-row { font-weight: bold; }
+            .footer { margin-top: 40px; display: flex; justify-content: space-between; }
+            .signature { width: 45%; }
+            .signature-line { border-top: 1px solid #000; margin-top: 50px; }
+          </style>
+        </head>
+        <body>
+          <div class="receipt">
+            <div class="header">
+              <div class="logo">Book Store</div>
+              <div>
+                <div class="receipt-id">Receipt ID: ${entry.id}</div>
+                <div>Date: ${entry.date.toLocaleDateString()}</div>
+              </div>
+            </div>
+            
+            <div class="details">
+              <p><strong>Operation:</strong> ${
+                entry.operationType === "add"
+                  ? "Stock Addition"
+                  : entry.operationType === "subtract"
+                    ? "Stock Subtraction"
+                    : "Stock Update"
+              }</p>
+              <p><strong>Reason:</strong> ${entry.reason}</p>
+              <p><strong>Processed by:</strong> ${session?.user?.name || "Unknown"}</p>
+            </div>
+            
+            <table>
+              <thead>
+                <tr>
+                  <th>Book ID</th>
+                  <th>Title</th>
+                  <th>ISBN</th>
+                  <th>Previous Stock</th>
+                  <th>Change</th>
+                  <th>New Stock</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${book.id}</td>
+                  <td>${book.title}</td>
+                  <td>${book.isbn}</td>
+                  <td>${entry.previousStock}</td>
+                  <td>${entry.change > 0 ? "+" + entry.change : entry.change}</td>
+                  <td>${entry.newStock}</td>
+                </tr>
+                <tr class="total-row">
+                  <td colspan="4" style="text-align: right;">Total Value Change:</td>
+                  <td colspan="2">$${(entry.change * book.price).toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="footer">
+              <div class="signature">
+                <div class="signature-line"></div>
+                <p>Warehouse Manager</p>
+              </div>
+              <div class="signature">
+                <div class="signature-line"></div>
+                <p>Received By</p>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }
+  };
+
+  // Hàm in tất cả hóa đơn nhập kho
+  const printAllStockReceipts = () => {
+    const printContent = `
+      <html>
+        <head>
+          <title>Stock Receipts</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; text-align: center; margin-bottom: 20px; }
+            .print-date { text-align: right; font-size: 12px; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+            th { background-color: #f2f2f2; }
+            .positive { color: green; }
+            .negative { color: red; }
+            .section { margin-bottom: 30px; }
+          </style>
+        </head>
+        <body>
+          <div class="print-date">Printed on: ${new Date().toLocaleString()}</div>
+          <h1>Stock Movement Report</h1>
+          
+          <div class="section">
+            <h2>Recent Stock Changes</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Book</th>
+                  <th>Previous</th>
+                  <th>Change</th>
+                  <th>New</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${stockHistory
+                  .map((entry) => {
+                    const book = books.find((b) => b.id === entry.bookId);
+                    return `
+                    <tr>
+                      <td>${entry.date.toLocaleDateString()}</td>
+                      <td>${book?.title || entry.bookTitle}</td>
+                      <td>${entry.previousStock}</td>
+                      <td class="${entry.change > 0 ? "positive" : "negative"}">${entry.change > 0 ? "+" + entry.change : entry.change}</td>
+                      <td>${entry.newStock}</td>
+                      <td>${entry.reason}</td>
+                    </tr>
+                  `;
+                  })
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="section">
+            <h2>Summary</h2>
+            <p><strong>Total Stock Movements:</strong> ${stockHistory.length}</p>
+            <p><strong>Total Items Added:</strong> ${stockHistory.filter((e) => e.change > 0).reduce((sum, e) => sum + e.change, 0)}</p>
+            <p><strong>Total Items Removed:</strong> ${Math.abs(stockHistory.filter((e) => e.change < 0).reduce((sum, e) => sum + e.change, 0))}</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }
   };
 
   if (isLoading) {
@@ -189,6 +418,14 @@ export default function InventoryManagementPage() {
               </span>
             )}
           </button>
+
+          <button
+            onClick={printAllStockReceipts}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
+          >
+            <FiPrinter className="mr-2" />
+            Print Reports
+          </button>
         </div>
       </div>
 
@@ -246,8 +483,79 @@ export default function InventoryManagementPage() {
         </div>
       </div>
 
+      {/* Recent Stock Changes */}
+      <div className="container mx-auto px-4 py-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">
+          Recent Stock Changes
+        </h2>
+        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Book
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Change
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Reason
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {stockHistory.map((entry) => (
+                  <tr key={entry.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {entry.date.toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {entry.bookTitle}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                          ${
+                            entry.change > 0
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                      >
+                        {entry.change > 0 ? "+" : ""}
+                        {entry.change}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {entry.reason}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => printStockReceipt(entry)}
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        <FiPrinter className="inline-block" /> Print Receipt
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       {/* Books Table */}
       <div className="container mx-auto px-4 py-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Inventory</h2>
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -300,13 +608,13 @@ export default function InventoryManagementPage() {
                     <tr key={book.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
+                          {/* <div className="flex-shrink-0 h-10 w-10">
                             <BookCover
                               src={book.coverImage}
                               alt={book.title}
                               className="h-10 w-10 rounded-sm"
                             />
-                          </div>
+                          </div> */}
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
                               {book.title}

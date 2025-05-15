@@ -1,52 +1,134 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Book } from "@/types/book";
 import Link from "next/link";
+import { FiShoppingCart, FiInfo, FiCheck } from "react-icons/fi";
+import { Book } from "@/types/book";
+import { useStore } from "@/store/index";
+import BookCover from "@/components/BookCover";
 
 interface BookCardProps {
   book: Book;
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book }) => {
+export default function BookCard({ book }: BookCardProps) {
+  const { id, title, author, price, coverImage, stock } = book;
+  const addToCart = useStore((state) => state.addToCart);
+  const getBookById = useStore((state) => state.getBookById);
+  const [quantity, setQuantity] = useState(1);
+  const [isAdded, setIsAdded] = useState(false);
+
+  const handleAddToCart = () => {
+    // Kiểm tra sách có tồn tại không trước khi thêm vào giỏ hàng
+    const bookExists = getBookById(id);
+    if (!bookExists) {
+      console.error(`Book with id ${id} not found`);
+      return;
+    }
+
+    if (stock < quantity) {
+      alert("Số lượng vượt quá tồn kho!");
+      return;
+    }
+
+    addToCart(id, quantity);
+    setIsAdded(true);
+
+    // Reset trạng thái "Đã thêm" sau 2 giây
+    setTimeout(() => {
+      setIsAdded(false);
+    }, 2000);
+  };
+
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow hover:shadow-lg overflow-hidden flex flex-col transition-transform hover:scale-[1.03]">
-      <div className="flex items-center justify-center aspect-[2/3] w-full bg-gray-50 relative">
-        <Image
-          src={book.coverImage}
-          alt={`Cover of ${book.title}`}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-          style={{ objectFit: "cover" }}
-          className="rounded-t-xl object-cover"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/images/book-placeholder.jpg";
-          }}
+    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+      <div className="relative h-60 w-full">
+        <BookCover
+          src={coverImage}
+          alt={title}
+          width={300}
+          height={240}
+          className="w-full h-full"
         />
       </div>
-      <div className="p-4 flex flex-col flex-1">
-        <h3 className="text-base font-semibold line-clamp-2 mb-1 min-h-[2.5em]">
-          {book.title}
+      <div className="p-4">
+        <h3 className="font-bold text-lg truncate" title={title}>
+          {title}
         </h3>
-        <p className="text-xs text-gray-500 mb-1">Tác giả: {book.author}</p>
-        <p className="font-medium text-green-600 mb-2 text-sm">
-          {book.price.toLocaleString("vi-VN")} đ
-        </p>
-        <p className="text-xs text-gray-500 mb-2">
-          {book.stock > 0 ? `Còn ${book.stock} sản phẩm` : "Hết hàng"}
-        </p>
-        <div className="mt-auto">
-          <Link
-            href={`/store/books/${book.id}`}
-            className="block w-full text-center py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold"
+        <p className="text-gray-600 text-sm mb-2">{author}</p>
+        <div className="flex justify-between items-center mt-2">
+          <span className="text-lg font-semibold">
+            {price.toLocaleString("vi-VN")} đ
+          </span>
+          <span
+            className={`text-sm ${stock > 0 ? "text-green-600" : "text-red-600"}`}
           >
-            Xem chi tiết
+            {stock > 0 ? `Còn ${stock}` : "Hết hàng"}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex border rounded-md">
+            <button
+              className="px-2 py-1 border-r"
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              aria-label="Giảm số lượng"
+              disabled={stock === 0}
+            >
+              -
+            </button>
+            <span className="px-2 py-1">{quantity}</span>
+            <button
+              className="px-2 py-1 border-l"
+              onClick={() => setQuantity(Math.min(stock, quantity + 1))}
+              aria-label="Tăng số lượng"
+              disabled={stock === 0 || quantity >= stock}
+            >
+              +
+            </button>
+          </div>
+
+          <button
+            onClick={handleAddToCart}
+            className={`px-3 py-1 rounded-md ${
+              stock === 0
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : isAdded
+                  ? "bg-green-500 text-white"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
+            disabled={stock === 0}
+            aria-label={
+              stock === 0
+                ? "Hết hàng"
+                : isAdded
+                  ? "Đã thêm vào giỏ"
+                  : "Thêm vào giỏ"
+            }
+          >
+            {isAdded ? (
+              <span className="flex items-center">
+                <FiCheck className="mr-1" /> Đã thêm
+              </span>
+            ) : (
+              <span className="flex items-center">
+                <FiShoppingCart className="mr-1" />{" "}
+                {stock === 0 ? "Hết hàng" : "Thêm vào giỏ"}
+              </span>
+            )}
+          </button>
+        </div>
+
+        <div className="mt-4">
+          <Link
+            href={`/store/books/${id}`}
+            className="text-blue-600 text-sm flex items-center hover:underline"
+          >
+            <FiInfo className="mr-1" /> Xem chi tiết
           </Link>
         </div>
       </div>
     </div>
   );
-};
-
-export default BookCard;
+}
