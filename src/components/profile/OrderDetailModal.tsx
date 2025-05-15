@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import { Order, OrderStatus } from "@/types/order";
 import { useStore } from "@/store/index";
+import Image from "next/image";
 
 interface OrderDetailModalProps {
   order: Order;
@@ -176,10 +177,12 @@ export default function OrderDetailModal({
                           <div className="flex items-center">
                             <div className="h-10 w-10 flex-shrink-0">
                               {book && (
-                                <img
+                                <Image
                                   className="h-10 w-10 rounded-sm object-cover"
                                   src={book.coverImage}
                                   alt={book.title}
+                                  width={40}
+                                  height={40}
                                 />
                               )}
                             </div>

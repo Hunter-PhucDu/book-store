@@ -41,7 +41,7 @@ export const initialUsers: User[] = [
     email: "admin@example.com",
     name: "Sam Admin",
     role: UserRole.ADMIN,
-    avatar: "/images/avatars/admin.jpg",
+    avatar: "/images/avatars/admin.png",
     createdAt: new Date("2023-12-01"),
     updatedAt: new Date("2023-12-01"),
   },

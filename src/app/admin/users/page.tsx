@@ -10,11 +10,11 @@ import {
   FiSearch,
   FiMail,
   FiUser,
-  FiBriefcase,
 } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { UserRole, User } from "@/types/user";
 import UserFormModal from "@/components/admin/UserFormModal";
+import Image from "next/image";
 
 export default function AdminUsersPage() {
   const { data: session, status } = useSession();
@@ -177,7 +177,7 @@ export default function AdminUsersPage() {
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
                             {user.avatar ? (
-                              <img
+                              <Image
                                 src={user.avatar}
                                 alt={user.name}
                                 className="h-10 w-10 rounded-full"
@@ -222,10 +222,10 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => setShowDeleteConfirm(user.id)}
                           className="text-red-600 hover:text-red-900"
-                          disabled={user.id === session?.user?.id} // Don't allow deleting yourself
+                          disabled={user.id === session?.user?.id} // Don"t allow deleting yourself
                           title={
                             user.id === session?.user?.id
-                              ? "You can't delete your own account"
+                              ? "You can&quot;t delete your own account"
                               : ""
                           }
                         >
@@ -241,8 +241,8 @@ export default function AdminUsersPage() {
                                 Confirm Delete
                               </h3>
                               <p>
-                                Are you sure you want to delete the user "
-                                {user.name}"? This action cannot be undone.
+                                Are you sure you want to delete the user &quot;
+                                {user.name}&quot;? This action cannot be undone.
                               </p>
                               <div className="mt-6 flex justify-end space-x-3">
                                 <button
@@ -267,7 +267,7 @@ export default function AdminUsersPage() {
                 ) : (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="px-6 py-4 text-center text-gray-500"
                     >
                       No users found matching your search.

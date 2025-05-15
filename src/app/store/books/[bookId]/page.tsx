@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useMemo } from "react";
@@ -35,7 +34,7 @@ export default function BookDetailsPage() {
 
   const book = useMemo(
     () => books.find((b: Book) => b.id === bookId),
-    [bookId],
+    [bookId, books],
   );
 
   const relatedBooks = useMemo(() => {
@@ -47,7 +46,7 @@ export default function BookDetailsPage() {
           (b.category === book.category || b.author === book.author),
       )
       .slice(0, 3);
-  }, [bookId, book]);
+  }, [bookId, book, books]);
 
   if (!book) {
     return notFound();
@@ -69,7 +68,7 @@ export default function BookDetailsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Book Image */}
-          <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
+          <div className="relative aspect-[2/4] max-w-xs rounded-lg overflow-hidden">
             <BookCover
               src={book.coverImage}
               alt={book.title}

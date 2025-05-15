@@ -193,8 +193,9 @@ export default function AdminBooksPage() {
                                 Confirm Delete
                               </h3>
                               <p>
-                                Are you sure you want to delete "{book.title}"?
-                                This action cannot be undone.
+                                Are you sure you want to delete &quot;
+                                {book.title}&quot;? This action cannot be
+                                undone.
                               </p>
                               <div className="mt-6 flex justify-end space-x-3">
                                 <button

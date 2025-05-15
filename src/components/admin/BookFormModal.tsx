@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { Book } from "@/types/book";
+import Image from "next/image";
 
 interface BookFormModalProps {
   book: Book | null;
@@ -263,10 +264,12 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               {formData.coverImage && (
                 <div className="mt-3">
                   <p className="text-sm text-gray-500 mb-2">Preview:</p>
-                  <img
+                  <Image
                     src={formData.coverImage}
                     alt="Cover preview"
                     className="h-40 object-cover rounded-lg border border-gray-300"
+                    width={160}
+                    height={240}
                     onError={(e) => {
                       (e.target as HTMLImageElement).onerror = null;
                       (e.target as HTMLImageElement).src =

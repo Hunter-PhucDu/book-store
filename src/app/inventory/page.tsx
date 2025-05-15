@@ -10,10 +10,7 @@ import {
   FiSearch,
   FiPackage,
   FiBell,
-  FiFileText,
-  FiList,
   FiUpload,
-  FiCheckSquare,
   FiClock,
 } from "react-icons/fi";
 import { useStore } from "@/store/index";

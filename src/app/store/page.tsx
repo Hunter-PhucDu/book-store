@@ -12,14 +12,12 @@ export default function StorePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading data
     const loadData = () => {
-      // Get books from mock data
       const booksData = initialBooks;
 
-      // Extract unique categories
+      // Normalize categories: trim and lowercase
       const uniqueCategories = Array.from(
-        new Set(booksData.map((book) => book.category)),
+        new Set(booksData.map((book) => book.category.trim().toLowerCase())),
       );
 
       setBooks(booksData);
@@ -27,10 +25,9 @@ export default function StorePage() {
       setIsLoading(false);
     };
 
-    // Simulate a slight delay for loading
     const timer = setTimeout(() => {
       loadData();
-    }, 300);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, []);

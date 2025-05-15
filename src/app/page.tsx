@@ -12,7 +12,21 @@ export default function Home() {
   const newReleases = [...allBooks]
     .sort((a, b) => b.publishYear - a.publishYear)
     .slice(0, 3);
-  const bestSellers = [...allBooks].sort(() => Math.random() - 0.5).slice(0, 3); // Mock bestsellers
+
+  const getRandomSample = <T,>(arr: T[], n: number): T[] => {
+    const result: T[] = [];
+    const used = new Set<number>();
+    while (result.length < n && used.size < arr.length) {
+      const idx = Math.floor(Math.random() * arr.length);
+      if (!used.has(idx)) {
+        used.add(idx);
+        result.push(arr[idx]);
+      }
+    }
+    return result;
+  };
+
+  const bestSellers = getRandomSample(allBooks, 3); // Mock bestsellers không trùng lặp
 
   return (
     <MainLayout>
