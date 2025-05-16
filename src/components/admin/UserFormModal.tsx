@@ -35,7 +35,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
       address: "",
       phoneNumber: "",
     }),
-    [],
+    []
   );
 
   const [formData, setFormData] = useState<typeof defaultFormData>({
@@ -119,7 +119,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
 

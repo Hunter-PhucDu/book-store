@@ -29,7 +29,7 @@ export default function EmployeeManagementPage() {
   const [isUserFormOpen, setIsUserFormOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState<string | null>(
-    null,
+    null
   );
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
 
@@ -37,7 +37,7 @@ export default function EmployeeManagementPage() {
   const staffMembers = users.filter(
     (user) =>
       user.role === UserRole.EMPLOYEE ||
-      user.role === UserRole.INVENTORY_MANAGER,
+      user.role === UserRole.INVENTORY_MANAGER
   );
 
   // Get unique departments
@@ -48,8 +48,8 @@ export default function EmployeeManagementPage() {
           const employee = staff as Employee;
           return employee.department;
         })
-        .filter(Boolean),
-    ),
+        .filter(Boolean)
+    )
   );
 
   useEffect(() => {
@@ -145,10 +145,22 @@ export default function EmployeeManagementPage() {
     <div className="min-h-screen bg-gray-100">
       {/* Page Header */}
       <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Employee Management
-          </h1>
+        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row md:justify-between md:items-center">
+          <div className="flex items-center mb-4 md:mb-0">
+            <button 
+              onClick={() => router.push('/admin')}
+              className="flex items-center mr-4 text-gray-600 hover:text-blue-600"
+              aria-label="Quay lại"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              <span>Quay lại</span>
+            </button>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Employee Management
+            </h1>
+          </div>
           <button
             onClick={handleAddEmployee}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
@@ -178,6 +190,7 @@ export default function EmployeeManagementPage() {
               value={departmentFilter}
               onChange={(e) => setDepartmentFilter(e.target.value)}
               className="px-4 py-3 border rounded-lg min-w-[180px]"
+              aria-label="Lọc theo phòng ban"
             >
               <option value="all">All Departments</option>
               {departments.map((dept) => (
@@ -269,6 +282,8 @@ export default function EmployeeManagementPage() {
                                   src={staff.avatar}
                                   alt={staff.name}
                                   className="h-10 w-10 rounded-full object-cover"
+                                  width={40}
+                                  height={40}
                                 />
                               ) : (
                                 <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">

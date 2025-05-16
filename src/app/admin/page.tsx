@@ -296,8 +296,20 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-100">
       {/* Dashboard Header */}
       <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
+          <div className="flex items-center">
+            <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+          </div>
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center text-gray-600 hover:text-blue-600"
+            aria-label="Trang chủ"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            <span>Quay về trang chủ</span>
+          </button>
         </div>
       </div>
 
@@ -528,7 +540,7 @@ export default function AdminDashboard() {
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
                 Quick Actions
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <Link
                   href="/admin/books"
                   className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
@@ -543,6 +555,14 @@ export default function AdminDashboard() {
                 >
                   <FiUsers className="h-6 w-6 text-purple-600 mb-2" />
                   <span className="text-sm text-gray-700">Manage Users</span>
+                </Link>
+                
+                <Link
+                  href="/admin/employees"
+                  className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
+                >
+                  <FiUsers className="h-6 w-6 text-green-600 mb-2" />
+                  <span className="text-sm text-gray-700">Quản lý nhân viên</span>
                 </Link>
 
                 <Link
