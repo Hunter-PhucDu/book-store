@@ -116,7 +116,7 @@ export default function Navigation() {
                     href="/account"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
-                    My Account
+                    Tài khoản
                   </Link>
 
                   {/* Orders */}
@@ -124,7 +124,7 @@ export default function Navigation() {
                     href="/account/orders"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
-                    My Orders
+                    Đơn hàng
                   </Link>
                   {/* Admin Dashboard - Only visible to admins */}
                   {session.user?.role === UserRole.ADMIN && (
@@ -132,7 +132,7 @@ export default function Navigation() {
                       href="/admin"
                       className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                     >
-                      Admin Dashboard
+                      Quản trị viên
                     </Link>
                   )}
 
@@ -142,7 +142,7 @@ export default function Navigation() {
                       href="/employee"
                       className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                     >
-                      Employee Dashboard
+                      Nhân viên
                     </Link>
                   )}
 
@@ -152,7 +152,7 @@ export default function Navigation() {
                       href="/inventory"
                       className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                     >
-                      Inventory Dashboard
+                      Quản lý kho
                     </Link>
                   )}
 
@@ -161,7 +161,7 @@ export default function Navigation() {
                     onClick={handleSignOut}
                     className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
-                    Sign Out
+                    Đăng xuất
                   </button>
                 </div>
               </div>
@@ -171,7 +171,7 @@ export default function Navigation() {
                 className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <FiLogIn className="h-5 w-5" />
-                <span>Sign In</span>
+                <span>Đăng nhập</span>
               </Link>
             )}
           </div>
@@ -198,28 +198,28 @@ export default function Navigation() {
                 className="text-gray-600 hover:text-blue-600 transition-colors"
                 onClick={closeMenu}
               >
-                Browse Books
+                Tất cả sách
               </Link>
               <Link
                 href="/store/categories"
                 className="text-gray-600 hover:text-blue-600 transition-colors"
                 onClick={closeMenu}
               >
-                Categories
+                Danh mục
               </Link>
               <Link
                 href="/store/new-releases"
                 className="text-gray-600 hover:text-blue-600 transition-colors"
                 onClick={closeMenu}
               >
-                New Releases
+                Sách mới
               </Link>
               <Link
                 href="/store/deals"
                 className="text-gray-600 hover:text-blue-600 transition-colors"
                 onClick={closeMenu}
               >
-                Deals
+                Giảm giá
               </Link>
 
               {/* Cart - Mobile */}
@@ -229,7 +229,7 @@ export default function Navigation() {
                 onClick={closeMenu}
               >
                 <FiShoppingCart className="h-5 w-5" />
-                <span>Cart ({cartItemCount})</span>
+                <span>Giỏ hàng ({cartItemCount})</span>
               </Link>
 
               {/* User Actions - Mobile */}
@@ -241,7 +241,7 @@ export default function Navigation() {
                     onClick={closeMenu}
                   >
                     <FiUser className="h-5 w-5" />
-                    <span>My Account</span>
+                    <span>Tài khoản</span>
                   </Link>
 
                   <Link
@@ -250,7 +250,7 @@ export default function Navigation() {
                     onClick={closeMenu}
                   >
                     <FiPackage className="h-5 w-5" />
-                    <span>My Orders</span>
+                    <span>Đơn hàng</span>
                   </Link>
 
                   {/* Admin Dashboard - Only visible to admins */}
@@ -261,7 +261,7 @@ export default function Navigation() {
                       onClick={closeMenu}
                     >
                       <FiBarChart2 className="h-5 w-5" />
-                      <span>Admin Dashboard</span>
+                      <span>Quản trị viên</span>
                     </Link>
                   )}
 
@@ -273,7 +273,7 @@ export default function Navigation() {
                       onClick={closeMenu}
                     >
                       <FiUsers className="h-5 w-5" />
-                      <span>Employee Dashboard</span>
+                      <span>Nhân viên</span>
                     </Link>
                   )}
 
@@ -285,7 +285,7 @@ export default function Navigation() {
                       onClick={closeMenu}
                     >
                       <FiSettings className="h-5 w-5" />
-                      <span>Inventory Dashboard</span>
+                      <span>Quản lý kho</span>
                     </Link>
                   )}
 
@@ -294,7 +294,7 @@ export default function Navigation() {
                     className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
                   >
                     <FiLogOut className="h-5 w-5" />
-                    <span>Sign Out</span>
+                    <span>Đăng xuất</span>
                   </button>
                 </>
               ) : (
@@ -304,7 +304,7 @@ export default function Navigation() {
                   onClick={closeMenu}
                 >
                   <FiLogIn className="h-5 w-5" />
-                  <span>Sign In</span>
+                  <span>Đăng nhập</span>
                 </Link>
               )}
             </nav>

@@ -3,18 +3,18 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { 
-  FiPackage, 
-  FiTruck, 
-  FiClock, 
-  FiCheckCircle, 
-  FiAlertCircle, 
+import {
+  FiPackage,
+  FiTruck,
+  FiClock,
+  FiCheckCircle,
+  FiAlertCircle,
   FiCalendar,
   FiUser,
   FiBarChart2,
   FiTrendingUp,
   FiBook,
-  FiShoppingCart
+  FiShoppingCart,
 } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { UserRole, Employee } from "@/types/user";
@@ -25,15 +25,15 @@ import Link from "next/link";
 export default function EmployeeDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+
   // Tối ưu cách sử dụng store để tránh re-render không cần thiết
   const users = useStore((state) => state.users);
   const orders = useStore((state) => state.orders);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<"tổng quan" | "đơn hàng" | "khách hàng">(
-    "tổng quan"
-  );
+  const [selectedTab, setSelectedTab] = useState<
+    "tổng quan" | "đơn hàng" | "khách hàng"
+  >("tổng quan");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -50,7 +50,9 @@ export default function EmployeeDashboard() {
   // Sử dụng useMemo cho các tính toán từ store để tránh infinite loop
   const currentEmployee = useMemo(() => {
     if (!session?.user?.email) return undefined;
-    return users.find((user) => user.email === session.user?.email) as Employee | undefined;
+    return users.find((user) => user.email === session.user?.email) as
+      | Employee
+      | undefined;
   }, [users, session?.user?.email]);
 
   // Dữ liệu giả cho đơn hàng cần xử lý
@@ -69,12 +71,18 @@ export default function EmployeeDashboard() {
 
   const todayOrders = useMemo(() => {
     const today = new Date().toDateString();
-    return orders.filter((order) => new Date(order.createdAt).toDateString() === today);
+    return orders.filter(
+      (order) => new Date(order.createdAt).toDateString() === today,
+    );
   }, [orders]);
 
   const thisWeekOrders = useMemo(() => {
     const today = new Date();
-    const lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+    const lastWeek = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - 7,
+    );
     return orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
       return orderDate >= lastWeek;
@@ -138,11 +146,16 @@ export default function EmployeeDashboard() {
             </h1>
           </div>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="flex items-center text-gray-600 hover:text-blue-600"
             aria-label="Trang chủ"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
             <span>Trang chủ</span>
@@ -211,7 +224,9 @@ export default function EmployeeDashboard() {
                   )}
                 </div>
                 <div className="flex-grow text-center md:text-left">
-                  <h2 className="text-2xl font-bold text-gray-800">{currentEmployee?.name}</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {currentEmployee?.name}
+                  </h2>
                   <p className="text-gray-600">{currentEmployee?.email}</p>
                   <div className="mt-2">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
@@ -220,7 +235,10 @@ export default function EmployeeDashboard() {
                   </div>
                   <p className="text-sm text-gray-500 mt-2">
                     <FiCalendar className="inline mr-1" />
-                    Thời gian làm việc: {currentEmployee ? calculateWorkDuration(currentEmployee.hireDate) : ""}
+                    Thời gian làm việc:{" "}
+                    {currentEmployee
+                      ? calculateWorkDuration(currentEmployee.hireDate)
+                      : ""}
                   </p>
                 </div>
                 <div className="flex flex-col justify-center items-center md:items-end">
@@ -239,8 +257,12 @@ export default function EmployeeDashboard() {
                     <FiPackage className="h-6 w-6" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">Đơn hàng hôm nay</p>
-                    <p className="text-xl font-semibold text-gray-800">{todayOrders.length}</p>
+                    <p className="text-sm font-medium text-gray-500">
+                      Đơn hàng hôm nay
+                    </p>
+                    <p className="text-xl font-semibold text-gray-800">
+                      {todayOrders.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -251,8 +273,12 @@ export default function EmployeeDashboard() {
                     <FiTruck className="h-6 w-6" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">Đã giao trong tuần</p>
-                    <p className="text-xl font-semibold text-gray-800">{deliveredOrders.length}</p>
+                    <p className="text-sm font-medium text-gray-500">
+                      Đã giao trong tuần
+                    </p>
+                    <p className="text-xl font-semibold text-gray-800">
+                      {deliveredOrders.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -263,8 +289,12 @@ export default function EmployeeDashboard() {
                     <FiClock className="h-6 w-6" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">Đơn chờ xử lý</p>
-                    <p className="text-xl font-semibold text-gray-800">{pendingOrders.length}</p>
+                    <p className="text-sm font-medium text-gray-500">
+                      Đơn chờ xử lý
+                    </p>
+                    <p className="text-xl font-semibold text-gray-800">
+                      {pendingOrders.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -275,8 +305,12 @@ export default function EmployeeDashboard() {
                     <FiTrendingUp className="h-6 w-6" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">Đơn hàng tuần này</p>
-                    <p className="text-xl font-semibold text-gray-800">{thisWeekOrders.length}</p>
+                    <p className="text-sm font-medium text-gray-500">
+                      Đơn hàng tuần này
+                    </p>
+                    <p className="text-xl font-semibold text-gray-800">
+                      {thisWeekOrders.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -284,23 +318,33 @@ export default function EmployeeDashboard() {
 
             {/* Quick Links */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Công cụ quản lý</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Công cụ quản lý
+              </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Link
                   href="/employee/books"
                   className="bg-gray-50 hover:bg-gray-100 p-4 rounded-lg flex flex-col items-center justify-center text-center transition-colors"
                 >
                   <FiBook className="h-8 w-8 text-blue-600 mb-2" />
-                  <span className="text-gray-700 font-medium">Quản lý sách</span>
-                  <span className="text-sm text-gray-500 mt-1">Danh sách và thông tin sách</span>
+                  <span className="text-gray-700 font-medium">
+                    Quản lý sách
+                  </span>
+                  <span className="text-sm text-gray-500 mt-1">
+                    Danh sách và thông tin sách
+                  </span>
                 </Link>
                 <Link
                   href="/employee/orders"
                   className="bg-gray-50 hover:bg-gray-100 p-4 rounded-lg flex flex-col items-center justify-center text-center transition-colors"
                 >
                   <FiShoppingCart className="h-8 w-8 text-blue-600 mb-2" />
-                  <span className="text-gray-700 font-medium">Quản lý đơn hàng</span>
-                  <span className="text-sm text-gray-500 mt-1">Danh sách và thông tin đơn hàng</span>
+                  <span className="text-gray-700 font-medium">
+                    Quản lý đơn hàng
+                  </span>
+                  <span className="text-sm text-gray-500 mt-1">
+                    Danh sách và thông tin đơn hàng
+                  </span>
                 </Link>
               </div>
             </div>
@@ -308,7 +352,9 @@ export default function EmployeeDashboard() {
             {/* Recent Orders */}
             <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
               <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800">Đơn hàng gần đây</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Đơn hàng gần đây
+                </h3>
                 <button
                   onClick={() => setSelectedTab("đơn hàng")}
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium"
@@ -320,22 +366,37 @@ export default function EmployeeDashboard() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã đơn hàng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khách hàng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày đặt</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng tiền</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Mã đơn hàng
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Khách hàng
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Ngày đặt
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tổng tiền
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Trạng thái
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orders.slice(0, 5).map((order) => (
                       <tr key={order.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{order.id}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                          {order.id}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {users.find((user) => user.id === order.userId)?.name || "Khách hàng không xác định"}
+                          {users.find((user) => user.id === order.userId)
+                            ?.name || "Khách hàng không xác định"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+                          {new Date(order.createdAt).toLocaleDateString(
+                            "vi-VN",
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {order.total.toLocaleString("vi-VN")} đ
@@ -346,23 +407,23 @@ export default function EmployeeDashboard() {
                               order.status === OrderStatus.DELIVERED
                                 ? "bg-green-100 text-green-800"
                                 : order.status === OrderStatus.SHIPPED
-                                ? "bg-blue-100 text-blue-800"
-                                : order.status === OrderStatus.PROCESSING
-                                ? "bg-yellow-100 text-yellow-800"
-                                : order.status === OrderStatus.CANCELLED
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : order.status === OrderStatus.PROCESSING
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : order.status === OrderStatus.CANCELLED
+                                      ? "bg-red-100 text-red-800"
+                                      : "bg-gray-100 text-gray-800"
                             }`}
                           >
                             {order.status === OrderStatus.DELIVERED
                               ? "Đã giao hàng"
                               : order.status === OrderStatus.SHIPPED
-                              ? "Đang giao hàng"
-                              : order.status === OrderStatus.PROCESSING
-                              ? "Đang xử lý"
-                              : order.status === OrderStatus.CANCELLED
-                              ? "Đã huỷ"
-                              : "Không xác định"}
+                                ? "Đang giao hàng"
+                                : order.status === OrderStatus.PROCESSING
+                                  ? "Đang xử lý"
+                                  : order.status === OrderStatus.CANCELLED
+                                    ? "Đã huỷ"
+                                    : "Không xác định"}
                           </span>
                         </td>
                       </tr>
@@ -374,7 +435,9 @@ export default function EmployeeDashboard() {
 
             {/* Tasks */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Nhiệm vụ hôm nay</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Nhiệm vụ hôm nay
+              </h3>
               <ul className="divide-y divide-gray-200">
                 <li className="py-3">
                   <div className="flex items-center">
@@ -383,8 +446,13 @@ export default function EmployeeDashboard() {
                       className="h-4 w-4 text-blue-600 rounded border-gray-300"
                       aria-label="Nhiệm vụ: Xác nhận và đóng gói đơn hàng"
                     />
-                    <span className="ml-3 text-gray-800">Xác nhận và đóng gói đơn hàng #{pendingOrders[0]?.id || "N/A"}</span>
-                    <span className="ml-auto bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Gấp</span>
+                    <span className="ml-3 text-gray-800">
+                      Xác nhận và đóng gói đơn hàng #
+                      {pendingOrders[0]?.id || "N/A"}
+                    </span>
+                    <span className="ml-auto bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                      Gấp
+                    </span>
                   </div>
                 </li>
                 <li className="py-3">
@@ -394,7 +462,9 @@ export default function EmployeeDashboard() {
                       className="h-4 w-4 text-blue-600 rounded border-gray-300"
                       aria-label="Nhiệm vụ: Cập nhật thông tin sản phẩm mới"
                     />
-                    <span className="ml-3 text-gray-800">Cập nhật thông tin sản phẩm mới</span>
+                    <span className="ml-3 text-gray-800">
+                      Cập nhật thông tin sản phẩm mới
+                    </span>
                   </div>
                 </li>
                 <li className="py-3">
@@ -405,8 +475,12 @@ export default function EmployeeDashboard() {
                       defaultChecked
                       aria-label="Nhiệm vụ: Họp nhân viên buổi sáng"
                     />
-                    <span className="ml-3 text-gray-500 line-through">Họp nhân viên buổi sáng</span>
-                    <span className="ml-auto text-green-600 text-xs">Hoàn thành</span>
+                    <span className="ml-3 text-gray-500 line-through">
+                      Họp nhân viên buổi sáng
+                    </span>
+                    <span className="ml-auto text-green-600 text-xs">
+                      Hoàn thành
+                    </span>
                   </div>
                 </li>
                 <li className="py-3">
@@ -416,7 +490,10 @@ export default function EmployeeDashboard() {
                       className="h-4 w-4 text-blue-600 rounded border-gray-300"
                       aria-label="Nhiệm vụ: Liên hệ với khách hàng về đơn hàng"
                     />
-                    <span className="ml-3 text-gray-800">Liên hệ với khách hàng về đơn hàng #{(orders.length > 2) ? orders[2].id : "N/A"}</span>
+                    <span className="ml-3 text-gray-800">
+                      Liên hệ với khách hàng về đơn hàng #
+                      {orders.length > 2 ? orders[2].id : "N/A"}
+                    </span>
                   </div>
                 </li>
               </ul>
@@ -427,31 +504,51 @@ export default function EmployeeDashboard() {
         {selectedTab === "đơn hàng" && (
           <>
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Đơn hàng cần xử lý</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Đơn hàng cần xử lý
+              </h2>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã đơn hàng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khách hàng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày đặt</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng tiền</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Mã đơn hàng
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Khách hàng
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Ngày đặt
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tổng tiền
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Trạng thái
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Hành động
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {pendingOrders.length > 0 ? (
                       pendingOrders.map((order) => {
-                        const customer = users.find((user) => user.id === order.userId);
+                        const customer = users.find(
+                          (user) => user.id === order.userId,
+                        );
                         return (
                           <tr key={order.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{order.id}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                              {order.id}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {customer?.name || "Khách hàng không xác định"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+                              {new Date(order.createdAt).toLocaleDateString(
+                                "vi-VN",
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {order.total.toLocaleString("vi-VN")} đ
@@ -462,15 +559,22 @@ export default function EmployeeDashboard() {
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <button className="text-indigo-600 hover:text-indigo-900 mr-2">Chi tiết</button>
-                              <button className="text-green-600 hover:text-green-900">Xác nhận</button>
+                              <button className="text-indigo-600 hover:text-indigo-900 mr-2">
+                                Chi tiết
+                              </button>
+                              <button className="text-green-600 hover:text-green-900">
+                                Xác nhận
+                              </button>
                             </td>
                           </tr>
                         );
                       })
                     ) : (
                       <tr>
-                        <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                        <td
+                          colSpan={6}
+                          className="px-6 py-4 text-center text-gray-500"
+                        >
                           Không có đơn hàng nào cần xử lý
                         </td>
                       </tr>
@@ -485,7 +589,9 @@ export default function EmployeeDashboard() {
         {selectedTab === "khách hàng" && (
           <>
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Danh sách khách hàng</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Danh sách khách hàng
+              </h2>
               <div className="mb-4">
                 <input
                   type="text"
@@ -498,11 +604,21 @@ export default function EmployeeDashboard() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khách hàng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số điện thoại</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Đơn hàng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Khách hàng
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Số điện thoại
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Đơn hàng
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Hành động
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -541,10 +657,16 @@ export default function EmployeeDashboard() {
                             {(customer as any).phoneNumber || "-"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {orders.filter((order) => order.userId === customer.id).length}
+                            {
+                              orders.filter(
+                                (order) => order.userId === customer.id,
+                              ).length
+                            }
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button className="text-indigo-600 hover:text-indigo-900">Xem chi tiết</button>
+                            <button className="text-indigo-600 hover:text-indigo-900">
+                              Xem chi tiết
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -557,4 +679,4 @@ export default function EmployeeDashboard() {
       </div>
     </div>
   );
-} 
+}

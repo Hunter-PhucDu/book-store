@@ -179,8 +179,8 @@ export const initialOrders: Order[] = [
         id: "item7",
         bookId: "8",
         quantity: 2,
-        unitPrice: 15.50,
-        totalPrice: 31.00,
+        unitPrice: 15.5,
+        totalPrice: 31.0,
       },
       {
         id: "item8",
@@ -188,7 +188,7 @@ export const initialOrders: Order[] = [
         quantity: 1,
         unitPrice: 24.99,
         totalPrice: 24.99,
-      }
+      },
     ],
     status: OrderStatus.PROCESSING,
     createdAt: new Date("2024-05-01"),
@@ -235,7 +235,7 @@ export const initialOrders: Order[] = [
         quantity: 1,
         unitPrice: 32.99,
         totalPrice: 32.99,
-      }
+      },
     ],
     status: OrderStatus.PROCESSING,
     createdAt: new Date("2024-05-02"),
@@ -262,7 +262,7 @@ export const initialOrders: Order[] = [
     subtotal: 32.99,
     tax: 2.64,
     shippingCost: 9.99,
-    discount: 5.00,
+    discount: 5.0,
     total: 40.62,
     payment: {
       method: PaymentMethod.PAYPAL,
@@ -296,7 +296,7 @@ export const initialOrders: Order[] = [
         quantity: 1,
         unitPrice: 16.25,
         totalPrice: 16.25,
-      }
+      },
     ],
     status: OrderStatus.PROCESSING,
     createdAt: new Date(),
@@ -325,8 +325,8 @@ export const initialOrders: Order[] = [
     subtotal: 56.49,
     tax: 4.52,
     shippingCost: 4.99,
-    discount: 10.00,
-    total: 56.00,
+    discount: 10.0,
+    total: 56.0,
     payment: {
       method: PaymentMethod.CREDIT_CARD,
       status: PaymentStatus.COMPLETED,
@@ -334,7 +334,7 @@ export const initialOrders: Order[] = [
       paidAt: new Date(),
     },
     orderDate: new Date().toISOString(),
-  }
+  },
 ];
 
 // Function to reset the orders to initial state

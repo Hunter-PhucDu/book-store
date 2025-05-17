@@ -115,22 +115,37 @@ export const useStore = create<StoreState>()(
           const newId = (
             Math.max(...state.users.map((user) => parseInt(user.id)), 0) + 1
           ).toString();
+
+          // Ensure the role is preserved exactly as passed
+          const role = userData.role;
+          console.log("Adding user with role:", role);
+
           const newUser = {
             ...userData,
             id: newId,
             createdAt: new Date(),
             updatedAt: new Date(),
+            role: role, // Explicitly set role to ensure it's preserved
           };
+
+          console.log("New user created with role:", newUser.role);
           return { users: [...state.users, newUser] };
         }),
       updateUser: (updatedUser) =>
-        set((state) => ({
-          users: state.users.map((user) =>
-            user.id === updatedUser.id
-              ? { ...updatedUser, updatedAt: new Date() }
-              : user,
-          ),
-        })),
+        set((state) => {
+          console.log("Updating user with role:", updatedUser.role);
+          return {
+            users: state.users.map((user) =>
+              user.id === updatedUser.id
+                ? {
+                    ...updatedUser,
+                    updatedAt: new Date(),
+                    role: updatedUser.role, // Explicitly preserve the role
+                  }
+                : user,
+            ),
+          };
+        }),
       deleteUser: (id) =>
         set((state) => ({
           users: state.users.filter((user) => user.id !== id),

@@ -155,7 +155,7 @@ export default function OrdersManagementPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="spinner h-12 w-12 border-4 border-t-blue-500 border-r-transparent border-b-blue-500 border-l-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading orders...</p>
+          <p className="mt-4 text-gray-600">Đang tải dữ liệu đơn hàng...</p>
         </div>
       </div>
     );
@@ -166,12 +166,12 @@ export default function OrdersManagementPage() {
       {/* Page Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">Order Management</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Quản lý đơn hàng</h1>
           <button
             onClick={exportOrdersToCSV}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
           >
-            <FiDownload className="mr-2" /> Export Orders
+            <FiDownload className="mr-2" /> Xuất đơn hàng
           </button>
         </div>
       </div>
@@ -182,7 +182,7 @@ export default function OrdersManagementPage() {
           <div className="relative flex-grow">
             <input
               type="text"
-              placeholder="Search orders by ID, customer name or email..."
+              placeholder="Tìm kiếm đơn hàng theo ID, tên khách hàng hoặc email..."
               className="w-full px-4 py-3 pl-12 border rounded-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -197,12 +197,12 @@ export default function OrdersManagementPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 border rounded-lg min-w-[180px]"
             >
-              <option value="all">All Statuses</option>
-              <option value="PENDING">Pending</option>
-              <option value="PROCESSING">Processing</option>
-              <option value="SHIPPED">Shipped</option>
-              <option value="DELIVERED">Delivered</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="all">Tất cả trạng thái</option>
+              <option value="PENDING">Chờ xử lý</option>
+              <option value="PROCESSING">Đang xử lý</option>
+              <option value="SHIPPED">Đã giao hàng</option>
+              <option value="DELIVERED">Đã nhận hàng</option>
+              <option value="CANCELLED">Đã hủy</option>
             </select>
           </div>
         </div>
@@ -213,13 +213,13 @@ export default function OrdersManagementPage() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="bg-white rounded-lg shadow p-4">
             <div className="font-medium text-sm text-gray-500">
-              Total Orders
+              Tổng đơn hàng
             </div>
             <div className="text-xl font-bold mt-1">{orders.length}</div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <div className="font-medium text-sm text-yellow-500">
-              Processing
+              Đang xử lý
             </div>
             <div className="text-xl font-bold mt-1">
               {
@@ -230,7 +230,9 @@ export default function OrdersManagementPage() {
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="font-medium text-sm text-blue-500">Shipped</div>
+            <div className="font-medium text-sm text-blue-500">
+              Đã giao hàng
+            </div>
             <div className="text-xl font-bold mt-1">
               {
                 orders.filter((order) => order.status === OrderStatus.SHIPPED)
@@ -239,7 +241,9 @@ export default function OrdersManagementPage() {
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="font-medium text-sm text-green-500">Delivered</div>
+            <div className="font-medium text-sm text-green-500">
+              Đã nhận hàng
+            </div>
             <div className="text-xl font-bold mt-1">
               {
                 orders.filter((order) => order.status === OrderStatus.DELIVERED)
@@ -248,7 +252,7 @@ export default function OrdersManagementPage() {
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="font-medium text-sm text-red-500">Cancelled</div>
+            <div className="font-medium text-sm text-red-500">Đã hủy</div>
             <div className="text-xl font-bold mt-1">
               {
                 orders.filter((order) => order.status === OrderStatus.CANCELLED)
@@ -267,25 +271,25 @@ export default function OrdersManagementPage() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order ID
+                    Mã đơn hàng
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Customer
+                    Khách hàng
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
+                    Ngày đặt
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Items
+                    Số lượng
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total
+                    Tổng tiền
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Trạng thái
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Thao tác
                   </th>
                 </tr>
               </thead>
@@ -302,7 +306,7 @@ export default function OrdersManagementPage() {
                           {order.id}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {customer?.name || "Unknown User"}
+                          {customer?.name || "Người dùng không xác định"}
                           {customer ? (
                             <div className="text-xs text-gray-500">
                               {customer.email}
@@ -325,13 +329,23 @@ export default function OrdersManagementPage() {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${order.total.toFixed(2)}
+                          {order.total.toLocaleString("vi-VN")}₫
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getOrderStatusClass(order.status)}`}
                           >
-                            {order.status}
+                            {order.status === "PENDING"
+                              ? "Chờ xử lý"
+                              : order.status === "PROCESSING"
+                                ? "Đang xử lý"
+                                : order.status === "SHIPPED"
+                                  ? "Đã giao hàng"
+                                  : order.status === "DELIVERED"
+                                    ? "Đã nhận hàng"
+                                    : order.status === "CANCELLED"
+                                      ? "Đã hủy"
+                                      : order.status}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -339,7 +353,7 @@ export default function OrdersManagementPage() {
                             <button
                               onClick={() => handleViewOrder(order)}
                               className="text-indigo-600 hover:text-indigo-900"
-                              title="View Details"
+                              title="Xem chi tiết"
                             >
                               <FiEye />
                             </button>
@@ -353,7 +367,7 @@ export default function OrdersManagementPage() {
                                   )
                                 }
                                 className="text-yellow-600 hover:text-yellow-900"
-                                title="Mark as Processing"
+                                title="Đánh dấu đang xử lý"
                               >
                                 <FiFilter />
                               </button>
@@ -368,7 +382,7 @@ export default function OrdersManagementPage() {
                                   )
                                 }
                                 className="text-blue-600 hover:text-blue-900"
-                                title="Mark as Shipped"
+                                title="Đánh dấu đã giao hàng"
                               >
                                 <FiTruck />
                               </button>
@@ -383,7 +397,7 @@ export default function OrdersManagementPage() {
                                   )
                                 }
                                 className="text-green-600 hover:text-green-900"
-                                title="Mark as Delivered"
+                                title="Đánh dấu đã nhận hàng"
                               >
                                 <FiCheckCircle />
                               </button>
@@ -399,7 +413,7 @@ export default function OrdersManagementPage() {
                                     )
                                   }
                                   className="text-red-600 hover:text-red-900"
-                                  title="Cancel Order"
+                                  title="Hủy đơn hàng"
                                 >
                                   <FiX />
                                 </button>
@@ -415,7 +429,7 @@ export default function OrdersManagementPage() {
                       colSpan={7}
                       className="px-6 py-4 text-center text-gray-500"
                     >
-                      No orders found matching your search.
+                      Không tìm thấy đơn hàng phù hợp với tìm kiếm của bạn.
                     </td>
                   </tr>
                 )}

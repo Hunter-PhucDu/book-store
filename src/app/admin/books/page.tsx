@@ -22,7 +22,7 @@ export default function AdminBooksPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentBook, setCurrentBook] = useState<Book | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function AdminBooksPage() {
     (book) =>
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.isbn.toLowerCase().includes(searchQuery.toLowerCase())
+      book.isbn.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleAddNewBook = () => {
@@ -76,13 +76,22 @@ export default function AdminBooksPage() {
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center">
-            <button 
-              onClick={() => router.push('/admin')}
+            <button
+              onClick={() => router.push("/admin")}
               className="flex items-center mr-4 text-gray-600 hover:text-blue-600"
               aria-label="Quay lại"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
               </svg>
               <span>Quay lại</span>
             </button>
@@ -102,25 +111,34 @@ export default function AdminBooksPage() {
       <div className="container mx-auto px-4 py-4 mt-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="font-medium text-sm text-gray-500">Tổng số sách</div>
-            <div className="text-xl font-bold mt-1 text-gray-800">{books.length}</div>
+            <div className="font-medium text-sm text-gray-500">
+              Tổng số sách
+            </div>
+            <div className="text-xl font-bold mt-1 text-gray-800">
+              {books.length}
+            </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <div className="font-medium text-sm text-green-500">Có sẵn</div>
             <div className="text-xl font-bold mt-1 text-green-600">
-              {books.filter(book => book.stock > 0).length}
+              {books.filter((book) => book.stock > 0).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="font-medium text-sm text-yellow-500">Sắp hết hàng</div>
+            <div className="font-medium text-sm text-yellow-500">
+              Sắp hết hàng
+            </div>
             <div className="text-xl font-bold mt-1 text-yellow-600">
-              {books.filter(book => book.stock > 0 && book.stock <= 10).length}
+              {
+                books.filter((book) => book.stock > 0 && book.stock <= 10)
+                  .length
+              }
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <div className="font-medium text-sm text-red-500">Hết hàng</div>
             <div className="text-xl font-bold mt-1 text-red-600">
-              {books.filter(book => book.stock === 0).length}
+              {books.filter((book) => book.stock === 0).length}
             </div>
           </div>
         </div>
@@ -129,7 +147,9 @@ export default function AdminBooksPage() {
       {/* Search Bar */}
       <div className="container mx-auto px-4 py-4">
         <div className="relative">
-          <label htmlFor="book-search" className="sr-only">Tìm kiếm sách</label>
+          <label htmlFor="book-search" className="sr-only">
+            Tìm kiếm sách
+          </label>
           <input
             id="book-search"
             type="text"
@@ -242,7 +262,8 @@ export default function AdminBooksPage() {
                               </h3>
                               <p>
                                 Bạn có chắc chắn muốn xóa &quot;
-                                {book.title}&quot;? Hành động này không thể hoàn tác.
+                                {book.title}&quot;? Hành động này không thể hoàn
+                                tác.
                               </p>
                               <div className="mt-6 flex justify-end space-x-3">
                                 <button

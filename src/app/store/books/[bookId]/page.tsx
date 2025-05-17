@@ -12,14 +12,12 @@ import {
 } from "react-icons/fi";
 import MainLayout from "@/components/layout/MainLayout";
 import BookCard from "@/components/BookCard";
-import BookCover from "@/components/BookCover";
+import BookImage from "@/components/BookImage";
 import { Book } from "@/types/book";
 import { initialBooks } from "@/store/bookData";
 
-// Mock cart function
 const mockAddToCart = (bookId: string, quantity: number) => {
   console.log(`Added book ${bookId} with quantity ${quantity} to cart`);
-  // In a real app, this would update some state
 };
 
 export default function BookDetailsPage() {
@@ -29,7 +27,6 @@ export default function BookDetailsPage() {
   const [quantity, setQuantity] = useState(1);
   const [showAddedToCart, setShowAddedToCart] = useState(false);
 
-  // Use mock data instead of Zustand store
   const books = initialBooks;
 
   const book = useMemo(
@@ -39,13 +36,28 @@ export default function BookDetailsPage() {
 
   const relatedBooks = useMemo(() => {
     if (!book) return [];
-    return books
-      .filter(
-        (b: Book) =>
-          b.id !== bookId &&
-          (b.category === book.category || b.author === book.author),
-      )
-      .slice(0, 3);
+
+    const similarBooks = books.filter(
+      (b: Book) =>
+        b.id !== bookId &&
+        (b.category === book.category || b.author === book.author),
+    );
+
+    if (similarBooks.length >= 3) {
+      return similarBooks.slice(0, 3);
+    }
+
+    const otherBooks = books.filter(
+      (b: Book) =>
+        b.id !== bookId &&
+        b.category !== book.category &&
+        b.author !== book.author,
+    );
+
+    const shuffledOtherBooks = [...otherBooks].sort(() => Math.random() - 0.5);
+
+    const combined = [...similarBooks, ...shuffledOtherBooks];
+    return combined.slice(0, 3);
   }, [bookId, book, books]);
 
   if (!book) {
@@ -68,35 +80,38 @@ export default function BookDetailsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Book Image */}
-          <div className="relative aspect-[2/4] max-w-xs rounded-lg overflow-hidden">
-            <BookCover
-              src={book.coverImage}
-              alt={book.title}
-              className="rounded-lg"
-            />
+          <div className="flex justify-center md:justify-start">
+            <div className="rounded-lg shadow-sm hover:shadow-2xl transition-shadow duration-500 ease-out">
+              <BookImage
+                src={book.coverImage}
+                alt={book.title}
+                className="rounded-lg"
+                width={320}
+                height={480}
+                hoverEffect={true}
+              />
+            </div>
           </div>
 
-          {/* Book Details */}
           <div>
             <h1 className="text-3xl font-bold mb-2">{book.title}</h1>
-            <p className="text-xl text-gray-600 mb-4">by {book.author}</p>
+            <p className="text-xl text-gray-600 mb-4">bởi {book.author}</p>
 
             <div className="flex items-center gap-4 mb-6">
               <span className="text-2xl font-bold text-blue-600">
-                ${book.price.toFixed(2)}
+                {book.price.toLocaleString("vi-VN")}₫
               </span>
               {book.stock > 0 ? (
                 <span className="text-green-600">
-                  In Stock ({book.stock} available)
+                  Còn Hàng ({book.stock} sản phẩm)
                 </span>
               ) : (
-                <span className="text-red-600">Out of Stock</span>
+                <span className="text-red-600">Hết Hàng</span>
               )}
             </div>
 
             <p className="text-gray-700 mb-6">{book.description}</p>
 
-            {/* Quantity Selector */}
             <div className="flex items-center gap-4 mb-6">
               <button
                 onClick={() => handleQuantityChange(quantity - 1)}
@@ -123,7 +138,7 @@ export default function BookDetailsPage() {
                 className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 <FiShoppingCart className="inline-block mr-2" />
-                Add to Cart
+                Thêm Vào Giỏ Hàng
               </button>
 
               <button className="p-3 border rounded-lg hover:bg-gray-100">
@@ -135,27 +150,34 @@ export default function BookDetailsPage() {
               </button>
             </div>
 
-            {/* Added to Cart Message */}
             {showAddedToCart && (
               <div className="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
                 <FiCheckCircle className="mr-2" />
-                Added to cart successfully!
+                Đã thêm vào giỏ hàng thành công!
               </div>
             )}
           </div>
         </div>
 
-        {/* Related Books */}
-        {relatedBooks.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold mb-6">You May Also Like</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {relatedBooks.map((book: Book) => (
-                <BookCard key={book.id} book={book} />
-              ))}
-            </div>
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold mb-6 border-l-4 border-blue-600 pl-4">
+            Bạn Cũng Có Thể Thích
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {relatedBooks.map((book: Book, index: number) => (
+              <div
+                key={book.id}
+                className="transform transition-all duration-300 hover:scale-105"
+                style={{
+                  animationDelay: `${index * 150}ms`,
+                  animation: "fadeInUp 0.6s ease-out forwards",
+                }}
+              >
+                <BookCard book={book} />
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </MainLayout>
   );

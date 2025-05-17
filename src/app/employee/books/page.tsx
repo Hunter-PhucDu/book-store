@@ -65,7 +65,7 @@ export default function EmployeeBooksManagement() {
           book.title.toLowerCase().includes(query) ||
           book.author.toLowerCase().includes(query) ||
           book.description.toLowerCase().includes(query) ||
-          book.isbn.toLowerCase().includes(query)
+          book.isbn.toLowerCase().includes(query),
       );
     }
 
@@ -81,7 +81,11 @@ export default function EmployeeBooksManagement() {
 
     // Sắp xếp
     results.sort((a, b) => {
-      if (sortField === "price" || sortField === "stock" || sortField === "publishYear") {
+      if (
+        sortField === "price" ||
+        sortField === "stock" ||
+        sortField === "publishYear"
+      ) {
         return sortDirection === "asc"
           ? a[sortField] - b[sortField]
           : b[sortField] - a[sortField];
@@ -95,7 +99,14 @@ export default function EmployeeBooksManagement() {
     });
 
     return results;
-  }, [books, searchQuery, selectedCategory, lowStockOnly, sortField, sortDirection]);
+  }, [
+    books,
+    searchQuery,
+    selectedCategory,
+    lowStockOnly,
+    sortField,
+    sortDirection,
+  ]);
 
   // Chi tiết sách được chọn
   const selectedBook = useMemo(() => {
@@ -200,7 +211,9 @@ export default function EmployeeBooksManagement() {
                   aria-label="Hiển thị sách có số lượng thấp"
                 />
                 <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                <span className="ms-3 text-sm font-medium text-gray-900">Số lượng thấp</span>
+                <span className="ms-3 text-sm font-medium text-gray-900">
+                  Số lượng thấp
+                </span>
               </label>
             </div>
           </div>
@@ -221,7 +234,11 @@ export default function EmployeeBooksManagement() {
                       <span>Tên sách</span>
                       {sortField === "title" && (
                         <span className="ml-1">
-                          {sortDirection === "asc" ? <FiChevronUp /> : <FiChevronDown />}
+                          {sortDirection === "asc" ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
                         </span>
                       )}
                     </div>
@@ -235,7 +252,11 @@ export default function EmployeeBooksManagement() {
                       <span>Tác giả</span>
                       {sortField === "author" && (
                         <span className="ml-1">
-                          {sortDirection === "asc" ? <FiChevronUp /> : <FiChevronDown />}
+                          {sortDirection === "asc" ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
                         </span>
                       )}
                     </div>
@@ -249,7 +270,11 @@ export default function EmployeeBooksManagement() {
                       <span>Danh mục</span>
                       {sortField === "category" && (
                         <span className="ml-1">
-                          {sortDirection === "asc" ? <FiChevronUp /> : <FiChevronDown />}
+                          {sortDirection === "asc" ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
                         </span>
                       )}
                     </div>
@@ -263,7 +288,11 @@ export default function EmployeeBooksManagement() {
                       <span>Giá</span>
                       {sortField === "price" && (
                         <span className="ml-1">
-                          {sortDirection === "asc" ? <FiChevronUp /> : <FiChevronDown />}
+                          {sortDirection === "asc" ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
                         </span>
                       )}
                     </div>
@@ -277,7 +306,11 @@ export default function EmployeeBooksManagement() {
                       <span>Số lượng</span>
                       {sortField === "stock" && (
                         <span className="ml-1">
-                          {sortDirection === "asc" ? <FiChevronUp /> : <FiChevronDown />}
+                          {sortDirection === "asc" ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
                         </span>
                       )}
                     </div>
@@ -298,7 +331,10 @@ export default function EmployeeBooksManagement() {
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10 relative">
                             <Image
-                              src={book.coverImage || "/images/book-placeholder.png"}
+                              src={
+                                book.coverImage ||
+                                "/images/book-placeholder.png"
+                              }
                               alt={book.title}
                               className="h-10 w-10 object-cover rounded"
                               width={40}
@@ -310,13 +346,19 @@ export default function EmployeeBooksManagement() {
                             />
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{book.title}</div>
-                            <div className="text-sm text-gray-500">ISBN: {book.isbn}</div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {book.title}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              ISBN: {book.isbn}
+                            </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{book.author}</div>
+                        <div className="text-sm text-gray-900">
+                          {book.author}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -332,8 +374,8 @@ export default function EmployeeBooksManagement() {
                             book.stock <= 5
                               ? "text-red-600"
                               : book.stock <= 10
-                              ? "text-yellow-600"
-                              : "text-green-600"
+                                ? "text-yellow-600"
+                                : "text-green-600"
                           }`}
                         >
                           {book.stock}
@@ -356,7 +398,10 @@ export default function EmployeeBooksManagement() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                    <td
+                      colSpan={6}
+                      className="px-6 py-4 text-center text-gray-500"
+                    >
                       Không có sách nào phù hợp với tiêu chí tìm kiếm
                     </td>
                   </tr>
@@ -372,7 +417,9 @@ export default function EmployeeBooksManagement() {
             <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-                  <h2 className="text-2xl font-bold text-gray-800">Chi tiết sách</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Chi tiết sách
+                  </h2>
                   <button
                     onClick={() => setViewBookId(null)}
                     className="text-gray-500 hover:text-gray-700"
@@ -387,7 +434,10 @@ export default function EmployeeBooksManagement() {
                   <div className="md:col-span-1 flex justify-center">
                     <div className="relative h-60 w-48">
                       <Image
-                        src={selectedBook.coverImage || "/images/book-placeholder.png"}
+                        src={
+                          selectedBook.coverImage ||
+                          "/images/book-placeholder.png"
+                        }
                         alt={selectedBook.title}
                         className="object-cover rounded shadow-md"
                         fill
@@ -402,18 +452,24 @@ export default function EmployeeBooksManagement() {
 
                   {/* Book Details */}
                   <div className="md:col-span-2">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{selectedBook.title}</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                      {selectedBook.title}
+                    </h3>
                     <p className="text-gray-600 mb-2">
-                      <span className="font-semibold">Tác giả:</span> {selectedBook.author}
+                      <span className="font-semibold">Tác giả:</span>{" "}
+                      {selectedBook.author}
                     </p>
                     <p className="text-gray-600 mb-2">
-                      <span className="font-semibold">Danh mục:</span> {selectedBook.category}
+                      <span className="font-semibold">Danh mục:</span>{" "}
+                      {selectedBook.category}
                     </p>
                     <p className="text-gray-600 mb-2">
-                      <span className="font-semibold">ISBN:</span> {selectedBook.isbn}
+                      <span className="font-semibold">ISBN:</span>{" "}
+                      {selectedBook.isbn}
                     </p>
                     <p className="text-gray-600 mb-2">
-                      <span className="font-semibold">Năm xuất bản:</span> {selectedBook.publishYear}
+                      <span className="font-semibold">Năm xuất bản:</span>{" "}
+                      {selectedBook.publishYear}
                     </p>
                     <p className="text-gray-600 mb-2">
                       <span className="font-semibold">Giá:</span>{" "}
@@ -424,20 +480,25 @@ export default function EmployeeBooksManagement() {
                         selectedBook.stock <= 5
                           ? "text-red-600"
                           : selectedBook.stock <= 10
-                          ? "text-yellow-600"
-                          : "text-green-600"
+                            ? "text-yellow-600"
+                            : "text-green-600"
                       }`}
                     >
-                      <span className="font-semibold">Số lượng trong kho:</span> {selectedBook.stock}
+                      <span className="font-semibold">Số lượng trong kho:</span>{" "}
+                      {selectedBook.stock}
                       {selectedBook.stock <= 10 && (
                         <span className="ml-2 text-sm text-red-600 font-semibold">
-                          {selectedBook.stock <= 5 ? "Sắp hết hàng!" : "Sắp hết!"}
+                          {selectedBook.stock <= 5
+                            ? "Sắp hết hàng!"
+                            : "Sắp hết!"}
                         </span>
                       )}
                     </p>
                     <div>
                       <h4 className="text-lg font-semibold mb-2">Mô tả:</h4>
-                      <p className="text-gray-700 whitespace-pre-line">{selectedBook.description}</p>
+                      <p className="text-gray-700 whitespace-pre-line">
+                        {selectedBook.description}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -457,4 +518,4 @@ export default function EmployeeBooksManagement() {
       </div>
     </div>
   );
-} 
+}

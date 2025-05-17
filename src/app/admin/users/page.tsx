@@ -9,18 +9,17 @@ import {
   FiUser,
   FiHome,
   FiPhone,
-  FiShoppingBag
+  FiShoppingBag,
 } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { UserRole, User, Customer } from "@/types/user";
-import Image from "next/image";
 
 export default function CustomerManagementPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const users = useStore((state) => state.users);
-  const customers = users.filter(user => user.role === UserRole.CUSTOMER);
+  const customers = users.filter((user) => user.role === UserRole.CUSTOMER);
 
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,23 +45,26 @@ export default function CustomerManagementPage() {
   });
 
   // Group customers by registration date (month/year)
-  const customersByMonth = filteredCustomers.reduce((acc, customer) => {
-    const date = new Date(customer.createdAt);
-    const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
-    
-    if (!acc[monthYear]) {
-      acc[monthYear] = [];
-    }
-    
-    acc[monthYear].push(customer);
-    return acc;
-  }, {} as Record<string, User[]>);
+  const customersByMonth = filteredCustomers.reduce(
+    (acc, customer) => {
+      const date = new Date(customer.createdAt);
+      const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
+
+      if (!acc[monthYear]) {
+        acc[monthYear] = [];
+      }
+
+      acc[monthYear].push(customer);
+      return acc;
+    },
+    {} as Record<string, User[]>,
+  );
 
   // Sort the keys (months) in descending order
   const sortedMonths = Object.keys(customersByMonth).sort((a, b) => {
-    const [monthA, yearA] = a.split('/').map(Number);
-    const [monthB, yearB] = b.split('/').map(Number);
-    
+    const [monthA, yearA] = a.split("/").map(Number);
+    const [monthB, yearB] = b.split("/").map(Number);
+
     if (yearA !== yearB) return yearB - yearA;
     return monthB - monthA;
   });
@@ -84,13 +86,22 @@ export default function CustomerManagementPage() {
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row md:justify-between md:items-center">
           <div className="flex items-center mb-4 md:mb-0">
-            <button 
-              onClick={() => router.push('/admin')}
+            <button
+              onClick={() => router.push("/admin")}
               className="flex items-center mr-4 text-gray-600 hover:text-blue-600"
               aria-label="Quay lại"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
               </svg>
               <span>Quay lại</span>
             </button>
@@ -110,49 +121,63 @@ export default function CustomerManagementPage() {
                 <FiUser className="h-6 w-6" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Tổng số khách hàng</p>
-                <p className="text-xl font-semibold text-gray-800">{customers.length}</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Tổng số khách hàng
+                </p>
+                <p className="text-xl font-semibold text-gray-800">
+                  {customers.length}
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-4">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-blue-100 text-blue-600">
                 <FiShoppingBag className="h-6 w-6" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Khách hàng có đơn hàng</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Khách hàng có đơn hàng
+                </p>
                 <p className="text-xl font-semibold text-gray-800">
-                  {customers.filter(c => (c as Customer).orderHistory?.length > 0).length}
+                  {
+                    customers.filter(
+                      (c) => (c as Customer).orderHistory?.length > 0,
+                    ).length
+                  }
                 </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-4">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-purple-100 text-purple-600">
                 <FiHome className="h-6 w-6" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Khách hàng có địa chỉ</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Khách hàng có địa chỉ
+                </p>
                 <p className="text-xl font-semibold text-gray-800">
-                  {customers.filter(c => (c as Customer).address).length}
+                  {customers.filter((c) => (c as Customer).address).length}
                 </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-4">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
                 <FiPhone className="h-6 w-6" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Khách hàng có SĐT</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Khách hàng có SĐT
+                </p>
                 <p className="text-xl font-semibold text-gray-800">
-                  {customers.filter(c => (c as Customer).phoneNumber).length}
+                  {customers.filter((c) => (c as Customer).phoneNumber).length}
                 </p>
               </div>
             </div>
@@ -180,15 +205,19 @@ export default function CustomerManagementPage() {
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white p-4 mb-4 rounded-lg shadow-sm">
           <div className="text-gray-600">
-            <span className="font-semibold text-blue-600">{filteredCustomers.length}</span> khách hàng {searchQuery ? "phù hợp với tìm kiếm" : ""}
+            <span className="font-semibold text-blue-600">
+              {filteredCustomers.length}
+            </span>{" "}
+            khách hàng {searchQuery ? "phù hợp với tìm kiếm" : ""}
           </div>
         </div>
 
         {sortedMonths.length > 0 ? (
-          sortedMonths.map(month => (
+          sortedMonths.map((month) => (
             <div key={month} className="mb-8">
               <h3 className="text-lg font-semibold text-gray-700 mb-3 px-3">
-                Khách hàng đăng ký tháng {month} ({customersByMonth[month].length})
+                Khách hàng đăng ký tháng {month} (
+                {customersByMonth[month].length})
               </h3>
               <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
@@ -222,21 +251,6 @@ export default function CustomerManagementPage() {
                           <tr key={customer.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10">
-                                  {customer.avatar ? (
-                                    <Image
-                                      src={customer.avatar}
-                                      alt={customer.name}
-                                      className="h-10 w-10 rounded-full"
-                                      width={40}
-                                      height={40}
-                                    />
-                                  ) : (
-                                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                      <FiUser className="h-5 w-5 text-gray-500" />
-                                    </div>
-                                  )}
-                                </div>
                                 <div className="ml-4">
                                   <div className="text-sm font-medium text-gray-900">
                                     {customer.name}
@@ -254,10 +268,15 @@ export default function CustomerManagementPage() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {typedCustomer.address ? (
-                                <span className="max-w-xs truncate inline-block" title={typedCustomer.address}>
+                                <span
+                                  className="max-w-xs truncate inline-block"
+                                  title={typedCustomer.address}
+                                >
                                   {typedCustomer.address}
                                 </span>
-                              ) : "-"}
+                              ) : (
+                                "-"
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {typedCustomer.orderHistory ? (
@@ -265,11 +284,15 @@ export default function CustomerManagementPage() {
                                   {typedCustomer.orderHistory.length}
                                 </span>
                               ) : (
-                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">0</span>
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                  0
+                                </span>
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {new Date(customer.createdAt).toLocaleDateString()}
+                              {new Date(
+                                customer.createdAt,
+                              ).toLocaleDateString()}
                             </td>
                           </tr>
                         );

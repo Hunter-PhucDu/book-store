@@ -106,7 +106,7 @@ export default function InventoryManagementPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="spinner h-12 w-12 border-4 border-t-blue-500 border-r-transparent border-b-blue-500 border-l-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading inventory...</p>
+          <p className="mt-4 text-gray-600">Đang tải dữ liệu kho hàng...</p>
         </div>
       </div>
     );
@@ -119,11 +119,30 @@ export default function InventoryManagementPage() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
+              <button
+                onClick={() => router.push("/")}
+                className="flex items-center mr-4 text-gray-600 hover:text-blue-600"
+                aria-label="Quay lại"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-1"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>Quay lại</span>
+              </button>
               <h1 className="text-3xl font-bold text-gray-800">
-                Inventory Management
+                Quản lý kho hàng
               </h1>
               <p className="text-gray-600 mt-2">
-                Manage book stock levels and inventory updates
+                Quản lý tồn kho và cập nhật lượng sách
               </p>
             </div>
             <button
@@ -131,7 +150,12 @@ export default function InventoryManagementPage() {
               className="flex items-center px-4 py-2 text-gray-600 hover:text-blue-600 border border-gray-300 rounded-lg hover:border-blue-600 transition-colors"
               aria-label="Về trang chủ"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
               </svg>
               <span>Trang chủ</span>
@@ -146,7 +170,7 @@ export default function InventoryManagementPage() {
           <div className="relative flex-grow">
             <input
               type="text"
-              placeholder="Search books..."
+              placeholder="Tìm kiếm sách..."
               className="w-full px-4 py-3 pl-12 border rounded-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -162,9 +186,9 @@ export default function InventoryManagementPage() {
             className="px-4 py-3 border rounded-lg min-w-[150px]"
             aria-label="Lọc theo tình trạng tồn kho"
           >
-            <option value="all">All Stock</option>
-            <option value="low">Low Stock (≤5)</option>
-            <option value="out">Out of Stock</option>
+            <option value="all">Tất cả kho</option>
+            <option value="low">Sắp hết (≤5)</option>
+            <option value="out">Hết hàng</option>
           </select>
         </div>
 
@@ -174,7 +198,12 @@ export default function InventoryManagementPage() {
             onClick={() => router.push("/inventory/books")}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
               <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
             </svg>
             Quản lý sách
@@ -185,7 +214,7 @@ export default function InventoryManagementPage() {
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
           >
             <FiUpload className="mr-2" />
-            Batch Update
+            Cập nhật hàng loạt
           </button>
 
           <button
@@ -193,7 +222,7 @@ export default function InventoryManagementPage() {
             className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 flex items-center"
           >
             <FiClock className="mr-2" />
-            View History
+            Xem lịch sử
           </button>
 
           <button
@@ -201,7 +230,7 @@ export default function InventoryManagementPage() {
             className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 flex items-center"
           >
             <FiBell className="mr-2" />
-            Stock Alerts
+            Cảnh báo kho
             {books.filter((book) => book.stock === 0 || book.stock <= 5)
               .length > 0 && (
               <span className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -224,7 +253,9 @@ export default function InventoryManagementPage() {
                 <FiPackage className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Books</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Tổng số sách
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {books.length}
                 </p>
@@ -239,7 +270,7 @@ export default function InventoryManagementPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">
-                  Low Stock Items
+                  Sách sắp hết
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {
@@ -257,9 +288,7 @@ export default function InventoryManagementPage() {
                 <FiAlertCircle className="h-6 w-6 text-red-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">
-                  Out of Stock
-                </p>
+                <p className="text-sm font-medium text-gray-600">Hết hàng</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {books.filter((book) => book.stock === 0).length}
                 </p>
@@ -280,7 +309,7 @@ export default function InventoryManagementPage() {
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("title")}
                   >
-                    Book
+                    Sách
                     {sortField === "title" &&
                       (sortDirection === "asc" ? (
                         <FiArrowUp className="inline-block ml-1" />
@@ -304,7 +333,7 @@ export default function InventoryManagementPage() {
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("stock")}
                   >
-                    Stock
+                    Tồn kho
                     {sortField === "stock" &&
                       (sortDirection === "asc" ? (
                         <FiArrowUp className="inline-block ml-1" />
@@ -313,7 +342,7 @@ export default function InventoryManagementPage() {
                       ))}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Thao tác
                   </th>
                 </tr>
               </thead>
@@ -362,7 +391,7 @@ export default function InventoryManagementPage() {
                           onClick={() => handleUpdateStock(book)}
                           className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
                         >
-                          Update Stock
+                          Cập nhật kho
                         </button>
                       </td>
                     </tr>
@@ -373,7 +402,7 @@ export default function InventoryManagementPage() {
                       colSpan={4}
                       className="px-6 py-4 text-center text-gray-500"
                     >
-                      No books found matching your search.
+                      Không tìm thấy sách phù hợp với tìm kiếm của bạn.
                     </td>
                   </tr>
                 )}
