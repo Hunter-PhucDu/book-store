@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -19,8 +19,7 @@ import Image from "next/image";
 
 export default function EmployeeManagementPage() {
   const { data: session, status } = useSession();
-  const router = useRouter();
-
+  const router = useRouter(); // Lấy users và deleteUser từ store
   const users = useStore((state) => state.users);
   const deleteUser = useStore((state) => state.deleteUser);
 
@@ -32,15 +31,18 @@ export default function EmployeeManagementPage() {
     null,
   );
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState(""); // Lấy danh sách nhân viên từ users - với dependency array tốt hơn để đảm bảo cập nhật khi users thay đổi
+  const staffMembers = useMemo(() => {
+    console.log("Recalculating staff members from users:", users);
+    return users.filter(
+      (user) =>
+        user.role === UserRole.EMPLOYEE ||
+        user.role === UserRole.INVENTORY_MANAGER ||
+        user.role === UserRole.ADMIN,
+    );
+  }, [users]);
 
-  // Get all employee and inventory manager users
-  const staffMembers = users.filter(
-    (user) =>
-      user.role === UserRole.EMPLOYEE ||
-      user.role === UserRole.INVENTORY_MANAGER,
-  );
-
-  // Get unique departments
   const departments = Array.from(
     new Set(
       staffMembers
@@ -51,7 +53,6 @@ export default function EmployeeManagementPage() {
         .filter(Boolean),
     ),
   );
-
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/signin?callbackUrl=/admin/employees");
@@ -63,16 +64,18 @@ export default function EmployeeManagementPage() {
       }
     }
   }, [status, session, router]);
+  useEffect(() => {
+    const unsubscribe = useStore.subscribe((state) => state.users);
 
-  // Filter employees
+    return () => unsubscribe();
+  }, []);
+
   const filteredStaff = staffMembers.filter((staff) => {
-    // Filter by department
     if (departmentFilter !== "all") {
       const employee = staff as Employee;
       if (employee.department !== departmentFilter) return false;
     }
 
-    // Filter by search query
     if (searchQuery) {
       const searchLower = searchQuery.toLowerCase();
       return (
@@ -94,13 +97,19 @@ export default function EmployeeManagementPage() {
     setSelectedUser(user);
     setIsUserFormOpen(true);
   };
-
   const handleDeleteEmployee = (id: string) => {
     deleteUser(id);
     setShowConfirmDelete(null);
+
+    setNotificationMessage("Đã xóa nhân viên thành công!");
+
+    setShowSuccessNotification(true);
+
+    setTimeout(() => {
+      setShowSuccessNotification(false);
+    }, 3000);
   };
 
-  // Format role title for display
   const formatRole = (role: string) => {
     return role
       .replace("_", " ")
@@ -108,7 +117,6 @@ export default function EmployeeManagementPage() {
       .replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
-  // Calculate employment duration
   const calculateEmploymentDuration = (hireDate: Date) => {
     const start = new Date(hireDate);
     const now = new Date();
@@ -122,12 +130,37 @@ export default function EmployeeManagementPage() {
     }
 
     if (years === 0) {
-      return `${months} month${months !== 1 ? "s" : ""}`;
+      return `${months} tháng`;
     } else if (months === 0) {
-      return `${years} year${years !== 1 ? "s" : ""}`;
+      return `${years} năm`;
     } else {
-      return `${years} year${years !== 1 ? "s" : ""}, ${months} month${months !== 1 ? "s" : ""}`;
+      return `${years} năm, ${months} tháng`;
     }
+  };
+
+  // Hàm xử lý khi đóng modal
+  const handleUserFormClose = (success?: boolean) => {
+    // Chỉ hiển thị thông báo thành công nếu tham số success là true
+    if (success) {
+      const action = selectedUser ? "update" : "add";
+      setNotificationMessage(
+        action === "add"
+          ? "Đã thêm nhân viên mới thành công!"
+          : "Đã cập nhật thông tin nhân viên thành công!",
+      );
+
+      const currentUsers = useStore.getState().users;
+      console.log("Current users after modal close:", currentUsers.length);
+
+      setShowSuccessNotification(true);
+
+      setTimeout(() => {
+        setShowSuccessNotification(false);
+      }, 3000);
+    }
+
+    // Đóng modal trong mọi trường hợp
+    setIsUserFormOpen(false);
   };
 
   if (isLoading) {
@@ -135,7 +168,7 @@ export default function EmployeeManagementPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="spinner h-12 w-12 border-4 border-t-blue-500 border-r-transparent border-b-blue-500 border-l-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading employee data...</p>
+          <p className="mt-4 text-gray-600">Đang tải dữ liệu nhân viên...</p>
         </div>
       </div>
     );
@@ -143,28 +176,46 @@ export default function EmployeeManagementPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Page Header */}
       <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Employee Management
-          </h1>
+        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row md:justify-between md:items-center">
+          <div className="flex items-center mb-4 md:mb-0">
+            <button
+              onClick={() => router.push("/admin")}
+              className="flex items-center mr-4 text-gray-600 hover:text-blue-600"
+              aria-label="Quay lại"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>Quay lại</span>
+            </button>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Quản lý nhân viên
+            </h1>
+          </div>
           <button
             onClick={handleAddEmployee}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
           >
-            <FiUserPlus className="mr-2" /> Add Employee
+            <FiUserPlus className="mr-2" /> Thêm nhân viên
           </button>
         </div>
       </div>
-
-      {/* Search and Filter */}
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-grow">
             <input
               type="text"
-              placeholder="Search by name, email, or department..."
+              placeholder="Tìm kiếm theo tên, email hoặc phòng ban..."
               className="w-full px-4 py-3 pl-12 border rounded-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -178,8 +229,9 @@ export default function EmployeeManagementPage() {
               value={departmentFilter}
               onChange={(e) => setDepartmentFilter(e.target.value)}
               className="px-4 py-3 border rounded-lg min-w-[180px]"
+              aria-label="Lọc theo phòng ban"
             >
-              <option value="all">All Departments</option>
+              <option value="all">Tất cả phòng ban</option>
               {departments.map((dept) => (
                 <option key={dept} value={dept}>
                   {dept}
@@ -189,23 +241,24 @@ export default function EmployeeManagementPage() {
           </div>
         </div>
       </div>
-
       {/* Employee Stats */}
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="font-medium text-sm text-gray-500">Total Staff</div>
+            <div className="font-medium text-sm text-gray-500">
+              Tổng nhân viên
+            </div>
             <div className="text-xl font-bold mt-1">{staffMembers.length}</div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="font-medium text-sm text-blue-500">Employees</div>
+            <div className="font-medium text-sm text-blue-500">Nhân viên</div>
             <div className="text-xl font-bold mt-1">
               {users.filter((user) => user.role === UserRole.EMPLOYEE).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <div className="font-medium text-sm text-green-500">
-              Inventory Managers
+              Quản lý kho
             </div>
             <div className="text-xl font-bold mt-1">
               {
@@ -215,14 +268,11 @@ export default function EmployeeManagementPage() {
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="font-medium text-sm text-purple-500">
-              Departments
-            </div>
+            <div className="font-medium text-sm text-purple-500">Phòng ban</div>
             <div className="text-xl font-bold mt-1">{departments.length}</div>
           </div>
         </div>
       </div>
-
       {/* Employees Table */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -231,26 +281,26 @@ export default function EmployeeManagementPage() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Employee
+                    Nhân viên
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Department
+                    Phòng ban
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role
+                    Chức vụ
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Hire Date
+                    Ngày tuyển
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tenure
+                    Thâm niên
                   </th>
                   {/* Only show salary to admin */}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Salary
+                    Lương
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Thao tác
                   </th>
                 </tr>
               </thead>
@@ -269,6 +319,8 @@ export default function EmployeeManagementPage() {
                                   src={staff.avatar}
                                   alt={staff.name}
                                   className="h-10 w-10 rounded-full object-cover"
+                                  width={40}
+                                  height={40}
                                 />
                               ) : (
                                 <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
@@ -307,9 +359,8 @@ export default function EmployeeManagementPage() {
                           {calculateEmploymentDuration(employee.hireDate)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          $
                           {employee.salary
-                            ? employee.salary.toLocaleString()
+                            ? employee.salary.toLocaleString("vi-VN") + " đ"
                             : "N/A"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -318,14 +369,14 @@ export default function EmployeeManagementPage() {
                               <button
                                 onClick={() => handleDeleteEmployee(staff.id)}
                                 className="text-red-600 hover:text-red-900"
-                                title="Confirm Delete"
+                                title="Xác nhận xóa"
                               >
                                 <FiCheck />
                               </button>
                               <button
                                 onClick={() => setShowConfirmDelete(null)}
                                 className="text-gray-600 hover:text-gray-900"
-                                title="Cancel"
+                                title="Hủy"
                               >
                                 <FiX />
                               </button>
@@ -335,14 +386,14 @@ export default function EmployeeManagementPage() {
                               <button
                                 onClick={() => handleEditEmployee(staff)}
                                 className="text-indigo-600 hover:text-indigo-900"
-                                title="Edit"
+                                title="Sửa"
                               >
                                 <FiEdit />
                               </button>
                               <button
                                 onClick={() => setShowConfirmDelete(staff.id)}
                                 className="text-red-600 hover:text-red-900"
-                                title="Delete"
+                                title="Xóa"
                               >
                                 <FiTrash2 />
                               </button>
@@ -358,7 +409,8 @@ export default function EmployeeManagementPage() {
                       colSpan={7}
                       className="px-6 py-4 text-center text-gray-500"
                     >
-                      No employees found matching your search.
+                      Không tìm thấy nhân viên nào phù hợp với tiêu chí tìm kiếm
+                      của bạn.
                     </td>
                   </tr>
                 )}
@@ -366,14 +418,55 @@ export default function EmployeeManagementPage() {
             </table>
           </div>
         </div>
-      </div>
-
-      {/* Employee Form Modal */}
+      </div>{" "}
+      {/* Employee Form Modal */}{" "}
       {isUserFormOpen && (
-        <UserFormModal
-          user={selectedUser}
-          onClose={() => setIsUserFormOpen(false)}
-        />
+        <UserFormModal user={selectedUser} onClose={handleUserFormClose} />
+      )}
+      {showSuccessNotification && (
+        <div className="fixed bottom-6 right-6 z-50 animate-[slideInBottom_0.3s_ease-in-out]">
+          <div className="bg-green-600 text-white px-6 py-4 rounded-lg shadow-xl flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 mr-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <div>
+              <h3 className="font-medium text-lg">Thao tác thành công!</h3>
+              <p className="text-sm text-green-100">
+                {notificationMessage || "Dữ liệu nhân viên đã được cập nhật."}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowSuccessNotification(false)}
+              className="ml-6 text-green-100 hover:text-white p-1"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -34,7 +34,7 @@ export default function OrdersManagementPage() {
     if (status === "unauthenticated") {
       router.push("/signin?callbackUrl=/admin/orders");
     } else if (status === "authenticated") {
-      if (session?.user?.role !== UserRole.ADMIN) {
+      if (session?.user?.role !== UserRole.EMPLOYEE) {
         router.push("/");
       } else {
         setIsLoading(false);

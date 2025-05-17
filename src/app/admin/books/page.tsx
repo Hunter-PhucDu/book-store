@@ -64,7 +64,7 @@ export default function AdminBooksPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="spinner h-12 w-12 border-4 border-t-blue-500 border-r-transparent border-b-blue-500 border-l-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading books...</p>
+          <p className="mt-4 text-gray-600">Đang tải dữ liệu sách...</p>
         </div>
       </div>
     );
@@ -75,31 +75,95 @@ export default function AdminBooksPage() {
       {/* Page Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">Book Management</h1>
+          <div className="flex items-center">
+            <button
+              onClick={() => router.push("/admin")}
+              className="flex items-center mr-4 text-gray-600 hover:text-blue-600"
+              aria-label="Quay lại"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>Quay lại</span>
+            </button>
+            <h1 className="text-3xl font-bold text-gray-800">Quản lý sách</h1>
+          </div>
           <button
             onClick={handleAddNewBook}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            aria-label="Thêm sách mới"
           >
-            <FiPlus className="inline-block mr-1" /> Add New Book
+            <FiPlus className="inline-block mr-1" /> Thêm sách mới
           </button>
         </div>
       </div>
 
+      {/* Book Stats */}
+      <div className="container mx-auto px-4 py-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="font-medium text-sm text-gray-500">
+              Tổng số sách
+            </div>
+            <div className="text-xl font-bold mt-1 text-gray-800">
+              {books.length}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="font-medium text-sm text-green-500">Có sẵn</div>
+            <div className="text-xl font-bold mt-1 text-green-600">
+              {books.filter((book) => book.stock > 0).length}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="font-medium text-sm text-yellow-500">
+              Sắp hết hàng
+            </div>
+            <div className="text-xl font-bold mt-1 text-yellow-600">
+              {
+                books.filter((book) => book.stock > 0 && book.stock <= 10)
+                  .length
+              }
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="font-medium text-sm text-red-500">Hết hàng</div>
+            <div className="text-xl font-bold mt-1 text-red-600">
+              {books.filter((book) => book.stock === 0).length}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Search Bar */}
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-4">
         <div className="relative">
+          <label htmlFor="book-search" className="sr-only">
+            Tìm kiếm sách
+          </label>
           <input
+            id="book-search"
             type="text"
-            placeholder="Search books by title, author or ISBN..."
+            placeholder="Tìm kiếm sách theo tên, tác giả hoặc ISBN..."
             className="w-full px-4 py-3 pl-12 border rounded-lg"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Tìm kiếm sách"
           />
           <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
       </div>
 
-      {/* Books Table */}
+      {/* Bảng Sách */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -107,22 +171,22 @@ export default function AdminBooksPage() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Book
+                    Sách
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     ISBN
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
+                    Thể loại
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
+                    Giá
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock
+                    Tồn kho
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Hành động
                   </th>
                 </tr>
               </thead>
@@ -132,11 +196,11 @@ export default function AdminBooksPage() {
                     <tr key={book.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
+                          <div className="flex-shrink-0 h-14 w-10 relative">
                             <BookCover
                               src={book.coverImage}
                               alt={book.title}
-                              className="h-10 w-10 rounded-sm"
+                              className="rounded-sm object-cover w-full h-full"
                             />
                           </div>
                           <div className="ml-4">
@@ -176,12 +240,16 @@ export default function AdminBooksPage() {
                         <button
                           onClick={() => handleEditBook(book)}
                           className="text-indigo-600 hover:text-indigo-900 mr-3"
+                          aria-label={`Chỉnh sửa ${book.title}`}
+                          title={`Chỉnh sửa ${book.title}`}
                         >
                           <FiEdit className="inline-block" />
                         </button>
                         <button
                           onClick={() => setShowDeleteConfirm(book.id)}
                           className="text-red-600 hover:text-red-900"
+                          aria-label={`Xóa ${book.title}`}
+                          title={`Xóa ${book.title}`}
                         >
                           <FiTrash className="inline-block" />
                         </button>
@@ -190,25 +258,25 @@ export default function AdminBooksPage() {
                           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                             <div className="bg-white p-6 rounded-lg max-w-sm mx-auto">
                               <h3 className="text-lg font-bold mb-4">
-                                Confirm Delete
+                                Xác nhận xóa
                               </h3>
                               <p>
-                                Are you sure you want to delete &quot;
-                                {book.title}&quot;? This action cannot be
-                                undone.
+                                Bạn có chắc chắn muốn xóa &quot;
+                                {book.title}&quot;? Hành động này không thể hoàn
+                                tác.
                               </p>
                               <div className="mt-6 flex justify-end space-x-3">
                                 <button
                                   onClick={() => setShowDeleteConfirm(null)}
                                   className="px-4 py-2 border rounded-lg hover:bg-gray-100"
                                 >
-                                  Cancel
+                                  Hủy
                                 </button>
                                 <button
                                   onClick={() => handleDeleteBook(book.id)}
                                   className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                                 >
-                                  Delete
+                                  Xóa
                                 </button>
                               </div>
                             </div>
@@ -223,7 +291,7 @@ export default function AdminBooksPage() {
                       colSpan={6}
                       className="px-6 py-4 text-center text-gray-500"
                     >
-                      No books found matching your search.
+                      Không tìm thấy sách phù hợp với tìm kiếm của bạn.
                     </td>
                   </tr>
                 )}

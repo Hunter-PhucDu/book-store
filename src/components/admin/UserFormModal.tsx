@@ -1,4 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslininterface UserFormModalProps {
+  user: User | null;
+  onClose: () => void;
+  onSuccess?: (action: 'add' | 'update', userData: User) => void;
+}able @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -8,30 +13,24 @@ import { User, UserRole } from "@/types/user";
 
 interface UserFormModalProps {
   user: User | null;
-  onClose: () => void;
+  onClose: (success?: boolean) => void;
 }
 
 export default function UserFormModal({ user, onClose }: UserFormModalProps) {
   const addUser = useStore((state) => state.addUser);
   const updateUser = useStore((state) => state.updateUser);
 
-  // Default form values
   const defaultFormData = useMemo(
     () => ({
       name: "",
       email: "",
-      role: UserRole.CUSTOMER,
+      role: UserRole.EMPLOYEE,
       password: "",
-      confirmPassword: "",
-      avatar: "",
-      // Employee/Inventory Manager specific fields
+      avatar: "/images/avatars/employee.jpg",
       department: "",
-      hireDate: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
+      hireDate: new Date().toISOString().split("T")[0],
       salary: 0,
-      warehouseId: "",
-      // Admin specific fields
       permissions: [] as string[],
-      // Customer specific fields
       address: "",
       phoneNumber: "",
     }),
@@ -44,43 +43,28 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Initialize form with user data if editing
   useEffect(() => {
     if (user) {
       const commonFields = {
         name: user.name,
         email: user.email,
         role: user.role,
-        avatar: user.avatar || "",
+        avatar: user.avatar || "/images/avatars/employee.jpg",
         password: "",
-        confirmPassword: "",
       };
 
-      // Role-specific fields
-      if (user.role === UserRole.EMPLOYEE) {
-        const employeeUser = user as any;
+      if (
+        user.role === UserRole.EMPLOYEE ||
+        user.role === UserRole.INVENTORY_MANAGER
+      ) {
+        const staffUser = user as any;
         setFormData({
           ...commonFields,
-          department: employeeUser.department || "",
-          hireDate: employeeUser.hireDate
-            ? new Date(employeeUser.hireDate).toISOString().split("T")[0]
+          department: staffUser.department || "",
+          hireDate: staffUser.hireDate
+            ? new Date(staffUser.hireDate).toISOString().split("T")[0]
             : new Date().toISOString().split("T")[0],
-          salary: employeeUser.salary || 0,
-          warehouseId: "",
-          permissions: [],
-          address: "",
-          phoneNumber: "",
-        });
-      } else if (user.role === UserRole.INVENTORY_MANAGER) {
-        const inventoryUser = user as any;
-        setFormData({
-          ...commonFields,
-          department: inventoryUser.department || "",
-          hireDate: inventoryUser.hireDate
-            ? new Date(inventoryUser.hireDate).toISOString().split("T")[0]
-            : new Date().toISOString().split("T")[0],
-          warehouseId: inventoryUser.warehouseId || "",
-          salary: 0,
+          salary: staffUser.salary || 0,
           permissions: [],
           address: "",
           phoneNumber: "",
@@ -93,12 +77,10 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
           department: "",
           hireDate: new Date().toISOString().split("T")[0],
           salary: 0,
-          warehouseId: "",
           address: "",
           phoneNumber: "",
         });
       } else {
-        // UserRole.CUSTOMER
         const customerUser = user as any;
         setFormData({
           ...commonFields,
@@ -107,7 +89,6 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
           department: "",
           hireDate: new Date().toISOString().split("T")[0],
           salary: 0,
-          warehouseId: "",
           permissions: [],
         });
       }
@@ -126,7 +107,28 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
     if (type === "number") {
       setFormData((prev) => ({ ...prev, [name]: parseFloat(value) }));
     } else if (name === "role") {
-      setFormData((prev) => ({ ...prev, [name]: value as UserRole }));
+      let roleValue: UserRole;
+
+      switch (value) {
+        case "EMPLOYEE":
+          roleValue = UserRole.EMPLOYEE;
+          break;
+        case "INVENTORY_MANAGER":
+          roleValue = UserRole.INVENTORY_MANAGER;
+          break;
+        case "ADMIN":
+          roleValue = UserRole.ADMIN;
+          break;
+        case "CUSTOMER":
+          roleValue = UserRole.CUSTOMER;
+          break;
+        default:
+          roleValue = UserRole.EMPLOYEE;
+          break;
+      }
+
+      console.log("Role selected:", value, "Mapped to:", roleValue);
+      setFormData((prev) => ({ ...prev, [name]: roleValue }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -141,19 +143,13 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
     if (!user) {
       // Only validate password for new users
       if (!formData.password) newErrors.password = "Password is required";
-      if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match";
-      }
-    } else if (
-      formData.password &&
-      formData.password !== formData.confirmPassword
-    ) {
-      // If changing password for existing user
-      newErrors.confirmPassword = "Passwords do not match";
     }
 
     // Role-specific validations
-    if (formData.role === UserRole.EMPLOYEE) {
+    if (
+      formData.role === UserRole.EMPLOYEE ||
+      formData.role === UserRole.INVENTORY_MANAGER
+    ) {
       if (!formData.department.trim())
         newErrors.department = "Department is required";
       if (!formData.hireDate) newErrors.hireDate = "Hire date is required";
@@ -161,16 +157,18 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
         newErrors.salary = "Salary must be greater than 0";
     }
 
-    if (formData.role === UserRole.INVENTORY_MANAGER) {
-      if (!formData.department.trim())
-        newErrors.department = "Department is required";
-      if (!formData.warehouseId.trim())
-        newErrors.warehouseId = "Warehouse ID is required";
-      if (!formData.hireDate) newErrors.hireDate = "Hire date is required";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // State to manage success message
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  // Create a handleClose function that only closes the modal without showing success message
+  const handleClose = () => {
+    // When manually closing, don't show success message
+    setShowSuccessMessage(false);
+    onClose();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -181,12 +179,16 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
     setIsSubmitting(true);
 
     try {
-      // Prepare user data based on role
+      // Define role explicitly to avoid any type issues
+      const selectedRole = formData.role;
+      console.log("Selected role before preparing data:", selectedRole);
+
+      // Prepare user data with explicit role assignment
       const userData: Record<string, unknown> = {
         name: formData.name,
         email: formData.email,
-        role: formData.role,
-        ...(formData.avatar ? { avatar: formData.avatar } : {}),
+        role: selectedRole, // Explicitly set from formData
+        avatar: formData.avatar, // Use default avatar
       };
 
       // Add password only if provided (or new user)
@@ -194,56 +196,143 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
         userData.password = formData.password;
       }
 
-      // Add role-specific fields
-      if (formData.role === UserRole.EMPLOYEE) {
+      // Add role-specific fields based on the selected role
+      if (
+        selectedRole === UserRole.EMPLOYEE ||
+        selectedRole === UserRole.INVENTORY_MANAGER
+      ) {
         userData.department = formData.department;
         userData.hireDate = new Date(formData.hireDate);
         userData.salary = formData.salary;
-      } else if (formData.role === UserRole.INVENTORY_MANAGER) {
-        userData.department = formData.department;
-        userData.hireDate = new Date(formData.hireDate);
-        userData.warehouseId = formData.warehouseId;
-      } else if (formData.role === UserRole.ADMIN) {
+        console.log(
+          `Adding ${selectedRole} specific fields with salary: ${formData.salary}`,
+        );
+      } else if (selectedRole === UserRole.ADMIN) {
         userData.permissions = formData.permissions;
         userData.lastLogin = new Date();
-      } else if (formData.role === UserRole.CUSTOMER) {
+        console.log("Adding ADMIN specific fields");
+      } else if (selectedRole === UserRole.CUSTOMER) {
         userData.address = formData.address;
         userData.phoneNumber = formData.phoneNumber;
         userData.orderHistory =
           user && "orderHistory" in user ? user.orderHistory : [];
+        console.log("Adding CUSTOMER specific fields");
       }
+
+      // Final check of the role before saving
+      console.log("Final userData.role before save:", userData.role);
 
       if (user) {
         // Update existing user
-        updateUser({
+        const updatedUser = {
           ...user,
           ...userData,
-        });
+          role: selectedRole, // Ensure role is explicitly set
+        };
+        console.log("Updating user with role:", updatedUser.role);
+        updateUser(updatedUser);
       } else {
         // Add new user
-        addUser(userData);
+        console.log("Adding new user with role:", userData.role);
+        addUser(userData as any);
       }
 
-      onClose();
+      // Show success message only when form is successfully submitted
+      setShowSuccessMessage(true);
+
+      // Ensure store has been updated before closing modal
+      setTimeout(() => {
+        // Force a refresh of the store subscribers
+        const currentUsers = useStore.getState().users;
+        console.log("User count before modal close:", currentUsers.length);
+
+        // Close the modal với tham số success=true
+        onClose(true);
+      }, 500);
     } catch (error) {
       console.error("Error saving user:", error);
+      // Nếu có lỗi, đóng modal mà không truyền tham số success
+      onClose();
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out]">
+      {showSuccessMessage && (
+        <div className="absolute top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-xl z-50 animate-[slideInBottom_0.3s_ease-in-out] flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <div>
+            <p className="font-medium">
+              {user
+                ? "User updated successfully!"
+                : "New user added successfully!"}
+            </p>
+            <p className="text-sm text-green-100">Redirecting...</p>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white/95 backdrop-blur-sm rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ease-in-out animate-[scaleIn_0.3s_ease-in-out]">
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-bold text-gray-800">
-            {user ? "Edit User" : "Add New User"}
+          <h2 className="text-xl font-bold text-gray-800 flex items-center">
+            {user ? (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 mr-2 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+                <span>Edit User</span>
+              </>
+            ) : (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 mr-2 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                  />
+                </svg>
+                <span>Add New User</span>
+              </>
+            )}
           </h2>
           <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-500"
+            onClick={handleClose}
+            className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-all duration-200"
           >
-            <FiX className="h-6 w-6" />
+            <FiX className="h-5 w-5" />
           </button>
         </div>
 
@@ -291,7 +380,6 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
-                <option value={UserRole.CUSTOMER}>Customer</option>
                 <option value={UserRole.EMPLOYEE}>Employee</option>
                 <option value={UserRole.INVENTORY_MANAGER}>
                   Inventory Manager
@@ -300,18 +388,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Avatar URL (optional)
-              </label>
-              <input
-                type="text"
-                name="avatar"
-                value={formData.avatar}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
+            {/* Avatar is set to default and not configurable in the form */}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -328,24 +405,6 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               />
               {errors.password && (
                 <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={`w-full p-2 border rounded-lg ${errors.confirmPassword ? "border-red-500" : "border-gray-300"}`}
-              />
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.confirmPassword}
-                </p>
               )}
             </div>
 
@@ -391,7 +450,8 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               </>
             )}
 
-            {formData.role === UserRole.EMPLOYEE && (
+            {(formData.role === UserRole.EMPLOYEE ||
+              formData.role === UserRole.INVENTORY_MANAGER) && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Salary
@@ -407,26 +467,6 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
                 />
                 {errors.salary && (
                   <p className="mt-1 text-sm text-red-500">{errors.salary}</p>
-                )}
-              </div>
-            )}
-
-            {formData.role === UserRole.INVENTORY_MANAGER && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Warehouse ID
-                </label>
-                <input
-                  type="text"
-                  name="warehouseId"
-                  value={formData.warehouseId}
-                  onChange={handleChange}
-                  className={`w-full p-2 border rounded-lg ${errors.warehouseId ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.warehouseId && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.warehouseId}
-                  </p>
                 )}
               </div>
             )}
@@ -462,20 +502,80 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
             )}
           </div>
 
-          <div className="mt-8 flex justify-end space-x-3">
+          <div className="mt-8 flex justify-end space-x-4">
             <button
               type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+              onClick={handleClose}
+              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-100 font-medium flex items-center transition-all duration-200"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
+              className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 font-medium flex items-center shadow-md hover:shadow-lg transition-all duration-200"
             >
-              {isSubmitting ? "Saving..." : user ? "Update User" : "Add User"}
+              {isSubmitting ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : user ? (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-1.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    />
+                  </svg>
+                  Update User
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-1.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  Add User
+                </>
+              )}
             </button>
           </div>
         </form>

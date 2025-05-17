@@ -10,7 +10,6 @@ import {
   FiPackage,
   FiUsers,
   FiGrid,
-  FiSettings,
   FiTrendingUp,
   FiShoppingBag,
 } from "react-icons/fi";
@@ -296,8 +295,27 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-100">
       {/* Dashboard Header */}
       <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
+          <div className="flex items-center">
+            <h1 className="text-3xl font-bold text-gray-800">
+              Admin Dashboard
+            </h1>
+          </div>
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-center text-gray-600 hover:text-blue-600"
+            aria-label="Trang chủ"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            <span>Quay về trang chủ</span>
+          </button>
         </div>
       </div>
 
@@ -313,7 +331,7 @@ export default function AdminDashboard() {
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
-              Overview
+              Tổng quan
             </button>
             <button
               onClick={() => setSelectedTab("sales")}
@@ -323,7 +341,7 @@ export default function AdminDashboard() {
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
-              Sales Analytics
+              Phân tích bán hàng
             </button>
             <button
               onClick={() => setSelectedTab("inventory")}
@@ -333,7 +351,7 @@ export default function AdminDashboard() {
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
-              Inventory Analysis
+              Phân tích hàng tồn kho
             </button>
           </div>
         </div>
@@ -351,7 +369,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <h2 className="text-sm font-medium text-gray-600">
-                    Total Books
+                    Tổng số sách
                   </h2>
                   <p className="text-2xl font-bold text-gray-900">
                     {totalBooks}
@@ -365,7 +383,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <h2 className="text-sm font-medium text-gray-600">
-                    Total Revenue
+                    Tổng doanh thu
                   </h2>
                   <p className="text-2xl font-bold text-gray-900">
                     ${totalRevenue.toFixed(2)}
@@ -379,7 +397,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <h2 className="text-sm font-medium text-gray-600">
-                    Total Customers
+                    Tổng khách hàng
                   </h2>
                   <p className="text-2xl font-bold text-gray-900">
                     {totalCustomers}
@@ -393,7 +411,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <h2 className="text-sm font-medium text-gray-600">
-                    Total Orders
+                    Tổng đơn hàng
                   </h2>
                   <p className="text-2xl font-bold text-gray-900">
                     {totalOrders}
@@ -407,7 +425,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <h2 className="text-sm font-medium text-gray-600">
-                    Total Staff
+                    Tổng nhân viên
                   </h2>
                   <p className="text-2xl font-bold text-gray-900">
                     {totalEmployees + totalInventoryManagers}
@@ -421,7 +439,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <h2 className="text-sm font-medium text-gray-600">
-                    Avg. Order Value
+                    Giá trị đơn hàng trung bình
                   </h2>
                   <p className="text-2xl font-bold text-gray-900">
                     ${averageOrderValue.toFixed(2)}
@@ -435,7 +453,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <h2 className="text-sm font-medium text-gray-600">
-                    Low Stock Books
+                    Sách sắp hết
                   </h2>
                   <p className="text-2xl font-bold text-gray-900">
                     {lowStockBooks}
@@ -449,7 +467,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <h2 className="text-sm font-medium text-gray-600">
-                    Inventory Value
+                    Giá trị hàng tồn kho
                   </h2>
                   <p className="text-2xl font-bold text-gray-900">
                     ${totalInventoryValue.toFixed(2)}
@@ -463,7 +481,7 @@ export default function AdminDashboard() {
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-semibold text-gray-800">
-                    Books by Category
+                    Sách theo danh mục
                   </h2>
                 </div>
                 <div className="h-64">
@@ -480,26 +498,26 @@ export default function AdminDashboard() {
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-semibold text-gray-800">
-                    Revenue Over Time
+                    Doanh thu theo thời gian
                   </h2>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setTimeRange("week")}
                       className={`px-3 py-1 text-xs rounded ${timeRange === "week" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                     >
-                      Week
+                      Tuần
                     </button>
                     <button
                       onClick={() => setTimeRange("month")}
                       className={`px-3 py-1 text-xs rounded ${timeRange === "month" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                     >
-                      Month
+                      Tháng
                     </button>
                     <button
                       onClick={() => setTimeRange("year")}
                       className={`px-3 py-1 text-xs rounded ${timeRange === "year" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                     >
-                      Year
+                      Năm
                     </button>
                   </div>
                 </div>
@@ -526,15 +544,15 @@ export default function AdminDashboard() {
             {/* Quick Actions */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                Quick Actions
+                Thao tác nhanh
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <Link
                   href="/admin/books"
                   className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
                 >
                   <FiGrid className="h-6 w-6 text-blue-600 mb-2" />
-                  <span className="text-sm text-gray-700">Manage Books</span>
+                  <span className="text-sm text-gray-700">Quản lý sách</span>
                 </Link>
 
                 <Link
@@ -542,7 +560,19 @@ export default function AdminDashboard() {
                   className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
                 >
                   <FiUsers className="h-6 w-6 text-purple-600 mb-2" />
-                  <span className="text-sm text-gray-700">Manage Users</span>
+                  <span className="text-sm text-gray-700">
+                    Quản lý khách hàng
+                  </span>
+                </Link>
+
+                <Link
+                  href="/admin/employees"
+                  className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
+                >
+                  <FiUsers className="h-6 w-6 text-green-600 mb-2" />
+                  <span className="text-sm text-gray-700">
+                    Quản lý nhân viên
+                  </span>
                 </Link>
 
                 <Link
@@ -550,15 +580,19 @@ export default function AdminDashboard() {
                   className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
                 >
                   <FiPackage className="h-6 w-6 text-yellow-600 mb-2" />
-                  <span className="text-sm text-gray-700">Manage Orders</span>
+                  <span className="text-sm text-gray-700">
+                    Quản lý đơn hàng
+                  </span>
                 </Link>
 
                 <Link
-                  href="/admin/settings"
+                  href="/inventory"
                   className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
                 >
-                  <FiSettings className="h-6 w-6 text-gray-600 mb-2" />
-                  <span className="text-sm text-gray-700">Settings</span>
+                  <FiPackage className="h-6 w-6 text-gray-600 mb-2" />
+                  <span className="text-sm text-gray-700">
+                    Quản lý hàng tồn kho
+                  </span>
                 </Link>
               </div>
             </div>
@@ -567,13 +601,13 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-lg shadow overflow-hidden">
               <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-800">
-                  Recent Orders
+                  Đơn đặt hàng gần đây
                 </h2>
                 <Link
                   href="/admin/orders"
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                 >
-                  View All
+                  Xem tất cả
                 </Link>
               </div>
               <div className="overflow-x-auto">
@@ -581,19 +615,19 @@ export default function AdminDashboard() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Order ID
+                        Mã đơn hàng
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Customer
+                        Tên khách hàng
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
+                        Ngày đặt
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total
+                        Tổng tiền
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
+                        Trạng thái
                       </th>
                     </tr>
                   </thead>
@@ -640,7 +674,7 @@ export default function AdminDashboard() {
                           colSpan={5}
                           className="px-6 py-4 text-center text-sm text-gray-500"
                         >
-                          No orders found.
+                          Không có đơn hàng nào được đặt gần đây.
                         </td>
                       </tr>
                     )}
@@ -655,26 +689,26 @@ export default function AdminDashboard() {
           <>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-800">
-                Sales Analytics
+                Phân tích bán hàng
               </h2>
               <div className="flex gap-2">
                 <button
                   onClick={() => setTimeRange("week")}
                   className={`px-3 py-1 text-sm rounded ${timeRange === "week" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                 >
-                  Last 7 days
+                  Trong 7 ngày qua
                 </button>
                 <button
                   onClick={() => setTimeRange("month")}
                   className={`px-3 py-1 text-sm rounded ${timeRange === "month" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                 >
-                  Last 30 days
+                  Trong 30 ngày qua
                 </button>
                 <button
                   onClick={() => setTimeRange("year")}
                   className={`px-3 py-1 text-sm rounded ${timeRange === "year" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                 >
-                  Last 12 months
+                  Trong 12 tháng qua
                 </button>
               </div>
             </div>
@@ -683,7 +717,7 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">
-                  Revenue
+                  Tổng doanh thu
                 </h3>
                 <p className="text-2xl font-bold text-gray-900">
                   ${filteredRevenue.toFixed(2)}
@@ -695,13 +729,13 @@ export default function AdminDashboard() {
                     : timeRange === "month"
                       ? "+8%"
                       : "+15%"}{" "}
-                  from previous period
+                  từ kỳ trước
                 </div>
               </div>
 
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">
-                  Orders
+                  Tổng đơn hàng
                 </h3>
                 <p className="text-2xl font-bold text-gray-900">
                   {filteredOrders.length}
@@ -713,13 +747,13 @@ export default function AdminDashboard() {
                     : timeRange === "month"
                       ? "+7%"
                       : "+10%"}{" "}
-                  from previous period
+                  từ kỳ trước
                 </div>
               </div>
 
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">
-                  Average Order Value
+                  Doanh thu trung bình mỗi đơn hàng
                 </h3>
                 <p className="text-2xl font-bold text-gray-900">
                   $
@@ -734,7 +768,7 @@ export default function AdminDashboard() {
                     : timeRange === "month"
                       ? "+2%"
                       : "+5%"}{" "}
-                  from previous period
+                  từ kỳ trước
                 </div>
               </div>
             </div>
@@ -742,7 +776,7 @@ export default function AdminDashboard() {
             {/* Revenue Chart */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Revenue Over Time
+                Doanh thu theo thời gian
               </h3>
               <div className="h-80">
                 <Line
@@ -767,7 +801,7 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800">
-                  Top Selling Books
+                  Top Sách Bán Chạy Nhất
                 </h3>
               </div>
               <div className="overflow-x-auto">
@@ -775,16 +809,16 @@ export default function AdminDashboard() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Book
+                        Sách
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Author
+                        Tác giả
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Units Sold
+                        Số lượng đã bán
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Revenue
+                        Doanh thu
                       </th>
                     </tr>
                   </thead>
@@ -812,7 +846,7 @@ export default function AdminDashboard() {
                           colSpan={4}
                           className="px-6 py-4 text-center text-sm text-gray-500"
                         >
-                          No sales data available for this period.
+                          Không có sách nào được bán chạy gần đây.
                         </td>
                       </tr>
                     )}
@@ -825,7 +859,7 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Sales by Category
+                  Doanh thu theo danh mục
                 </h3>
                 <div className="h-64">
                   <Pie
@@ -840,7 +874,7 @@ export default function AdminDashboard() {
 
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Monthly Orders
+                  Đơn hàng theo tháng
                 </h3>
                 <div className="h-64">
                   <Bar
@@ -895,7 +929,7 @@ export default function AdminDashboard() {
           <>
             <div className="mb-6">
               <h2 className="text-xl font-bold text-gray-800">
-                Inventory Analysis
+                Phân tích hàng tồn kho
               </h2>
             </div>
 
@@ -903,37 +937,37 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">
-                  Total Products
+                  Tổng số sách
                 </h3>
                 <p className="text-2xl font-bold text-gray-900">{totalBooks}</p>
                 <div className="mt-2 text-sm text-gray-600">
                   <span className="font-medium">
                     {books.reduce((sum, book) => sum + book.stock, 0)}
                   </span>{" "}
-                  items in stock
+                  sách có sẵn
                 </div>
               </div>
 
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">
-                  Low Stock Items
+                  Sách sắp hết
                 </h3>
                 <p className="text-2xl font-bold text-gray-900">
                   {lowStockBooks}
                 </p>
-                <div className="mt-2 text-sm text-red-600">Needs attention</div>
+                <div className="mt-2 text-sm text-red-600">Cần chú ý</div>
               </div>
 
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">
-                  Out of Stock
+                  Hết hàng
                 </h3>
                 <p className="text-2xl font-bold text-gray-900">
                   {outOfStockBooks}
                 </p>
                 <div className="mt-2 text-sm text-red-600">
                   <Link href="/inventory" className="underline">
-                    Manage inventory
+                    Quản lý hàng tồn kho
                   </Link>
                 </div>
               </div>
@@ -942,7 +976,7 @@ export default function AdminDashboard() {
             {/* Inventory Value */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Inventory Value
+                Giá trị hàng tồn kho
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -950,13 +984,13 @@ export default function AdminDashboard() {
                     ${totalInventoryValue.toFixed(2)}
                   </div>
                   <div className="mt-2 text-sm text-gray-600">
-                    Total value of inventory
+                    Tổng giá trị hàng tồn kho
                   </div>
 
                   <div className="mt-6 space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">
-                        Average Value per Book
+                        Giá trị trung bình mỗi sách
                       </span>
                       <span className="text-sm font-medium text-gray-900">
                         ${(totalInventoryValue / totalBooks).toFixed(2)}
@@ -964,15 +998,15 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">
-                        Highest Value Category
+                        Danh mục có giá trị cao nhất
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        Science Fiction
+                        Khoa học viễn tưởng
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">
-                        Low Stock Value
+                        Giá trị hàng tồn kho thấp nhất
                       </span>
                       <span className="text-sm font-medium text-gray-900">
                         $
@@ -1028,13 +1062,13 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
               <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800">
-                  Low Stock Books
+                  Sách sắp hết hàng
                 </h3>
                 <Link
                   href="/inventory"
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                 >
-                  View All
+                  Xem tất cả
                 </Link>
               </div>
               <div className="overflow-x-auto">
@@ -1042,19 +1076,19 @@ export default function AdminDashboard() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Book
+                        Sách
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Category
+                        Danh mục
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Price
+                        Giá
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Stock
+                        Số lượng
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
+                        Trạng thái
                       </th>
                     </tr>
                   </thead>
@@ -1113,7 +1147,7 @@ export default function AdminDashboard() {
                           colSpan={5}
                           className="px-6 py-4 text-center text-sm text-gray-500"
                         >
-                          No low stock books found.
+                          Không có sách nào sắp hết hàng.
                         </td>
                       </tr>
                     )}
@@ -1125,7 +1159,7 @@ export default function AdminDashboard() {
             {/* Category Distribution */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Category Distribution
+                Phân phối sách theo danh mục
               </h3>
               <div className="h-80">
                 <Bar

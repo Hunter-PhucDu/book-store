@@ -22,8 +22,8 @@ export default function BookCover({
     <Image
       src={imageSrc}
       alt={alt}
-      fill
-      sizes="(max-width: 640px) 50vw, 25vw"
+      width={100}
+      height={150}
       style={{ objectFit: "cover" }}
       className={className}
       onError={(e) => {
