@@ -13,7 +13,8 @@ import {
   FiUser,
   FiBarChart2,
   FiTrendingUp,
-  FiBook
+  FiBook,
+  FiShoppingCart
 } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { UserRole, Employee } from "@/types/user";
@@ -52,10 +53,19 @@ export default function EmployeeDashboard() {
     return users.find((user) => user.email === session.user?.email) as Employee | undefined;
   }, [users, session?.user?.email]);
 
-  // Tối ưu các phép tính với useMemo
+  // Dữ liệu giả cho đơn hàng cần xử lý
+  const fakePendingOrders = Array.from({ length: 20 }, (_, index) => ({
+    id: `order${index + 1}`,
+    userId: `user${(index % 5) + 1}`, // Giả định có 5 người dùng
+    createdAt: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(), // Ngày tạo đơn hàng
+    total: Math.floor(Math.random() * 100000) + 10000, // Tổng tiền ngẫu nhiên
+    status: OrderStatus.PROCESSING, // Tất cả đều là đơn hàng đang xử lý
+  }));
+
   const pendingOrders = useMemo(() => {
-    return orders.filter((order) => order.status === OrderStatus.PROCESSING);
-  }, [orders]);
+    // Thay thế bằng dữ liệu giả
+    return fakePendingOrders;
+  }, []);
 
   const todayOrders = useMemo(() => {
     const today = new Date().toDateString();
@@ -96,6 +106,15 @@ export default function EmployeeDashboard() {
       return `${years} năm, ${months} tháng`;
     }
   };
+
+  // Dữ liệu giả cho đơn hàng
+  const fakeOrders = Array.from({ length: 20 }, (_, index) => ({
+    id: `order${index + 1}`,
+    userId: `user${(index % 5) + 1}`, // Giả định có 5 người dùng
+    createdAt: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(), // Ngày tạo đơn hàng
+    total: Math.floor(Math.random() * 100000) + 10000, // Tổng tiền ngẫu nhiên
+    status: index % 2 === 0 ? "DELIVERED" : "PROCESSING", // Trạng thái ngẫu nhiên
+  }));
 
   if (isLoading) {
     return (
@@ -275,7 +294,14 @@ export default function EmployeeDashboard() {
                   <span className="text-gray-700 font-medium">Quản lý sách</span>
                   <span className="text-sm text-gray-500 mt-1">Danh sách và thông tin sách</span>
                 </Link>
-                {/* Thêm các công cụ khác ở đây khi cần */}
+                <Link
+                  href="/employee/orders"
+                  className="bg-gray-50 hover:bg-gray-100 p-4 rounded-lg flex flex-col items-center justify-center text-center transition-colors"
+                >
+                  <FiShoppingCart className="h-8 w-8 text-blue-600 mb-2" />
+                  <span className="text-gray-700 font-medium">Quản lý đơn hàng</span>
+                  <span className="text-sm text-gray-500 mt-1">Danh sách và thông tin đơn hàng</span>
+                </Link>
               </div>
             </div>
 
