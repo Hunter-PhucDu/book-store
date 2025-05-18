@@ -84,8 +84,6 @@ export default function ProfileUpdateModal({
 
       updateUser(updatedUser);
       setSuccess("Profile updated successfully!");
-
-      // Close modal after a short delay
       setTimeout(() => {
         onClose();
       }, 1500);

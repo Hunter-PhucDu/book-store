@@ -14,13 +14,12 @@ export default function Footer() {
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto py-10 px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* About */}
           <div>
-            <h3 className="text-xl font-bold mb-4">About BookStore</h3>
+            <h3 className="text-xl font-bold mb-4">Về Cửa hàng sách Tây Bắc</h3>
             <p className="text-gray-400">
-              Your one-stop destination for books across all genres. We provide
-              quality books at affordable prices with excellent customer
-              service.
+              Cửa hàng sách Tây Bắc là một cửa hàng sách được thiết kế để cung
+              cấp cho khách hàng những cuốn sách tốt nhất với giá cả phải chăng
+              và dịch vụ tốt nhất.
             </p>
             <div className="flex space-x-4 mt-4">
               <a
@@ -50,7 +49,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
@@ -97,7 +95,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Customer Service */}
           <div>
             <h3 className="text-xl font-bold mb-4">Customer Service</h3>
             <ul className="space-y-2">
@@ -144,7 +141,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Information */}
           <div>
             <h3 className="text-xl font-bold mb-4">Contact Us</h3>
             <ul className="space-y-3">
@@ -168,7 +164,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Newsletter */}
         <div className="border-t border-gray-800 mt-10 pt-8">
           <div className="max-w-xl mx-auto text-center">
             <h3 className="text-xl font-bold mb-4">
@@ -194,7 +189,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Copyright */}
         <div className="text-center text-gray-500 text-sm mt-8">
           &copy; {new Date().getFullYear()} BookStore. All rights reserved.
         </div>

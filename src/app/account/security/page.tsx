@@ -23,10 +23,8 @@ export default function SecurityPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(status === "loading");
 
-  // Email for display
   const userEmail = session?.user?.email || "user@example.com";
 
-  // Form states
   const [changePasswordForm, setChangePasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -39,30 +37,27 @@ export default function SecurityPage() {
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [passwordSuccess, setPasswordSuccess] = useState(false);
 
-  // Toggle states
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [loginAlerts, setLoginAlerts] = useState(true);
 
-  // For demo device list
   const [devices, setDevices] = useState([
     {
       id: "dev1",
       name: "iPhone 13",
-      location: "Hồ Chí Minh, Việt Nam",
+      location: "Sơn La, Việt Nam",
       lastActive: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago
       isCurrent: true,
     },
     {
       id: "dev2",
       name: "Chrome - Windows",
-      location: "Hà Nội, Việt Nam",
+      location: "Sơn La, Việt Nam",
       lastActive: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
       isCurrent: false,
     },
   ]);
 
-  // Password validation rules
   const passwordRules = [
     {
       id: "length",
@@ -105,7 +100,6 @@ export default function SecurityPage() {
     const { name, value } = e.target;
     setChangePasswordForm((prev) => ({ ...prev, [name]: value }));
 
-    // Clear success message when typing
     if (passwordSuccess) {
       setPasswordSuccess(false);
     }
@@ -115,12 +109,10 @@ export default function SecurityPage() {
     e.preventDefault();
     const errors: string[] = [];
 
-    // Check if current password is filled
     if (!changePasswordForm.currentPassword) {
       errors.push("Vui lòng nhập mật khẩu hiện tại");
     }
 
-    // Validate new password
     const failedRules = passwordRules.filter(
       (rule) => !rule.validate(changePasswordForm.newPassword),
     );
@@ -129,7 +121,6 @@ export default function SecurityPage() {
       errors.push("Mật khẩu mới không đáp ứng các yêu cầu bảo mật");
     }
 
-    // Check if passwords match
     if (changePasswordForm.newPassword !== changePasswordForm.confirmPassword) {
       errors.push("Mật khẩu mới và xác nhận mật khẩu không khớp");
     }
@@ -140,11 +131,9 @@ export default function SecurityPage() {
       return;
     }
 
-    // Success case
     setPasswordSuccess(true);
     setPasswordErrors([]);
 
-    // Reset form after successful submission
     setTimeout(() => {
       setChangePasswordForm({
         currentPassword: "",
@@ -188,7 +177,6 @@ export default function SecurityPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left column - Password Management */}
           <div className="lg:col-span-7">
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
               <div className="border-b border-gray-200">
@@ -348,7 +336,6 @@ export default function SecurityPage() {
                     </div>
                   </div>
 
-                  {/* Password requirements */}
                   <div className="mt-6">
                     <h3 className="text-sm font-medium text-gray-700 mb-3">
                       Yêu cầu mật khẩu:
@@ -386,7 +373,6 @@ export default function SecurityPage() {
               </div>
             </div>
 
-            {/* Two-Factor Authentication */}
             <div className="bg-white shadow-md rounded-lg overflow-hidden mt-8">
               <div className="px-6 py-5 flex justify-between items-center border-b border-gray-200">
                 <div className="flex items-center">

@@ -16,16 +16,12 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // In a real app, you'd check the credentials against a database.
-        // For our mock system, we'll just check if the email exists among our mock users
-        // and use a fake password check since we don't have real passwords in mock data
         const users = getInitialUsers();
         const user = users.find(
           (user) =>
             user.email.toLowerCase() === credentials.email.toLowerCase(),
         );
 
-        // For demo purposes, allow any password for the mock users
         if (user) {
           return {
             id: user.id,

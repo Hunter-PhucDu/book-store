@@ -21,7 +21,6 @@ export default function OrdersPage() {
     if (status === "unauthenticated") {
       router.push("/signin?callbackUrl=/account/orders");
     } else if (status === "authenticated" && session?.user?.id) {
-      // Lấy đơn hàng của người dùng hiện tại
       const fetchedOrders = getOrdersByUserId(session.user.id);
       setUserOrders(fetchedOrders);
       setIsLoading(false);

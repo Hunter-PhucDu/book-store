@@ -17,8 +17,6 @@ import {
 } from "react-icons/fi";
 import MainLayout from "@/components/layout/MainLayout";
 
-// Mock payment methods data
-// In a real application, this would be stored in the database and retrieved based on the user ID
 const mockPaymentMethods = [
   {
     id: "pm_1",
@@ -96,27 +94,24 @@ export default function PaymentMethodsPage() {
   const handleAddNewCard = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
     if (!cardNumber || !cardName || !expiryMonth || !expiryYear || !cvv) {
       setFormError("Vui lòng điền đầy đủ thông tin thẻ");
       return;
     }
 
-    // In a real app, you'd send this to your backend/payment processor
     const newPaymentMethod = {
       id: `pm_${Date.now()}`,
       type: "credit_card",
-      brand: cardNumber.startsWith("4") ? "visa" : "mastercard", // Simplified brand detection
+      brand: cardNumber.startsWith("4") ? "visa" : "mastercard",
       last4: cardNumber.slice(-4),
       expMonth: parseInt(expiryMonth),
       expYear: parseInt(expiryYear),
-      isDefault: paymentMethods.length === 0, // Make default if it's the first card
+      isDefault: paymentMethods.length === 0,
     };
 
     setPaymentMethods([...paymentMethods, newPaymentMethod]);
     setShowNewCardForm(false);
 
-    // Reset form
     setCardNumber("");
     setCardName("");
     setExpiryMonth("");
@@ -167,7 +162,6 @@ export default function PaymentMethodsPage() {
     <MainLayout>
       <div className="bg-gray-50 min-h-screen py-10">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Header */}
           <div className="flex items-center mb-6">
             <Link
               href="/account"
@@ -243,7 +237,6 @@ export default function PaymentMethodsPage() {
                         </div>
                       </div>
 
-                      {/* Delete confirmation */}
                       {showDeleteConfirmation === method.id && (
                         <div className="mt-4 p-3 bg-red-50 rounded-lg border border-red-100">
                           <p className="text-sm text-red-800 mb-3 flex items-center">
@@ -299,7 +292,6 @@ export default function PaymentMethodsPage() {
                 </div>
               )}
 
-              {/* Add new card form */}
               {showNewCardForm && (
                 <div className="mt-6 border border-gray-200 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-4">

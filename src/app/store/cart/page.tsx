@@ -1,3 +1,4 @@
+//cart
 "use client";
 
 import { useState } from "react";
@@ -16,23 +17,22 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import { useSession } from "next-auth/react";
-import { Address, CartItem } from "@/types/order";
+import { Address } from "@/types/order";
 import { initialBooks } from "@/store/bookData";
+import { useStore } from "@/store/index";
 import MainLayout from "@/components/layout/MainLayout";
-
-// Mock cart data
-const mockCartItems: CartItem[] = [
-  { bookId: "1", quantity: 2 },
-  { bookId: "3", quantity: 1 },
-];
 
 export default function CartPage() {
   const { data: session } = useSession();
   const router = useRouter();
+
+  const cart = useStore((state) => state.cart);
+  const updateCartItem = useStore((state) => state.updateCartItem);
+  const removeFromCart = useStore((state) => state.removeFromCart);
+  const clearCart = useStore((state) => state.clearCart);
+
   const books = initialBooks;
 
-  // Local state for cart
-  const [cart, setCart] = useState<CartItem[]>(mockCartItems);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [activeStep, setActiveStep] = useState<number>(1);
   const [shippingInfo, setShippingInfo] = useState<Address>({
@@ -45,7 +45,6 @@ export default function CartPage() {
     phoneNumber: "",
   });
 
-  // Calculate cart total
   const calculateCartTotal = () => {
     return cart.reduce((total, item) => {
       const book = books.find((b) => b.id === item.bookId);
@@ -62,20 +61,12 @@ export default function CartPage() {
 
     const book = books.find((book) => book.id === bookId);
     if (book && quantity <= book.stock) {
-      setCart(
-        cart.map((item) =>
-          item.bookId === bookId ? { ...item, quantity } : item,
-        ),
-      );
+      updateCartItem(bookId, quantity);
     }
   };
 
   const handleRemoveItem = (bookId: string) => {
-    setCart(cart.filter((item) => item.bookId !== bookId));
-  };
-
-  const clearCart = () => {
-    setCart([]);
+    removeFromCart(bookId);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,7 +81,7 @@ export default function CartPage() {
   const handlePrevStep = () => {
     setActiveStep((current) => Math.max(current - 1, 1));
   };
-  // State for success notification
+
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
   const handleCheckout = (e?: React.FormEvent) => {
@@ -103,23 +94,19 @@ export default function CartPage() {
       return;
     }
 
-    // In a real app, we would save the order to the database
-    setActiveStep(4); // Move to confirmation step
+    setActiveStep(4);
 
-    // After showing the confirmation, we'll show a toast notification
     setTimeout(() => {
       clearCart();
       setIsCheckingOut(false);
       setShowSuccessNotification(true);
 
-      // Auto hide notification after 5 seconds
       setTimeout(() => {
         setShowSuccessNotification(false);
       }, 5000);
     }, 3000);
   };
 
-  // Empty cart state
   if (cart.length === 0) {
     return (
       <MainLayout>
@@ -166,11 +153,9 @@ export default function CartPage() {
     <MainLayout>
       <div className="bg-gray-50 py-8">
         <div className="container mx-auto px-4">
-          {/* Progress Steps - only show during checkout */}
           {isCheckingOut && (
             <div className="max-w-4xl mx-auto mb-8">
               <div className="flex items-center justify-between">
-                {/* Step 1: Review Cart */}
                 <div className="flex flex-col items-center">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -186,12 +171,10 @@ export default function CartPage() {
                   </p>
                 </div>
 
-                {/* Connector */}
                 <div
                   className={`flex-1 h-1 mx-2 ${activeStep >= 2 ? "bg-blue-600" : "bg-gray-200"}`}
                 ></div>
 
-                {/* Step 2: Shipping */}
                 <div className="flex flex-col items-center">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -207,12 +190,10 @@ export default function CartPage() {
                   </p>
                 </div>
 
-                {/* Connector */}
                 <div
                   className={`flex-1 h-1 mx-2 ${activeStep >= 3 ? "bg-blue-600" : "bg-gray-200"}`}
                 ></div>
 
-                {/* Step 3: Payment */}
                 <div className="flex flex-col items-center">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -228,12 +209,10 @@ export default function CartPage() {
                   </p>
                 </div>
 
-                {/* Connector */}
                 <div
                   className={`flex-1 h-1 mx-2 ${activeStep >= 4 ? "bg-blue-600" : "bg-gray-200"}`}
                 ></div>
 
-                {/* Step 4: Confirmation */}
                 <div className="flex flex-col items-center">
                   {" "}
                   <div
@@ -263,7 +242,6 @@ export default function CartPage() {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8">
-              {/* Cart Items */}
               <div className="lg:w-2/3">
                 <div className="bg-white shadow-md rounded-xl overflow-hidden">
                   <table className="min-w-full divide-y divide-gray-200">
@@ -407,7 +385,6 @@ export default function CartPage() {
                     </tbody>
                   </table>
 
-                  {/* Cart Actions */}
                   <div className="px-6 py-4 bg-gray-50 flex flex-wrap justify-between items-center gap-4">
                     <button
                       onClick={clearCart}
@@ -427,7 +404,6 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* Order Summary */}
               <div className="lg:w-1/3">
                 <div className="bg-white shadow-md rounded-lg p-6 sticky top-6">
                   <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -443,9 +419,9 @@ export default function CartPage() {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Thuế (8%)</span>
-                      <span className="text-gray-900">
-                        {(cartTotal * 0.08).toLocaleString("vi-VN")}₫
+                      <span className="text-gray-600">Khuyến mãi (5%)</span>
+                      <span className="text-green-600">
+                        -{(cartTotal * 0.05).toLocaleString("vi-VN")}₫
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -474,8 +450,8 @@ export default function CartPage() {
                         </span>
                         <span className="text-lg font-semibold text-gray-900">
                           {(
-                            cartTotal +
-                            cartTotal * 0.08 +
+                            cartTotal -
+                            cartTotal * 0.05 +
                             (cartTotal > 500000 ? 0 : 30000)
                           ).toLocaleString("vi-VN")}
                           ₫
@@ -501,7 +477,6 @@ export default function CartPage() {
               </div>
             </div>
           </div>{" "}
-          {/* Checkout Modal */}
           {isCheckingOut && (
             <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out]">
               <div
@@ -612,9 +587,9 @@ export default function CartPage() {
                           <span>{cartTotal.toLocaleString("vi-VN")}₫</span>
                         </div>
                         <div className="flex justify-between mb-1">
-                          <span className="text-gray-600">Thuế</span>
-                          <span>
-                            {(cartTotal * 0.08).toLocaleString("vi-VN")}₫
+                          <span className="text-gray-600">Khuyến mãi</span>
+                          <span className="text-green-600">
+                            -{(cartTotal * 0.05).toLocaleString("vi-VN")}₫
                           </span>
                         </div>
                         <div className="flex justify-between">
@@ -627,8 +602,8 @@ export default function CartPage() {
                           <span className="font-semibold">Tổng cộng</span>
                           <span className="font-semibold">
                             {(
-                              cartTotal +
-                              cartTotal * 0.08 +
+                              cartTotal -
+                              cartTotal * 0.05 +
                               (cartTotal > 500000 ? 0 : 30000)
                             ).toLocaleString("vi-VN")}
                             ₫
@@ -912,11 +887,6 @@ export default function CartPage() {
                               clipRule="evenodd"
                             />
                           </svg>
-                          <div>
-                            Vì đây là môi trường demo, không có giao dịch thực
-                            nào được thực hiện. Tất cả các phương thức thanh
-                            toán chỉ để minh họa.
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -1067,7 +1037,6 @@ export default function CartPage() {
         </div>
       </div>
 
-      {/* Success Notification */}
       {showSuccessNotification && (
         <div className="fixed bottom-6 right-6 z-50 animate-[slideInBottom_0.3s_ease-in-out]">
           <div className="bg-green-600 text-white px-6 py-4 rounded-lg shadow-xl flex items-center">

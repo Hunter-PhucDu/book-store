@@ -86,7 +86,6 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Stats */}
               <div className="mt-12 grid grid-cols-3 gap-4">
                 <div className="text-center backdrop-blur-sm bg-white/5 rounded-lg p-3">
                   <p className="text-2xl font-bold text-amber-300">5000+</p>
@@ -103,7 +102,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Featured Books Carousel */}
             <div className="relative z-10">
               <div className="book-showcase-3d relative h-[450px] w-[320px] mx-auto">
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 w-[240px] h-[350px] transition-all duration-500 hover:scale-110 hover:rotate-3 hover:translate-x-5 shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)]">
@@ -170,7 +168,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Decorative elements */}
               <div className="absolute -top-10 -left-10 w-20 h-20 bg-amber-400 rounded-full opacity-50 blur-xl"></div>
               <div className="absolute -bottom-5 -right-5 w-16 h-16 bg-blue-400 rounded-full opacity-40 blur-xl"></div>
               <div className="absolute top-1/4 right-1/4 w-12 h-12 bg-purple-500 rounded-full opacity-30 blur-lg"></div>
@@ -178,7 +175,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Wave divider */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -190,7 +186,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories Section - New */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
@@ -261,7 +256,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section - Enhanced */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -269,7 +263,8 @@ export default function Home() {
               Dịch vụ của chúng tôi
             </h5>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Tại Sao Chọn <span className="text-blue-600">BookStore</span>?
+              Tại Sao Chọn{" "}
+              <span className="text-blue-600">Cửa hàng sách Tây Bắc</span>?
             </h2>
             <p className="text-gray-600 text-lg">
               Chúng tôi cung cấp trải nghiệm mua sắm sách tuyệt vời với nhiều ưu
@@ -401,7 +396,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Popular Books - New */}
       <section className="py-16 bg-gradient-to-br from-blue-50 to-indigo-50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between mb-12">
@@ -516,7 +510,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* New Releases Section - Enhanced */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -540,7 +533,7 @@ export default function Home() {
 
           <div className="text-center mt-10">
             <Link
-              href="/store/new-releases"
+              href="/store"
               className="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 bg-white hover:bg-blue-600 hover:text-white rounded-lg font-semibold transition-colors"
             >
               Xem Tất Cả Sách Mới
@@ -562,7 +555,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bestsellers Section - Enhanced */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-10">
@@ -575,7 +567,7 @@ export default function Home() {
               </h2>
             </div>
             <Link
-              href="/store/bestsellers"
+              href="/store"
               className="text-blue-600 hover:text-blue-800 font-medium flex items-center bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow transition-shadow"
             >
               Xem Tất Cả
@@ -610,7 +602,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials - Enhanced */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -666,9 +657,9 @@ export default function Home() {
               </div>
 
               <blockquote className="text-gray-600 italic">
-                &quot;Tôi rất thích sự đa dạng về sách có sẵn tại BookStore.
-                Giao diện trang web dễ sử dụng và việc giao hàng luôn luôn nhanh
-                chóng. Sẽ tiếp tục ủng hộ!&quot;
+                &quot;Tôi rất thích sự đa dạng về sách có sẵn tại Cửa hàng sách
+                Tây Bắc. Giao diện trang web dễ sử dụng và việc giao hàng luôn
+                luôn nhanh chóng. Sẽ tiếp tục ủng hộ!&quot;
               </blockquote>
 
               <div className="flex items-center mt-4 text-sm text-gray-500">
@@ -787,7 +778,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Newsletter Section - New */}
       <section className="py-16 bg-gradient-to-r from-blue-700 to-indigo-800 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
@@ -816,9 +806,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Call to Action - Enhanced */}
       <section className="py-20 bg-gray-50 relative overflow-hidden">
-        {/* Background design elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-0 w-40 h-40 bg-blue-100 rounded-full opacity-60 -translate-x-20 -translate-y-20"></div>
           <div className="absolute bottom-0 right-0 w-60 h-60 bg-amber-100 rounded-full opacity-60 translate-x-20 translate-y-20"></div>

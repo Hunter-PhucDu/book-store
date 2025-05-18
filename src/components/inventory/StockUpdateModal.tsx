@@ -44,13 +44,11 @@ export default function StockUpdateModal({
     setIsSubmitting(true);
 
     try {
-      // Calculate new stock level
       const newStockLevel =
         operation === "add"
           ? book.stock + stockChange
           : Math.max(0, book.stock - stockChange);
 
-      // Update the book
       updateBook({
         ...book,
         stock: newStockLevel,
@@ -79,7 +77,6 @@ export default function StockUpdateModal({
         </div>
 
         <div className="p-6">
-          {/* Book info */}
           <div className="flex items-center mb-6">
             <div className="flex-shrink-0 h-16 w-16">
               <BookCover
@@ -119,7 +116,6 @@ export default function StockUpdateModal({
           )}
 
           <form onSubmit={handleSubmit}>
-            {/* Operation selection */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Thao tác
@@ -156,7 +152,6 @@ export default function StockUpdateModal({
               </div>
             </div>
 
-            {/* Stock change amount */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Số lượng cần {operation === "add" ? "nhập" : "xuất"}
@@ -172,7 +167,6 @@ export default function StockUpdateModal({
               />
             </div>
 
-            {/* New stock preview */}
             <div className="mb-4 p-3 bg-gray-50 rounded-md">
               <p className="text-sm text-gray-600">
                 Tồn kho mới:
@@ -184,7 +178,6 @@ export default function StockUpdateModal({
               </p>
             </div>
 
-            {/* Reason */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Lý do

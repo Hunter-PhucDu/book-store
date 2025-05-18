@@ -15,7 +15,6 @@ interface InventoryHistoryModalProps {
   onClose: () => void;
 }
 
-// Mock inventory history data - in a real app, this would come from a database
 interface InventoryChange {
   id: string;
   bookId: string;
@@ -28,7 +27,6 @@ interface InventoryChange {
   updatedBy: string;
 }
 
-// Generate mock inventory history data
 const generateMockHistory = (books: Book[]): InventoryChange[] => {
   const history: InventoryChange[] = [];
   const reasons = [
@@ -40,14 +38,13 @@ const generateMockHistory = (books: Book[]): InventoryChange[] => {
   ];
   const users = ["John Doe", "Jane Smith", "Admin User"];
 
-  // Generate random changes for each book (1-3 changes per book)
   books.slice(0, 10).forEach((book) => {
     const changesCount = Math.floor(Math.random() * 3) + 1;
 
     for (let i = 0; i < changesCount; i++) {
-      const change = Math.floor(Math.random() * 10) - 5; // Random change between -5 and +5
+      const change = Math.floor(Math.random() * 10) - 5;
       const date = new Date();
-      date.setDate(date.getDate() - Math.floor(Math.random() * 30)); // Random date within last 30 days
+      date.setDate(date.getDate() - Math.floor(Math.random() * 30));
 
       history.push({
         id: `change-${history.length + 1}`,
@@ -63,7 +60,6 @@ const generateMockHistory = (books: Book[]): InventoryChange[] => {
     }
   });
 
-  // Sort by timestamp (newest first)
   return history.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 };
 
@@ -81,7 +77,6 @@ export default function InventoryHistoryModal({
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [bookFilter, setBookFilter] = useState<string>("all");
 
-  // Apply filters
   const filteredHistory = inventoryHistory.filter((item) => {
     if (dateFilter === "7days") {
       const sevenDaysAgo = new Date();
@@ -104,7 +99,6 @@ export default function InventoryHistoryModal({
     return true;
   });
 
-  // Apply sorting
   const sortedHistory = [...filteredHistory].sort((a, b) => {
     const fieldA = a[sortField];
     const fieldB = b[sortField];
@@ -136,7 +130,6 @@ export default function InventoryHistoryModal({
   };
 
   const exportToCsv = () => {
-    // Create CSV content
     let csvContent =
       "Book Title,Previous Stock,New Stock,Change,Reason,Date,Updated By\n";
 
@@ -153,7 +146,6 @@ export default function InventoryHistoryModal({
       csvContent += row.join(",") + "\n";
     });
 
-    // Create a blob and download link
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");

@@ -43,14 +43,10 @@ export default function OrdersManagementPage() {
     }
   }, [status, session, router]);
 
-  // Filter orders
   const filteredOrders = orders.filter((order) => {
-    // Filter by status
     if (statusFilter !== "all" && order.status !== statusFilter) {
       return false;
     }
-
-    // Filter by search query
     if (searchQuery) {
       const customer = users.find((user) => user.id === order.userId);
       const searchLower = searchQuery.toLowerCase();
@@ -65,7 +61,6 @@ export default function OrdersManagementPage() {
     return true;
   });
 
-  // Update order status
   const handleUpdateStatus = (orderId: string, newStatus: OrderStatus) => {
     const orderToUpdate = orders.find((o) => o.id === orderId);
     if (orderToUpdate) {
@@ -85,13 +80,11 @@ export default function OrdersManagementPage() {
     }
   };
 
-  // View order details
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
     setIsDetailsModalOpen(true);
   };
 
-  // Export orders to CSV
   const exportOrdersToCSV = () => {
     const headers = [
       "Order ID",
@@ -191,7 +184,6 @@ export default function OrdersManagementPage() {
         </div>
       </div>
 
-      {/* Filters and Search */}
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-grow">
@@ -224,7 +216,6 @@ export default function OrdersManagementPage() {
         </div>
       </div>
 
-      {/* Orders Stats */}
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="bg-white rounded-lg shadow p-4">
@@ -279,7 +270,6 @@ export default function OrdersManagementPage() {
         </div>
       </div>
 
-      {/* Orders Table */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -455,7 +445,6 @@ export default function OrdersManagementPage() {
         </div>
       </div>
 
-      {/* Order Details Modal */}
       {isDetailsModalOpen && selectedOrder && (
         <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
           <div className="bg-white rounded-lg w-full max-w-4xl mx-4">
@@ -472,7 +461,6 @@ export default function OrdersManagementPage() {
             </div>
 
             <div className="p-6">
-              {/* Order Summary */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div className="border rounded-lg p-4">
                   <h3 className="font-medium text-gray-700 mb-2">

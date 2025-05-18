@@ -33,11 +33,9 @@ export default function BatchUpdateModal({
 
   const parseCSV = () => {
     try {
-      // Skip header row if it exists and parse CSV content
       const lines = csvContent.trim().split("\n");
       const updatesArray: BookUpdate[] = [];
 
-      // Bắt đầu từ index 0 hoặc 1 tùy thuộc vào việc có header hay không
       const startIndex = lines[0].toLowerCase().includes("isbn") ? 1 : 0;
 
       for (let i = startIndex; i < lines.length; i++) {
@@ -51,7 +49,6 @@ export default function BatchUpdateModal({
           throw new Error(`Dữ liệu không hợp lệ ở dòng ${i + 1}`);
         }
 
-        // Check if book with ISBN exists in our inventory
         const bookExists = books.some((book) => book.isbn === isbn);
 
         updatesArray.push({
@@ -80,7 +77,6 @@ export default function BatchUpdateModal({
     setIsSubmitting(true);
 
     try {
-      // Process all valid book updates
       const updatedBooks = updates
         .filter((update) => update.found)
         .map((update) => {
@@ -95,7 +91,6 @@ export default function BatchUpdateModal({
             newStock = Math.max(0, update.quantity);
           }
 
-          // Update the book with new stock level
           updateBook({
             ...book,
             stock: newStock,

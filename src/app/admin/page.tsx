@@ -32,7 +32,6 @@ import {
 } from "chart.js";
 import { Pie, Bar, Line } from "react-chartjs-2";
 
-// Register Chart.js components
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -73,7 +72,6 @@ export default function AdminDashboard() {
     }
   }, [status, session, router]);
 
-  // Calculate dashboard statistics
   const totalBooks = books.length;
   const totalCustomers = users.filter(
     (user) => user.role === UserRole.CUSTOMER,
@@ -86,17 +84,14 @@ export default function AdminDashboard() {
   ).length;
   const totalOrders = orders.length;
 
-  // Calculate enhanced statistics
   const lowStockBooks = books.filter(
     (book) => book.stock > 0 && book.stock <= 5,
   ).length;
   const outOfStockBooks = books.filter((book) => book.stock === 0).length;
 
-  // Calculate revenue
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
   const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-  // Calculate date ranges for filtering
   const today = new Date();
   const oneWeekAgo = new Date(today);
   oneWeekAgo.setDate(today.getDate() - 7);
@@ -115,7 +110,6 @@ export default function AdminDashboard() {
 
   const startDate = dateRangeMap[timeRange];
 
-  // Filter orders by date range
   const filteredOrders = orders.filter(
     (order) => new Date(order.createdAt) >= startDate,
   );
@@ -124,7 +118,6 @@ export default function AdminDashboard() {
     0,
   );
 
-  // Create data for Charts
   const booksByCategoryData = {
     labels: Array.from(new Set(books.map((book) => book.category))),
     datasets: [
@@ -157,13 +150,11 @@ export default function AdminDashboard() {
       },
     ],
   };
-  // Generate data for daily revenue chart
   const generateDateLabels = () => {
     const labels: string[] = [];
     const data: number[] = [];
     const salesByDate: Record<string, number> = {};
 
-    // Initialize all dates in the range with 0
     const daysToShow =
       timeRange === "week" ? 7 : timeRange === "month" ? 30 : 12;
     const dateFormat: Intl.DateTimeFormatOptions =
@@ -172,7 +163,6 @@ export default function AdminDashboard() {
         : { month: "short" as const, day: "numeric" as const };
 
     if (timeRange === "year") {
-      // For year view, use months
       for (let i = 11; i >= 0; i--) {
         const date = new Date();
         date.setMonth(date.getMonth() - i);
@@ -181,14 +171,12 @@ export default function AdminDashboard() {
         salesByDate[label] = 0;
       }
 
-      // Aggregate sales by month
       filteredOrders.forEach((order) => {
         const date = new Date(order.createdAt);
         const label = date.toLocaleDateString("en-US", { month: "short" });
         salesByDate[label] = (salesByDate[label] || 0) + order.total;
       });
     } else {
-      // For week or month view, use days
       for (let i = daysToShow - 1; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
@@ -197,7 +185,6 @@ export default function AdminDashboard() {
         salesByDate[label] = 0;
       }
 
-      // Aggregate sales by day
       filteredOrders.forEach((order) => {
         const date = new Date(order.createdAt);
         const label = date.toLocaleDateString("en-US", dateFormat);
@@ -205,7 +192,6 @@ export default function AdminDashboard() {
       });
     }
 
-    // Push sales values in the same order as labels
     labels.forEach((label) => {
       data.push(salesByDate[label] || 0);
     });
@@ -232,7 +218,6 @@ export default function AdminDashboard() {
     ],
   };
 
-  // Top selling books data
   const topSellingBooks = useMemo(() => {
     const bookSales: Record<
       string,
@@ -245,7 +230,6 @@ export default function AdminDashboard() {
       }
     > = {};
 
-    // Count books sold from orders
     filteredOrders.forEach((order) => {
       order.items.forEach((item) => {
         if (!bookSales[item.bookId]) {
@@ -268,13 +252,11 @@ export default function AdminDashboard() {
       });
     });
 
-    // Convert to array and sort
     return Object.values(bookSales)
       .sort((a, b) => b.totalSold - a.totalSold)
       .slice(0, 5);
   }, [filteredOrders, books]);
 
-  // Inventory value
   const totalInventoryValue = books.reduce(
     (sum, book) => sum + book.price * book.stock,
     0,
@@ -293,7 +275,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Dashboard Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center">
@@ -319,7 +300,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Dashboard Tabs */}
       <div className="bg-white border-t border-gray-200">
         <div className="container mx-auto px-4">
           <div className="flex overflow-x-auto">
@@ -357,11 +337,9 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Dashboard Content */}
       <div className="container mx-auto px-4 py-8">
         {selectedTab === "overview" && (
           <>
-            {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow p-6 flex items-center">
                 <div className="rounded-full bg-blue-100 p-3">
@@ -597,7 +575,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Recent Orders Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
               <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-800">
@@ -713,7 +690,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Revenue Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">
@@ -773,7 +749,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Revenue Chart */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 Doanh thu theo thời gian
@@ -797,7 +772,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Top Selling Books */}
             <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800">
@@ -855,7 +829,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Sales by Category */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -973,7 +946,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Inventory Value */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 Giá trị hàng tồn kho
@@ -1156,7 +1128,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Category Distribution */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 Phân phối sách theo danh mục

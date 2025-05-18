@@ -26,7 +26,6 @@ interface PaymentMethod {
   lastFour: string;
 }
 
-// Mock data - in a real app this would come from the user profile
 const mockPaymentMethods: PaymentMethod[] = [
   {
     id: "1",
@@ -152,7 +151,6 @@ export default function PaymentMethodsModal({
               : "",
         };
 
-        // Add specific properties based on type
         if (currentPaymentMethod.type === "credit") {
           newMethod.cardNumber = currentPaymentMethod.cardNumber;
           newMethod.cardName = currentPaymentMethod.cardName;
@@ -161,7 +159,6 @@ export default function PaymentMethodsModal({
           newMethod.paypalEmail = currentPaymentMethod.paypalEmail;
         }
 
-        // Update other payment methods if this is the default
         let updatedMethods = [...paymentMethods];
         if (newMethod.isDefault) {
           updatedMethods = updatedMethods.map((method) => ({
@@ -169,15 +166,12 @@ export default function PaymentMethodsModal({
             isDefault: false,
           }));
         } else if (updatedMethods.length === 0) {
-          // If this is the first payment method, make it default
           newMethod.isDefault = true;
         }
 
-        // Add the new method
         updatedMethods.push(newMethod);
         setPaymentMethods(updatedMethods);
 
-        // Reset the form
         setCurrentPaymentMethod(null);
         setIsAddingNew(false);
         setSuccess("Payment method added successfully.");
@@ -198,16 +192,13 @@ export default function PaymentMethodsModal({
   };
 
   const formatCardNumber = (value: string) => {
-    // Remove all non-digits
     const cleaned = value.replace(/\D/g, "");
 
-    // Add spaces
     const formatted = cleaned.match(/.{1,4}/g)?.join(" ") || cleaned;
 
     return formatted;
   };
 
-  // Icon component for payment methods
   const PaymentIcon = ({ type }: { type: string }) => {
     switch (type) {
       case "visa":

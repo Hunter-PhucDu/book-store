@@ -14,7 +14,6 @@ import MainLayout from "@/components/layout/MainLayout";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-// Types
 interface Address {
   id: string;
   fullName: string;
@@ -28,7 +27,6 @@ interface Address {
   isDefault: boolean;
 }
 
-// Mock data
 const mockAddresses: Address[] = [
   {
     id: "addr1",
@@ -65,7 +63,6 @@ export default function AddressesPage() {
     null,
   );
 
-  // Form state
   const emptyAddress: Omit<Address, "id" | "isDefault"> = {
     fullName: "",
     addressLine1: "",
@@ -79,10 +76,8 @@ export default function AddressesPage() {
 
   const [formData, setFormData] = useState(emptyAddress);
 
-  // Loading state
   const [isLoading, setIsLoading] = useState(status === "loading");
 
-  // Effects
   useState(() => {
     if (status === "unauthenticated") {
       router.push("/signin?callbackUrl=/account/addresses");
@@ -91,7 +86,6 @@ export default function AddressesPage() {
     }
   });
 
-  // Handlers
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -116,7 +110,6 @@ export default function AddressesPage() {
     e.preventDefault();
 
     if (isEditing) {
-      // Update existing address
       setAddresses((prevAddresses) =>
         prevAddresses.map((addr) =>
           addr.id === isEditing ? { ...addr, ...formData } : addr,
@@ -124,17 +117,15 @@ export default function AddressesPage() {
       );
       setIsEditing(null);
     } else {
-      // Add new address
       const newAddress: Address = {
         id: `addr${Date.now()}`,
         ...formData,
-        isDefault: addresses.length === 0, // Make default if it's the first address
+        isDefault: addresses.length === 0,
       };
       setAddresses((prev) => [...prev, newAddress]);
       setIsAddingNew(false);
     }
 
-    // Reset form
     setFormData(emptyAddress);
   };
 
@@ -148,7 +139,6 @@ export default function AddressesPage() {
     setAddresses((prev) => {
       const filtered = prev.filter((addr) => addr.id !== id);
 
-      // If we deleted the default address, set a new one
       if (
         prev.find((addr) => addr.id === id)?.isDefault &&
         filtered.length > 0
@@ -477,7 +467,6 @@ export default function AddressesPage() {
                     </button>
                   )}
 
-                  {/* Delete confirmation modal */}
                   {showDeleteConfirm === address.id && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                       <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">

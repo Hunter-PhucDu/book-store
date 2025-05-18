@@ -19,14 +19,12 @@ export default function StockAlertsModal({
     useState<boolean>(true);
   const [autoReorder, setAutoReorder] = useState<boolean>(false);
 
-  // Get low stock books based on threshold
   const lowStockBooks = books.filter(
     (book) => book.stock > 0 && book.stock <= threshold,
   );
   const outOfStockBooks = books.filter((book) => book.stock === 0);
 
   const handleSaveSettings = () => {
-    // In a real application, we would save these settings to user preferences or a database
     onClose();
   };
 

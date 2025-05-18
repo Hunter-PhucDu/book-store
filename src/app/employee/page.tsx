@@ -25,7 +25,6 @@ export default function EmployeeDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Tối ưu cách sử dụng store để tránh re-render không cần thiết
   const users = useStore((state) => state.users);
   const orders = useStore((state) => state.orders);
 
@@ -46,7 +45,6 @@ export default function EmployeeDashboard() {
     }
   }, [status, session, router]);
 
-  // Sử dụng useMemo cho các tính toán từ store để tránh infinite loop
   const currentEmployee = useMemo(() => {
     if (!session?.user?.email) return undefined;
     return users.find((user) => user.email === session.user?.email) as
@@ -54,17 +52,15 @@ export default function EmployeeDashboard() {
       | undefined;
   }, [users, session?.user?.email]);
 
-  // Dữ liệu giả cho đơn hàng cần xử lý
   const fakePendingOrders = Array.from({ length: 20 }, (_, index) => ({
     id: `order${index + 1}`,
-    userId: `user${(index % 5) + 1}`, // Giả định có 5 người dùng
-    createdAt: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(), // Ngày tạo đơn hàng
-    total: Math.floor(Math.random() * 100000) + 10000, // Tổng tiền ngẫu nhiên
-    status: OrderStatus.PROCESSING, // Tất cả đều là đơn hàng đang xử lý
+    userId: `user${(index % 5) + 1}`,
+    createdAt: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(),
+    total: Math.floor(Math.random() * 100000) + 10000,
+    status: OrderStatus.PROCESSING,
   }));
 
   const pendingOrders = useMemo(() => {
-    // Thay thế bằng dữ liệu giả
     return fakePendingOrders;
   }, []);
 
@@ -92,7 +88,6 @@ export default function EmployeeDashboard() {
     return orders.filter((order) => order.status === OrderStatus.DELIVERED);
   }, [orders]);
 
-  // Tính thời gian làm việc
   const calculateWorkDuration = (hireDate: Date) => {
     const start = new Date(hireDate);
     const now = new Date();
@@ -127,7 +122,6 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center">
@@ -153,7 +147,6 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="bg-white border-t border-gray-200">
         <div className="container mx-auto px-4">
           <div className="flex overflow-x-auto">
@@ -191,11 +184,9 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      {/* Dashboard Content */}
       <div className="container mx-auto px-4 py-8">
         {selectedTab === "tổng quan" && (
           <>
-            {/* Employee Information */}
             <div className="bg-white p-6 rounded-lg shadow-md mb-8">
               <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                 <div className="flex-shrink-0">
@@ -239,7 +230,6 @@ export default function EmployeeDashboard() {
               </div>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
@@ -306,7 +296,6 @@ export default function EmployeeDashboard() {
               </div>
             </div>
 
-            {/* Quick Links */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 Công cụ quản lý
@@ -339,7 +328,6 @@ export default function EmployeeDashboard() {
               </div>
             </div>
 
-            {/* Recent Orders */}
             <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
               <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800">
@@ -423,7 +411,6 @@ export default function EmployeeDashboard() {
               </div>
             </div>
 
-            {/* Tasks */}
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 Nhiệm vụ hôm nay

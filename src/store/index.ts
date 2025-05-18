@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { Book } from "@/types/book";
 import { User } from "@/types/user";
 import { Order, CartItem } from "@/types/order";
@@ -156,8 +156,6 @@ export const useStore = create<StoreState>()(
       currentUser: null,
       isAuthenticated: false,
       login: async (email) => {
-        // For our mock system, we'll just check if the email matches any user
-        // In a real system, you would verify the password as well
         const user = get().users.find(
           (u) => u.email.toLowerCase() === email.toLowerCase(),
         );
@@ -325,6 +323,16 @@ export const useStore = create<StoreState>()(
         orders: state.orders,
         currentUser: state.currentUser,
         isAuthenticated: state.isAuthenticated,
+      }),
+      storage: createJSONStorage(() => {
+        if (typeof window !== "undefined") {
+          return localStorage;
+        }
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        };
       }),
     },
   ),

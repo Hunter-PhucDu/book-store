@@ -41,7 +41,6 @@ export default function SignUp() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Form validation
     if (!formData.name || !formData.email || !formData.password) {
       setErrorMessage("Tên, email và mật khẩu là bắt buộc");
       return;
@@ -55,14 +54,12 @@ export default function SignUp() {
     try {
       setIsLoading(true);
       setErrorMessage("");
-      // Add user to our mock database
       addUser({
         name: formData.name,
         email: formData.email,
         role: UserRole.CUSTOMER,
       });
 
-      // Redirect to sign-in page after successful registration
       router.push("/signin?registered=true");
     } catch (err) {
       console.error("Registration error:", err);
@@ -120,7 +117,6 @@ export default function SignUp() {
           </p>
         </div>
 
-        {/* Progress indicator */}
         <div className="sm:mx-auto sm:w-full sm:max-w-md mt-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col items-center">
@@ -145,7 +141,6 @@ export default function SignUp() {
           </div>
         </div>
 
-        {/* Error message */}
         {errorMessage && (
           <div className="sm:mx-auto sm:w-full sm:max-w-md mt-4">
             <div className="rounded-md bg-red-50 p-4">
@@ -168,7 +163,6 @@ export default function SignUp() {
             <form className="space-y-6" onSubmit={handleSubmit}>
               {step === 1 && (
                 <>
-                  {/* Name */}
                   <div>
                     <label
                       htmlFor="name"
@@ -194,7 +188,6 @@ export default function SignUp() {
                     </div>
                   </div>
 
-                  {/* Email */}
                   <div>
                     <label
                       htmlFor="email"
@@ -220,7 +213,6 @@ export default function SignUp() {
                     </div>
                   </div>
 
-                  {/* Phone Number (Optional) */}
                   <div>
                     <label
                       htmlFor="phoneNumber"
@@ -262,7 +254,6 @@ export default function SignUp() {
 
               {step === 2 && (
                 <>
-                  {/* Password */}
                   <div>
                     <label
                       htmlFor="password"
@@ -288,7 +279,6 @@ export default function SignUp() {
                     </div>
                   </div>
 
-                  {/* Confirm Password */}
                   <div>
                     <label
                       htmlFor="confirmPassword"
@@ -314,7 +304,6 @@ export default function SignUp() {
                     </div>
                   </div>
 
-                  {/* Address (Optional) */}
                   <div>
                     <label
                       htmlFor="address"
@@ -384,7 +373,6 @@ export default function SignUp() {
         </div>
       </div>
 
-      {/* Right side - Image */}
       <div className="hidden md:flex md:w-1/2 bg-blue-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-l from-blue-900 to-blue-700 opacity-90"></div>
         <div className="absolute inset-0">

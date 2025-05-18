@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FiPlus, FiEdit, FiTrash, FiSearch } from "react-icons/fi";
@@ -9,13 +9,17 @@ import { Book } from "@/types/book";
 import { UserRole } from "@/types/user";
 import BookCover from "@/components/BookCover";
 import BookFormModal from "@/components/admin/BookFormModal";
+import { getInitialBooks } from "@/store/bookData";
 
 export default function AdminBooksPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const books = useStore((state) => state.books);
+  const [books, setBooks] = useState<Book[]>([]);
+  const storeBooks = useStore((state) => state.books);
   const deleteBook = useStore((state) => state.deleteBook);
+  const updateBook = useStore((state) => state.updateBook);
+  const addBook = useStore((state) => state.addBook);
 
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,38 +30,124 @@ export default function AdminBooksPage() {
   );
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      const defaultBooks = getInitialBooks();
+
+      const booksMap = new Map<string, Book>();
+
+      defaultBooks.forEach((book) => {
+        booksMap.set(book.id, book);
+      });
+
+      if (storeBooks && storeBooks.length > 0) {
+        storeBooks.forEach((book) => {
+          booksMap.set(book.id, book);
+        });
+      }
+
+      const combinedBooks = Array.from(booksMap.values());
+
+      combinedBooks.sort((a, b) => Number(a.id) - Number(b.id));
+
+      setBooks(combinedBooks);
+      console.log(
+        `Đã tải ${combinedBooks.length} sách (${defaultBooks.length} từ mặc định, ${storeBooks.length} từ localStorage)`,
+      );
+
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [storeBooks]);
+
+  useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/signin?callbackUrl=/admin/books");
     } else if (status === "authenticated") {
       if (session?.user?.role !== UserRole.ADMIN) {
         router.push("/");
-      } else {
-        setIsLoading(false);
       }
     }
   }, [status, session, router]);
 
-  const filteredBooks = books.filter(
-    (book) =>
-      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.isbn.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredBooks = useMemo(() => {
+    const lowercaseQuery = searchQuery.toLowerCase();
+    return books.filter(
+      (book) =>
+        book.title.toLowerCase().includes(lowercaseQuery) ||
+        book.author.toLowerCase().includes(lowercaseQuery) ||
+        book.isbn.toLowerCase().includes(lowercaseQuery),
+    );
+  }, [books, searchQuery]);
 
-  const handleAddNewBook = () => {
+  const handleAddNewBook = useCallback(() => {
     setCurrentBook(null);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleEditBook = (book: Book) => {
+  const handleEditBook = useCallback((book: Book) => {
     setCurrentBook(book);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleDeleteBook = async (id: string) => {
-    deleteBook(id);
-    setShowDeleteConfirm(null);
-  };
+  const handleDeleteBook = useCallback(
+    async (id: string) => {
+      deleteBook(id);
+      setBooks((prev) => prev.filter((book) => book.id !== id));
+      setShowDeleteConfirm(null);
+    },
+    [deleteBook],
+  );
+
+  const handleAddBookSubmit = useCallback(
+    (bookData: Omit<Book, "id">) => {
+      addBook(bookData);
+
+      const newId = (
+        Math.max(...books.map((book) => parseInt(book.id)), 0) + 1
+      ).toString();
+      const newBook = { ...bookData, id: newId };
+
+      setBooks((prev) => [...prev, newBook]);
+      setIsModalOpen(false);
+    },
+    [addBook, books],
+  );
+
+  const handleUpdateBookSubmit = useCallback(
+    (updatedBook: Book) => {
+      updateBook(updatedBook);
+
+      setBooks((prev) =>
+        prev.map((book) => (book.id === updatedBook.id ? updatedBook : book)),
+      );
+
+      setIsModalOpen(false);
+    },
+    [updateBook],
+  );
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+    },
+    [],
+  );
+
+  const handleBookSubmit = useCallback(
+    (bookData: Omit<Book, "id"> | Book) => {
+      if ("id" in bookData) {
+        handleUpdateBookSubmit(bookData as Book);
+      } else {
+        handleAddBookSubmit(bookData);
+      }
+    },
+    [handleAddBookSubmit, handleUpdateBookSubmit],
+  );
 
   if (isLoading) {
     return (
@@ -70,9 +160,15 @@ export default function AdminBooksPage() {
     );
   }
 
+  const bookStats = {
+    total: books.length,
+    available: books.filter((book) => book.stock > 0).length,
+    lowStock: books.filter((book) => book.stock > 0 && book.stock <= 10).length,
+    outOfStock: books.filter((book) => book.stock === 0).length,
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Page Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center">
@@ -107,7 +203,6 @@ export default function AdminBooksPage() {
         </div>
       </div>
 
-      {/* Book Stats */}
       <div className="container mx-auto px-4 py-4 mt-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg shadow p-4">
@@ -115,13 +210,13 @@ export default function AdminBooksPage() {
               Tổng số sách
             </div>
             <div className="text-xl font-bold mt-1 text-gray-800">
-              {books.length}
+              {bookStats.total}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <div className="font-medium text-sm text-green-500">Có sẵn</div>
             <div className="text-xl font-bold mt-1 text-green-600">
-              {books.filter((book) => book.stock > 0).length}
+              {bookStats.available}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
@@ -129,22 +224,18 @@ export default function AdminBooksPage() {
               Sắp hết hàng
             </div>
             <div className="text-xl font-bold mt-1 text-yellow-600">
-              {
-                books.filter((book) => book.stock > 0 && book.stock <= 10)
-                  .length
-              }
+              {bookStats.lowStock}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <div className="font-medium text-sm text-red-500">Hết hàng</div>
             <div className="text-xl font-bold mt-1 text-red-600">
-              {books.filter((book) => book.stock === 0).length}
+              {bookStats.outOfStock}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Search Bar */}
       <div className="container mx-auto px-4 py-4">
         <div className="relative">
           <label htmlFor="book-search" className="sr-only">
@@ -156,14 +247,13 @@ export default function AdminBooksPage() {
             placeholder="Tìm kiếm sách theo tên, tác giả hoặc ISBN..."
             className="w-full px-4 py-3 pl-12 border rounded-lg"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             aria-label="Tìm kiếm sách"
           />
           <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
       </div>
 
-      {/* Bảng Sách */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -220,7 +310,7 @@ export default function AdminBooksPage() {
                         {book.category}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${book.price.toFixed(2)}
+                        {book.price.toLocaleString("vi-VN")}₫
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
@@ -255,28 +345,32 @@ export default function AdminBooksPage() {
                         </button>
 
                         {showDeleteConfirm === book.id && (
-                          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white p-6 rounded-lg max-w-sm mx-auto">
-                              <h3 className="text-lg font-bold mb-4">
+                          <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                            <div className="bg-white p-8 rounded-lg max-w-xl w-full mx-auto shadow-xl border border-gray-100">
+                              <h3 className="text-2xl font-bold mb-4 text-gray-800">
                                 Xác nhận xóa
                               </h3>
-                              <p>
-                                Bạn có chắc chắn muốn xóa &quot;
-                                {book.title}&quot;? Hành động này không thể hoàn
-                                tác.
+                              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                                Bạn có chắc chắn muốn xóa{" "}
+                                <span className="font-semibold text-gray-800 break-all">
+                                  &quot;{book.title}&quot;
+                                </span>
+                                ?
+                                <br />
+                                Hành động này không thể hoàn tác.
                               </p>
-                              <div className="mt-6 flex justify-end space-x-3">
+                              <div className="mt-8 flex justify-end space-x-5">
                                 <button
                                   onClick={() => setShowDeleteConfirm(null)}
-                                  className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+                                  className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium text-base"
                                 >
                                   Hủy
                                 </button>
                                 <button
                                   onClick={() => handleDeleteBook(book.id)}
-                                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                                  className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center font-medium text-base"
                                 >
-                                  Xóa
+                                  <FiTrash className="mr-2 h-5 w-5" /> Xóa
                                 </button>
                               </div>
                             </div>
@@ -301,11 +395,11 @@ export default function AdminBooksPage() {
         </div>
       </div>
 
-      {/* Book Form Modal */}
       {isModalOpen && (
         <BookFormModal
           book={currentBook}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleCloseModal}
+          onSubmit={handleBookSubmit}
         />
       )}
     </div>

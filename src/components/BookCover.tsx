@@ -1,34 +1,35 @@
 "use client";
 
-import Image from "next/image";
+import { memo } from "react";
+import Image, { ImageProps } from "next/image";
 
-interface BookCoverProps {
+interface BookCoverProps extends Omit<ImageProps, "src"> {
   src: string;
   alt: string;
   className?: string;
 }
 
-export default function BookCover({
-  src,
-  alt,
-  className = "bg-gray-100",
-}: BookCoverProps) {
-  const imageSrc = src.startsWith("/images/")
-    ? src
-    : "/images/book-placeholder.jpg";
-
+const BookCover = memo(({ src, alt, className, ...props }: BookCoverProps) => {
   return (
-    <Image
-      src={imageSrc}
-      alt={alt}
-      width={100}
-      height={150}
-      style={{ objectFit: "cover" }}
-      className={className}
-      onError={(e) => {
-        const target = e.target as HTMLImageElement;
-        target.src = "/images/book-placeholder.jpg";
-      }}
-    />
+    <div className={`relative w-full h-full ${className || ""}`}>
+      <Image
+        src={src}
+        alt={alt || "Book cover"}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        className="object-cover"
+        loading="lazy"
+        priority={false}
+        onError={(e) => {
+          (e.target as HTMLImageElement).onerror = null;
+          (e.target as HTMLImageElement).src = "/images/book-placeholder.jpg";
+        }}
+        {...props}
+      />
+    </div>
   );
-}
+});
+
+BookCover.displayName = "BookCover";
+
+export default BookCover;

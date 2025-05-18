@@ -16,7 +16,6 @@ export default function StorePage() {
     const loadData = () => {
       const booksData = initialBooks;
 
-      // Normalize categories: trim and lowercase
       const uniqueCategories = Array.from(
         new Set(booksData.map((book) => book.category.trim().toLowerCase())),
       );
@@ -36,7 +35,6 @@ export default function StorePage() {
   return (
     <MainLayout>
       <div className="relative bg-gradient-to-r from-blue-800 to-indigo-900 py-12 overflow-hidden">
-        {/* Background elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute -top-10 -right-10 w-40 h-40 border-2 border-white rounded-full"></div>
           <div className="absolute bottom-5 left-10 w-24 h-24 border-2 border-white rounded-full"></div>

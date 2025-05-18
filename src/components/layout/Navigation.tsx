@@ -38,43 +38,35 @@ export default function Navigation() {
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <FiBook className="h-8 w-8 text-blue-600" />
-            <span className="font-bold text-xl text-gray-800">BookStore</span>
+            <span className="font-bold text-xl text-gray-800">
+              Cửa hàng sách Tây Bắc
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               href="/store"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Browse Books
+              Cửa hàng
             </Link>
             <Link
-              href="/store/categories"
+              href="/store"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Categories
+              Danh mục
             </Link>
             <Link
-              href="/store/new-releases"
+              href="/store"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              New Releases
-            </Link>
-            <Link
-              href="/store/deals"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              Deals
+              Sách mới
             </Link>
           </nav>
 
-          {/* User Actions */}
           <div className="hidden md:flex items-center space-x-6">
-            {/* Cart */}
             <Link
               href="/store/cart"
               className="text-gray-600 hover:text-blue-600 transition-colors relative"
@@ -126,7 +118,6 @@ export default function Navigation() {
                   >
                     Đơn hàng
                   </Link>
-                  {/* Admin Dashboard - Only visible to admins */}
                   {session.user?.role === UserRole.ADMIN && (
                     <Link
                       href="/admin"
@@ -136,27 +127,24 @@ export default function Navigation() {
                     </Link>
                   )}
 
-                  {/* Employee Dashboard - Only visible to employees */}
                   {session.user?.role === UserRole.EMPLOYEE && (
                     <Link
                       href="/employee"
                       className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                     >
-                      Nhân viên
+                      Nhân viên Dashboard
                     </Link>
                   )}
 
-                  {/* Inventory Manager Dashboard - Only visible to inventory managers */}
                   {session.user?.role === UserRole.INVENTORY_MANAGER && (
                     <Link
                       href="/inventory"
                       className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                     >
-                      Quản lý kho
+                      Quản lý kho Dashboard
                     </Link>
                   )}
 
-                  {/* Sign Out */}
                   <button
                     onClick={handleSignOut}
                     className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
@@ -176,7 +164,6 @@ export default function Navigation() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden text-gray-600 hover:text-blue-600 transition-colors"
             onClick={toggleMenu}
@@ -189,7 +176,6 @@ export default function Navigation() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 border-t border-gray-200 py-4">
             <nav className="flex flex-col space-y-4">
@@ -222,7 +208,6 @@ export default function Navigation() {
                 Giảm giá
               </Link>
 
-              {/* Cart - Mobile */}
               <Link
                 href="/store/cart"
                 className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
@@ -232,7 +217,6 @@ export default function Navigation() {
                 <span>Giỏ hàng ({cartItemCount})</span>
               </Link>
 
-              {/* User Actions - Mobile */}
               {session ? (
                 <>
                   <Link
@@ -253,7 +237,6 @@ export default function Navigation() {
                     <span>Đơn hàng</span>
                   </Link>
 
-                  {/* Admin Dashboard - Only visible to admins */}
                   {session.user.role === UserRole.ADMIN && (
                     <Link
                       href="/admin"
@@ -265,7 +248,6 @@ export default function Navigation() {
                     </Link>
                   )}
 
-                  {/* Employee Dashboard - Only visible to employees */}
                   {session.user.role === UserRole.EMPLOYEE && (
                     <Link
                       href="/employee"
@@ -277,7 +259,6 @@ export default function Navigation() {
                     </Link>
                   )}
 
-                  {/* Inventory Manager Dashboard - Only visible to inventory managers */}
                   {session.user.role === UserRole.INVENTORY_MANAGER && (
                     <Link
                       href="/inventory"

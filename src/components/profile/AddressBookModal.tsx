@@ -25,7 +25,6 @@ interface Address {
   isDefault: boolean;
 }
 
-// Mock data - in a real app this would come from the user profile
 const mockAddresses: Address[] = [
   {
     id: "1",
@@ -91,7 +90,6 @@ export default function AddressBookModal({ onClose }: AddressBookModalProps) {
     setAddresses(updatedAddresses);
     setSuccess(`Default ${type} address updated successfully.`);
 
-    // In a real app, save this to the user profile
     setTimeout(() => setSuccess(""), 3000);
   };
 
@@ -99,7 +97,6 @@ export default function AddressBookModal({ onClose }: AddressBookModalProps) {
     const updatedAddresses = addresses.filter((address) => address.id !== id);
     setAddresses(updatedAddresses);
 
-    // Check if we need to set a new default address
     const shippingAddresses = updatedAddresses.filter(
       (addr) => addr.type === "shipping",
     );
@@ -123,7 +120,6 @@ export default function AddressBookModal({ onClose }: AddressBookModalProps) {
 
     setSuccess("Address deleted successfully.");
 
-    // In a real app, save this to the user profile
     setTimeout(() => setSuccess(""), 3000);
   };
 
@@ -132,7 +128,6 @@ export default function AddressBookModal({ onClose }: AddressBookModalProps) {
 
     if (!currentAddress) return;
 
-    // Validate the form
     if (
       !currentAddress.name ||
       !currentAddress.street ||
@@ -147,23 +142,18 @@ export default function AddressBookModal({ onClose }: AddressBookModalProps) {
     setIsSubmitting(true);
 
     try {
-      // Check if this is a new address or an existing one being edited
       if (addresses.some((addr) => addr.id === currentAddress.id)) {
-        // Update existing address
         const updatedAddresses = addresses.map((addr) =>
           addr.id === currentAddress.id ? currentAddress : addr,
         );
         setAddresses(updatedAddresses);
       } else {
-        // Add new address
         setAddresses([...addresses, currentAddress]);
       }
 
       setSuccess("Address saved successfully.");
       setIsEditing(false);
       setCurrentAddress(null);
-
-      // In a real app, save this to the user profile
     } catch (error) {
       setError("An error occurred while saving the address.");
       console.error("Error saving address:", error);

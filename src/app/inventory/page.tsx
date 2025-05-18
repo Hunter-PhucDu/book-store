@@ -21,12 +21,14 @@ import BatchUpdateModal from "@/components/inventory/BatchUpdateModal";
 import StockAlertsModal from "@/components/inventory/StockAlertsModal";
 import InventoryHistoryModal from "@/components/inventory/InventoryHistoryModal";
 import { Book } from "@/types/book";
+import { getInitialBooks } from "@/store/bookData";
 
 export default function InventoryManagementPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const books = useStore((state) => state.books);
+  const storeBooks = useStore((state) => state.books);
+  const [books, setBooks] = useState<Book[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,6 +40,35 @@ export default function InventoryManagementPage() {
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const defaultBooks = getInitialBooks();
+
+      const booksMap = new Map<string, Book>();
+
+      defaultBooks.forEach((book) => {
+        booksMap.set(book.id, book);
+      });
+
+      if (storeBooks && storeBooks.length > 0) {
+        storeBooks.forEach((book) => {
+          booksMap.set(book.id, book);
+        });
+      }
+
+      const combinedBooks = Array.from(booksMap.values());
+
+      combinedBooks.sort((a, b) => Number(a.id) - Number(b.id));
+
+      setBooks(combinedBooks);
+      console.log(
+        `Đã tải ${combinedBooks.length} sách (${defaultBooks.length} từ mặc định, ${storeBooks.length} từ localStorage)`,
+      );
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [storeBooks]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -54,7 +85,6 @@ export default function InventoryManagementPage() {
     }
   }, [status, session, router]);
 
-  // Filter books based on search query and stock filter
   const filteredBooks = books.filter((book) => {
     const matchesSearch =
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -70,7 +100,6 @@ export default function InventoryManagementPage() {
     return matchesSearch;
   });
 
-  // Sort books
   const sortedBooks = [...filteredBooks].sort((a, b) => {
     if (
       sortField === "price" ||
@@ -114,7 +143,6 @@ export default function InventoryManagementPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Page Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
@@ -164,7 +192,6 @@ export default function InventoryManagementPage() {
         </div>
       </div>
 
-      {/* Filters and Search */}
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-grow">
@@ -192,7 +219,6 @@ export default function InventoryManagementPage() {
           </select>
         </div>
 
-        {/* Action buttons */}
         <div className="flex flex-wrap gap-3 mt-4">
           <button
             onClick={() => router.push("/inventory/books")}
@@ -244,7 +270,6 @@ export default function InventoryManagementPage() {
         </div>
       </div>
 
-      {/* Inventory Stats */}
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
@@ -298,7 +323,6 @@ export default function InventoryManagementPage() {
         </div>
       </div>
 
-      {/* Books Table */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -412,7 +436,6 @@ export default function InventoryManagementPage() {
         </div>
       </div>
 
-      {/* Stock Update Modal */}
       {isModalOpen && currentBook && (
         <StockUpdateModal
           book={currentBook}
@@ -420,7 +443,6 @@ export default function InventoryManagementPage() {
         />
       )}
 
-      {/* Batch Update Modal */}
       {isBatchModalOpen && (
         <BatchUpdateModal
           books={books}
@@ -428,7 +450,6 @@ export default function InventoryManagementPage() {
         />
       )}
 
-      {/* Stock Alerts Modal */}
       {isAlertsModalOpen && (
         <StockAlertsModal
           books={books}
@@ -436,7 +457,6 @@ export default function InventoryManagementPage() {
         />
       )}
 
-      {/* Inventory History Modal */}
       {isHistoryModalOpen && (
         <InventoryHistoryModal
           books={books}

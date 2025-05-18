@@ -7,7 +7,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
 
-// Thành phần chứa form đăng nhập
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -53,7 +52,6 @@ function SignInForm() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
-      {/* Left side - Image */}
       <div className="hidden md:flex md:w-1/2 bg-blue-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-blue-700 opacity-90"></div>
         <div className="absolute inset-0">
@@ -133,7 +131,6 @@ function SignInForm() {
         </div>
       </div>
 
-      {/* Right side - Login form */}
       <div className="flex flex-col justify-center w-full md:w-1/2 p-6 sm:p-12 lg:px-20">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Link href="/" className="flex justify-center mb-5">
@@ -163,7 +160,6 @@ function SignInForm() {
           </p>
         </div>
 
-        {/* Success message */}
         {registered && (
           <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div className="rounded-md bg-green-50 p-4">
@@ -192,7 +188,6 @@ function SignInForm() {
           </div>
         )}
 
-        {/* Error messages */}
         {(error || errorMessage) && (
           <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div className="rounded-md bg-red-50 p-4">
@@ -347,7 +342,6 @@ function SignInForm() {
   );
 }
 
-// Thành phần chính với Suspense Boundary
 export default function SignIn() {
   return (
     <Suspense fallback={<div>Loading...</div>}>

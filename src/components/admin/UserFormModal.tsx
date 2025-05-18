@@ -160,12 +160,9 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  // State to manage success message
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-  // Create a handleClose function that only closes the modal without showing success message
   const handleClose = () => {
-    // When manually closing, don't show success message
     setShowSuccessMessage(false);
     onClose();
   };
@@ -178,24 +175,20 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
     setIsSubmitting(true);
 
     try {
-      // Define role explicitly to avoid any type issues
       const selectedRole = formData.role;
       console.log("Selected role before preparing data:", selectedRole);
 
-      // Prepare user data with explicit role assignment
       const userData: Record<string, unknown> = {
         name: formData.name,
         email: formData.email,
-        role: selectedRole, // Explicitly set from formData
-        avatar: formData.avatar, // Use default avatar
+        role: selectedRole,
+        avatar: formData.avatar,
       };
 
-      // Add password only if provided (or new user)
       if (!user || (user && formData.password)) {
         userData.password = formData.password;
       }
 
-      // Add role-specific fields based on the selected role
       if (
         selectedRole === UserRole.EMPLOYEE ||
         selectedRole === UserRole.INVENTORY_MANAGER
@@ -218,39 +211,31 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
         console.log("Adding CUSTOMER specific fields");
       }
 
-      // Final check of the role before saving
       console.log("Final userData.role before save:", userData.role);
 
       if (user) {
-        // Update existing user
         const updatedUser = {
           ...user,
           ...userData,
-          role: selectedRole, // Ensure role is explicitly set
+          role: selectedRole,
         };
         console.log("Updating user with role:", updatedUser.role);
         updateUser(updatedUser);
       } else {
-        // Add new user
         console.log("Adding new user with role:", userData.role);
         addUser(userData as any);
       }
 
-      // Show success message only when form is successfully submitted
       setShowSuccessMessage(true);
 
-      // Ensure store has been updated before closing modal
       setTimeout(() => {
-        // Force a refresh of the store subscribers
         const currentUsers = useStore.getState().users;
         console.log("User count before modal close:", currentUsers.length);
 
-        // Close the modal với tham số success=true
         onClose(true);
       }, 500);
     } catch (error) {
       console.error("Error saving user:", error);
-      // Nếu có lỗi, đóng modal mà không truyền tham số success
       onClose();
     } finally {
       setIsSubmitting(false);
@@ -392,8 +377,6 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               </select>
             </div>
 
-            {/* Avatar is set to default and not configurable in the form */}
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {user ? "Mật khẩu mới (để trống nếu không đổi)" : "Mật khẩu"}
@@ -412,7 +395,6 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               )}
             </div>
 
-            {/* Role-specific fields */}
             {(formData.role === UserRole.EMPLOYEE ||
               formData.role === UserRole.INVENTORY_MANAGER) && (
               <>

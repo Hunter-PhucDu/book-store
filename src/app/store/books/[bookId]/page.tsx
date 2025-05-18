@@ -15,10 +15,7 @@ import BookCard from "@/components/BookCard";
 import BookImage from "@/components/BookImage";
 import { Book } from "@/types/book";
 import { initialBooks } from "@/store/bookData";
-
-const mockAddToCart = (bookId: string, quantity: number) => {
-  console.log(`Added book ${bookId} with quantity ${quantity} to cart`);
-};
+import { useStore } from "@/store/index";
 
 export default function BookDetailsPage() {
   const params = useParams();
@@ -28,6 +25,8 @@ export default function BookDetailsPage() {
   const [showAddedToCart, setShowAddedToCart] = useState(false);
 
   const books = initialBooks;
+
+  const addToCart = useStore((state) => state.addToCart);
 
   const book = useMemo(
     () => books.find((b: Book) => b.id === bookId),
@@ -65,7 +64,7 @@ export default function BookDetailsPage() {
   }
 
   const handleAddToCart = () => {
-    mockAddToCart(book.id, quantity);
+    addToCart(book.id, quantity);
     setShowAddedToCart(true);
     setTimeout(() => setShowAddedToCart(false), 3000);
   };
@@ -79,7 +78,6 @@ export default function BookDetailsPage() {
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Book Image */}
           <div className="flex justify-center md:justify-start">
             <div className="rounded-lg shadow-sm hover:shadow-2xl transition-shadow duration-500 ease-out">
               <BookImage
@@ -130,7 +128,6 @@ export default function BookDetailsPage() {
               </button>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={handleAddToCart}

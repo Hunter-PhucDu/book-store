@@ -30,7 +30,6 @@ export default function AccountPage() {
     if (status === "unauthenticated") {
       router.push("/signin?callbackUrl=/account");
     } else if (status === "authenticated" && session?.user?.id) {
-      // Lấy số lượng đơn hàng của người dùng
       const fetchedOrders = getOrdersByUserId(session.user.id);
       setUserOrders(fetchedOrders.length);
       setIsLoading(false);
@@ -84,7 +83,6 @@ export default function AccountPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Đơn hàng */}
             <Link href="/account/orders" className="group">
               <div className="bg-white rounded-lg shadow-md p-6 h-full transform transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
                 <div className="flex items-center mb-4">
@@ -107,7 +105,6 @@ export default function AccountPage() {
               </div>
             </Link>
 
-            {/* Sản phẩm yêu thích */}
             <Link href="/account/wishlist" className="group">
               <div className="bg-white rounded-lg shadow-md p-6 h-full transform transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
                 <div className="flex items-center mb-4">
@@ -130,7 +127,6 @@ export default function AccountPage() {
               </div>
             </Link>
 
-            {/* Địa chỉ */}
             <Link href="/account/addresses" className="group">
               <div className="bg-white rounded-lg shadow-md p-6 h-full transform transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
                 <div className="flex items-center mb-4">
@@ -153,7 +149,6 @@ export default function AccountPage() {
               </div>
             </Link>
 
-            {/* Phương thức thanh toán */}
             <Link href="/account/payment-methods" className="group">
               <div className="bg-white rounded-lg shadow-md p-6 h-full transform transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
                 <div className="flex items-center mb-4">
@@ -178,7 +173,6 @@ export default function AccountPage() {
               </div>
             </Link>
 
-            {/* Thông tin cá nhân */}
             <Link href="/account/profile" className="group">
               <div className="bg-white rounded-lg shadow-md p-6 h-full transform transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
                 <div className="flex items-center mb-4">
@@ -201,7 +195,6 @@ export default function AccountPage() {
               </div>
             </Link>
 
-            {/* Bảo mật */}
             <Link href="/account/security" className="group">
               <div className="bg-white rounded-lg shadow-md p-6 h-full transform transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
                 <div className="flex items-center mb-4">
@@ -227,7 +220,6 @@ export default function AccountPage() {
             </Link>
           </div>
 
-          {/* Đăng xuất */}
           <div className="mt-8">
             <button className="w-full md:w-auto px-6 py-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
               <FiLogOut className="h-5 w-5 text-gray-600" />

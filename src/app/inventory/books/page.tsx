@@ -117,17 +117,14 @@ export default function InventoryBooksPage() {
   }, [status, session, router]);
 
   useEffect(() => {
-    // Load dữ liệu từ bookData khi component mount
     const initialBooks = getInitialBooks();
-    // Chuyển đổi từ Book sang BookWithCategories
     const booksWithCategories = initialBooks.map((book) => ({
       ...book,
-      categories: [book.category], // Chuyển category thành mảng categories
+      categories: [book.category],
     }));
     setBooks(booksWithCategories);
   }, []);
 
-  // Lọc sách dựa trên tìm kiếm và các bộ lọc
   const filteredBooks = useMemo(() => {
     return books.filter((book) => {
       const matchesSearch =
@@ -151,7 +148,6 @@ export default function InventoryBooksPage() {
     });
   }, [books, searchQuery, selectedCategory, stockFilter]);
 
-  // Sắp xếp sách
   const sortedBooks = useMemo(() => {
     return [...filteredBooks].sort((a, b) => {
       if (
@@ -183,7 +179,6 @@ export default function InventoryBooksPage() {
     setSelectedBook(book);
   };
 
-  // Component để hiển thị bìa sách
   const BookCoverComponent = ({
     book,
     width,
@@ -207,7 +202,6 @@ export default function InventoryBooksPage() {
     />
   );
 
-  // Reset form data when adding a new book
   const handleAddBookClick = () => {
     setBookFormData({
       title: "",
@@ -223,7 +217,6 @@ export default function InventoryBooksPage() {
     setIsAddBookModalOpen(true);
   };
 
-  // Populate form data when editing a book
   const handleEditBookClick = (book: BookWithCategories) => {
     setBookFormData({
       title: book.title,
@@ -240,7 +233,6 @@ export default function InventoryBooksPage() {
     setIsEditBookModalOpen(true);
   };
 
-  // Handle form field changes
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -260,12 +252,11 @@ export default function InventoryBooksPage() {
     }
   };
 
-  // Handle book submission (add new)
   const handleAddBookSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newBook: BookWithCategories = {
       ...bookFormData,
-      id: Math.random().toString(36).substr(2, 9), // Tạo ID ngẫu nhiên
+      id: Math.random().toString(36).substr(2, 9),
       category: bookFormData.categories[0] || "",
       categories: bookFormData.categories,
     };
@@ -273,7 +264,6 @@ export default function InventoryBooksPage() {
     setIsAddBookModalOpen(false);
   };
 
-  // Handle book update
   const handleEditBookSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedBook) {
@@ -293,7 +283,6 @@ export default function InventoryBooksPage() {
     }
   };
 
-  // Handle book deletion
   const handleDeleteBook = () => {
     if (selectedBook) {
       setBooks((prevBooks) =>
@@ -317,7 +306,6 @@ export default function InventoryBooksPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Page Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center">
@@ -345,7 +333,6 @@ export default function InventoryBooksPage() {
           </button>
         </div>
       </div>
-      {/* Thống kê sách */}
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
@@ -412,7 +399,6 @@ export default function InventoryBooksPage() {
           </div>
         </div>
       </div>
-      {/* Filters and Search */}
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="relative flex-grow">
@@ -458,7 +444,6 @@ export default function InventoryBooksPage() {
           </div>
         </div>
 
-        {/* Sorting options */}
         <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center space-x-4">
@@ -726,7 +711,6 @@ export default function InventoryBooksPage() {
           )}
         </div>
       </div>
-      {/* Book Detail Modal */}
       {selectedBook && (
         <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
           <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -857,7 +841,6 @@ export default function InventoryBooksPage() {
                     <button
                       className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
                       onClick={() => {
-                        // Hiển thị form cập nhật số lượng kho
                         const newStock = prompt(
                           `Nhập số lượng mới cho sách "${selectedBook.title}":`,
                           String(selectedBook.stock),
@@ -898,8 +881,7 @@ export default function InventoryBooksPage() {
             </div>
           </div>
         </div>
-      )}
-      {/* Add Book Modal */}{" "}
+      )}{" "}
       {isAddBookModalOpen && (
         <div className="fixed inset-0 bg-gray-900/25 bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
@@ -1160,7 +1142,6 @@ export default function InventoryBooksPage() {
           </div>
         </div>
       )}
-      {/* Edit Book Modal */}
       {isEditBookModalOpen && selectedBook && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
@@ -1421,7 +1402,6 @@ export default function InventoryBooksPage() {
           </div>
         </div>
       )}
-      {/* Delete Confirmation Modal */}
       {isDeleteConfirmOpen && selectedBook && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">

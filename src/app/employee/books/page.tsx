@@ -21,7 +21,6 @@ export default function EmployeeBooksManagement() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Thay đổi từ useStore sang useState để sử dụng dữ liệu từ bookData
   const [books, setBooks] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,7 +37,6 @@ export default function EmployeeBooksManagement() {
       if (session?.user?.role !== UserRole.EMPLOYEE) {
         router.push("/");
       } else {
-        // Load dữ liệu từ bookData
         const initialBooks = getInitialBooks();
         setBooks(initialBooks);
         setIsLoading(false);
@@ -46,17 +44,14 @@ export default function EmployeeBooksManagement() {
     }
   }, [status, session, router]);
 
-  // Lấy danh sách các danh mục sách duy nhất
   const categories = useMemo(() => {
     const uniqueCategories = [...new Set(books.map((book) => book.category))];
     return ["all", ...uniqueCategories.sort((a, b) => a.localeCompare(b))];
   }, [books]);
 
-  // Lọc và sắp xếp sách
   const filteredBooks = useMemo(() => {
     let results = [...books];
 
-    // Lọc theo tên, tác giả, mô tả
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       results = results.filter(
@@ -68,17 +63,14 @@ export default function EmployeeBooksManagement() {
       );
     }
 
-    // Lọc theo danh mục
     if (selectedCategory !== "all") {
       results = results.filter((book) => book.category === selectedCategory);
     }
 
-    // Lọc sách có số lượng thấp
     if (lowStockOnly) {
       results = results.filter((book) => book.stock <= 10);
     }
 
-    // Sắp xếp
     results.sort((a, b) => {
       if (
         sortField === "price" ||
@@ -106,12 +98,10 @@ export default function EmployeeBooksManagement() {
     sortDirection,
   ]);
 
-  // Chi tiết sách được chọn
   const selectedBook = useMemo(() => {
     return books.find((book) => book.id === viewBookId);
   }, [books, viewBookId]);
 
-  // Xử lý sắp xếp
   const handleSort = (field: keyof Book) => {
     if (field === sortField) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -134,7 +124,6 @@ export default function EmployeeBooksManagement() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center">
@@ -151,12 +140,9 @@ export default function EmployeeBooksManagement() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* Search */}
             <div className="flex-grow relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <FiSearch className="text-gray-400" />
@@ -171,7 +157,6 @@ export default function EmployeeBooksManagement() {
               />
             </div>
 
-            {/* Category Filter */}
             <div className="sm:w-64">
               <select
                 value={selectedCategory}
@@ -187,7 +172,6 @@ export default function EmployeeBooksManagement() {
               </select>
             </div>
 
-            {/* Low Stock Filter */}
             <div className="flex items-center">
               <label className="inline-flex items-center cursor-pointer">
                 <input
@@ -206,7 +190,6 @@ export default function EmployeeBooksManagement() {
           </div>
         </div>
 
-        {/* Books Table */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -398,7 +381,6 @@ export default function EmployeeBooksManagement() {
           </div>
         </div>
 
-        {/* Book Details Modal */}
         {selectedBook && (
           <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
             <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -417,7 +399,6 @@ export default function EmployeeBooksManagement() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Book Cover */}
                   <div className="md:col-span-1 flex justify-center">
                     <div className="relative h-60 w-48">
                       <Image
@@ -437,7 +418,6 @@ export default function EmployeeBooksManagement() {
                     </div>
                   </div>
 
-                  {/* Book Details */}
                   <div className="md:col-span-2">
                     <h3 className="text-xl font-bold text-gray-800 mb-2">
                       {selectedBook.title}

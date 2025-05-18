@@ -19,7 +19,7 @@ import Image from "next/image";
 
 export default function EmployeeManagementPage() {
   const { data: session, status } = useSession();
-  const router = useRouter(); // Lấy users và deleteUser từ store
+  const router = useRouter();
   const users = useStore((state) => state.users);
   const deleteUser = useStore((state) => state.deleteUser);
 
@@ -32,7 +32,7 @@ export default function EmployeeManagementPage() {
   );
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState(""); // Lấy danh sách nhân viên từ users - với dependency array tốt hơn để đảm bảo cập nhật khi users thay đổi
+  const [notificationMessage, setNotificationMessage] = useState("");
   const staffMembers = useMemo(() => {
     console.log("Recalculating staff members from users:", users);
     return users.filter(
@@ -138,9 +138,7 @@ export default function EmployeeManagementPage() {
     }
   };
 
-  // Hàm xử lý khi đóng modal
   const handleUserFormClose = (success?: boolean) => {
-    // Chỉ hiển thị thông báo thành công nếu tham số success là true
     if (success) {
       const action = selectedUser ? "update" : "add";
       setNotificationMessage(
@@ -159,7 +157,6 @@ export default function EmployeeManagementPage() {
       }, 3000);
     }
 
-    // Đóng modal trong mọi trường hợp
     setIsUserFormOpen(false);
   };
 
@@ -241,7 +238,6 @@ export default function EmployeeManagementPage() {
           </div>
         </div>
       </div>
-      {/* Employee Stats */}
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg shadow p-4">
@@ -273,7 +269,6 @@ export default function EmployeeManagementPage() {
           </div>
         </div>
       </div>
-      {/* Employees Table */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -295,7 +290,6 @@ export default function EmployeeManagementPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Thâm niên
                   </th>
-                  {/* Only show salary to admin */}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Lương
                   </th>
@@ -419,7 +413,6 @@ export default function EmployeeManagementPage() {
           </div>
         </div>
       </div>{" "}
-      {/* Employee Form Modal */}{" "}
       {isUserFormOpen && (
         <UserFormModal user={selectedUser} onClose={handleUserFormClose} />
       )}

@@ -18,13 +18,7 @@ import {
 import MainLayout from "@/components/layout/MainLayout";
 import { initialBooks } from "@/store/bookData";
 
-// Mock data for wishlist
-// In a real application, this would be stored in the database and retrieved based on the user ID
-const mockWishlist = [
-  "1",
-  "5",
-  "12", // Book IDs from bookData
-];
+const mockWishlist = ["1", "5", "12"];
 
 export default function WishlistPage() {
   const { status } = useSession();
@@ -50,12 +44,9 @@ export default function WishlistPage() {
   };
 
   const handleAddToCart = (bookId: string) => {
-    // In a real app, this would add the book to the cart
     console.log(`Added book ${bookId} to cart`);
-    // Could also remove from wishlist after adding to cart if desired
   };
 
-  // Filter wishlist based on search query
   const filteredWishlist = wishlistBooks.filter(
     (book) =>
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -161,7 +152,6 @@ export default function WishlistPage() {
                       key={book.id}
                       className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden relative group"
                     >
-                      {/* Wishlist and cart buttons */}
                       <div className="absolute top-2 right-2 flex flex-col gap-2 z-10">
                         <button
                           onClick={() => handleRemoveFromWishlist(book.id)}
@@ -179,7 +169,6 @@ export default function WishlistPage() {
                         </button>
                       </div>
 
-                      {/* Book cover */}
                       <Link href={`/store/books/${book.id}`}>
                         <div className="aspect-[2/3] relative overflow-hidden">
                           <Image
@@ -195,7 +184,6 @@ export default function WishlistPage() {
                         </div>
                       </Link>
 
-                      {/* Book details */}
                       <div className="p-4">
                         <Link
                           href={`/store/books/${book.id}`}

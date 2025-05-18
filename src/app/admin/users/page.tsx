@@ -44,7 +44,6 @@ export default function CustomerManagementPage() {
     return matchesSearch;
   });
 
-  // Group customers by registration date (month/year)
   const customersByMonth = filteredCustomers.reduce(
     (acc, customer) => {
       const date = new Date(customer.createdAt);
@@ -60,7 +59,6 @@ export default function CustomerManagementPage() {
     {} as Record<string, User[]>,
   );
 
-  // Sort the keys (months) in descending order
   const sortedMonths = Object.keys(customersByMonth).sort((a, b) => {
     const [monthA, yearA] = a.split("/").map(Number);
     const [monthB, yearB] = b.split("/").map(Number);
@@ -82,7 +80,6 @@ export default function CustomerManagementPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Page Header */}
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row md:justify-between md:items-center">
           <div className="flex items-center mb-4 md:mb-0">
@@ -112,7 +109,6 @@ export default function CustomerManagementPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg shadow p-4">
@@ -185,7 +181,6 @@ export default function CustomerManagementPage() {
         </div>
       </div>
 
-      {/* Search */}
       <div className="container mx-auto px-4 py-2">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-grow">
@@ -201,7 +196,6 @@ export default function CustomerManagementPage() {
         </div>
       </div>
 
-      {/* Customers List */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white p-4 mb-4 rounded-lg shadow-sm">
           <div className="text-gray-600">
