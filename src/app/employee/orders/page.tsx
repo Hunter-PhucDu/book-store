@@ -11,6 +11,7 @@ import {
   FiX,
   FiEye,
   FiTruck,
+  FiArrowLeft,
 } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { UserRole } from "@/types/user";
@@ -165,14 +166,29 @@ export default function OrdersManagementPage() {
     <div className="min-h-screen bg-gray-100">
       {/* Page Header */}
       <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">Quản lý đơn hàng</h1>
-          <button
-            onClick={exportOrdersToCSV}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
-          >
-            <FiDownload className="mr-2" /> Xuất đơn hàng
-          </button>
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <button
+                onClick={() => router.push("/employee")}
+                className="mr-4 flex items-center text-gray-600 hover:text-blue-600"
+                aria-label="Quay lại Dashboard"
+              >
+                <FiArrowLeft className="h-5 w-5 mr-1" />
+                <span>Quay lại</span>
+              </button>
+              <h1 className="text-3xl font-bold text-gray-800">
+                Quản lý đơn hàng
+              </h1>
+            </div>
+            <button
+              onClick={exportOrdersToCSV}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+              title="Xuất danh sách đơn hàng"
+            >
+              <FiDownload className="mr-2" /> Xuất đơn hàng
+            </button>
+          </div>
         </div>
       </div>
 
@@ -196,6 +212,8 @@ export default function OrdersManagementPage() {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 border rounded-lg min-w-[180px]"
+              title="Lọc theo trạng thái đơn hàng"
+              aria-label="Lọc theo trạng thái đơn hàng"
             >
               <option value="all">Tất cả trạng thái</option>
               <option value="PENDING">Chờ xử lý</option>
@@ -441,11 +459,11 @@ export default function OrdersManagementPage() {
 
       {/* Order Details Modal */}
       {isDetailsModalOpen && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto py-10">
+        <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
           <div className="bg-white rounded-lg w-full max-w-4xl mx-4">
             <div className="flex justify-between items-center p-6 border-b">
               <h2 className="text-xl font-bold text-gray-800">
-                Order Details - {selectedOrder.id}
+                Chi tiết đơn hàng - {selectedOrder.id}
               </h2>
               <button
                 onClick={() => setIsDetailsModalOpen(false)}
@@ -460,11 +478,11 @@ export default function OrdersManagementPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div className="border rounded-lg p-4">
                   <h3 className="font-medium text-gray-700 mb-2">
-                    Order Information
+                    Thông tin đơn hàng
                   </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Status:</span>
+                      <span className="text-gray-500">Trạng thái:</span>
                       <span
                         className={`font-medium ${
                           selectedOrder.status === OrderStatus.DELIVERED
@@ -482,25 +500,29 @@ export default function OrdersManagementPage() {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Created:</span>
+                      <span className="text-gray-500">Ngày tạo:</span>
                       <span className="font-medium">
                         {new Date(selectedOrder.createdAt).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Last Updated:</span>
+                      <span className="text-gray-500">Ngày cập nhật:</span>
                       <span className="font-medium">
                         {new Date(selectedOrder.updatedAt).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Payment Method:</span>
+                      <span className="text-gray-500">
+                        Phương thức thanh toán:
+                      </span>
                       <span className="font-medium">
                         {selectedOrder.payment.method}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Payment Status:</span>
+                      <span className="text-gray-500">
+                        Trạng thái thanh toán:
+                      </span>
                       <span className="font-medium">
                         {selectedOrder.payment.status}
                       </span>
@@ -510,11 +532,11 @@ export default function OrdersManagementPage() {
 
                 <div className="border rounded-lg p-4">
                   <h3 className="font-medium text-gray-700 mb-2">
-                    Customer Information
+                    Thông tin khách hàng
                   </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Name:</span>
+                      <span className="text-gray-500">Tên:</span>
                       <span className="font-medium">
                         {selectedOrder.shippingAddress.fullName}
                       </span>
@@ -527,7 +549,7 @@ export default function OrdersManagementPage() {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Phone:</span>
+                      <span className="text-gray-500">Số điện thoại:</span>
                       <span className="font-medium">
                         {selectedOrder.shippingAddress.phoneNumber}
                       </span>
@@ -537,7 +559,7 @@ export default function OrdersManagementPage() {
 
                 <div className="border rounded-lg p-4">
                   <h3 className="font-medium text-gray-700 mb-2">
-                    Shipping Information
+                    Thông tin giao hàng
                   </h3>
                   <div className="space-y-1 text-sm">
                     <div className="text-gray-800 font-medium">
@@ -558,14 +580,14 @@ export default function OrdersManagementPage() {
                     </div>
                     <div className="mt-2">
                       <span className="font-medium text-gray-500">
-                        Shipping Method:
+                        Phương thức giao hàng:
                       </span>{" "}
                       {selectedOrder.shippingMethod}
                     </div>
                     {selectedOrder.trackingNumber && (
                       <div className="mt-1">
                         <span className="font-medium text-gray-500">
-                          Tracking Number:
+                          Mã vận đơn:
                         </span>{" "}
                         {selectedOrder.trackingNumber}
                       </div>
@@ -577,7 +599,7 @@ export default function OrdersManagementPage() {
               {/* Update Status */}
               <div className="mb-6 border rounded-lg p-4">
                 <h3 className="font-medium text-gray-700 mb-2">
-                  Update Order Status
+                  Cập nhật trạng thái đơn hàng
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -586,7 +608,7 @@ export default function OrdersManagementPage() {
                     }
                     className={`px-3 py-1 text-xs rounded-full ${selectedOrder.status === OrderStatus.PENDING ? "bg-gray-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"}`}
                   >
-                    Pending
+                    Chờ xử lý
                   </button>
                   <button
                     onClick={() =>
@@ -597,7 +619,7 @@ export default function OrdersManagementPage() {
                     }
                     className={`px-3 py-1 text-xs rounded-full ${selectedOrder.status === OrderStatus.PROCESSING ? "bg-yellow-600 text-white" : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"}`}
                   >
-                    Processing
+                    Đang xử lý
                   </button>
                   <button
                     onClick={() =>
@@ -605,7 +627,7 @@ export default function OrdersManagementPage() {
                     }
                     className={`px-3 py-1 text-xs rounded-full ${selectedOrder.status === OrderStatus.SHIPPED ? "bg-blue-600 text-white" : "bg-blue-100 text-blue-800 hover:bg-blue-200"}`}
                   >
-                    Shipped
+                    Đã giao hàng
                   </button>
                   <button
                     onClick={() =>
@@ -616,7 +638,7 @@ export default function OrdersManagementPage() {
                     }
                     className={`px-3 py-1 text-xs rounded-full ${selectedOrder.status === OrderStatus.DELIVERED ? "bg-green-600 text-white" : "bg-green-100 text-green-800 hover:bg-green-200"}`}
                   >
-                    Delivered
+                    Đã nhận hàng
                   </button>
                   <button
                     onClick={() =>
@@ -627,31 +649,31 @@ export default function OrdersManagementPage() {
                     }
                     className={`px-3 py-1 text-xs rounded-full ${selectedOrder.status === OrderStatus.CANCELLED ? "bg-red-600 text-white" : "bg-red-100 text-red-800 hover:bg-red-200"}`}
                   >
-                    Cancelled
+                    Đã hủy
                   </button>
                 </div>
               </div>
 
               {/* Order Items */}
-              <div className="border rounded-lg overflow-hidden">
+              <div className="border rounded-lg overflow-hidden ">
                 <h3 className="font-medium text-gray-700 p-4 bg-gray-50 border-b">
-                  Order Items
+                  Sản phẩm trong đơn hàng
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Item
+                          Sản phẩm
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Unit Price
+                          Đơn giá
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Quantity
+                          Số lượng
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Total
+                          Tổng tiền
                         </th>
                       </tr>
                     </thead>
@@ -679,7 +701,7 @@ export default function OrdersManagementPage() {
                           colSpan={3}
                           className="px-6 py-3 text-sm font-medium text-gray-900 text-right"
                         >
-                          Subtotal:
+                          Tổng tiền:
                         </td>
                         <td className="px-6 py-3 text-sm font-medium text-gray-900">
                           ${selectedOrder.subtotal.toFixed(2)}
@@ -690,7 +712,7 @@ export default function OrdersManagementPage() {
                           colSpan={3}
                           className="px-6 py-3 text-sm font-medium text-gray-900 text-right"
                         >
-                          Tax:
+                          Thuế:
                         </td>
                         <td className="px-6 py-3 text-sm font-medium text-gray-900">
                           ${selectedOrder.tax.toFixed(2)}
@@ -701,7 +723,7 @@ export default function OrdersManagementPage() {
                           colSpan={3}
                           className="px-6 py-3 text-sm font-medium text-gray-900 text-right"
                         >
-                          Shipping:
+                          Phí giao hàng:
                         </td>
                         <td className="px-6 py-3 text-sm font-medium text-gray-900">
                           ${selectedOrder.shippingCost.toFixed(2)}
@@ -713,7 +735,7 @@ export default function OrdersManagementPage() {
                             colSpan={3}
                             className="px-6 py-3 text-sm font-medium text-gray-900 text-right"
                           >
-                            Discount:
+                            Giảm giá:
                           </td>
                           <td className="px-6 py-3 text-sm font-medium text-green-600">
                             -${selectedOrder.discount.toFixed(2)}
@@ -725,7 +747,7 @@ export default function OrdersManagementPage() {
                           colSpan={3}
                           className="px-6 py-3 text-base font-bold text-gray-900 text-right"
                         >
-                          Total:
+                          Tổng tiền:
                         </td>
                         <td className="px-6 py-3 text-base font-bold text-gray-900">
                           ${selectedOrder.total.toFixed(2)}
@@ -742,7 +764,7 @@ export default function OrdersManagementPage() {
                 onClick={() => setIsDetailsModalOpen(false)}
                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
               >
-                Close
+                Đóng
               </button>
             </div>
           </div>

@@ -20,6 +20,7 @@ import { UserRole } from "@/types/user";
 import { Book } from "@/types/book";
 import Image from "next/image";
 import Link from "next/link";
+import { getInitialBooks } from "@/store/bookData";
 
 // Interface mở rộng cho Book để hỗ trợ danh mục
 interface BookWithCategories extends Book {
@@ -51,7 +52,7 @@ const CategoryBadges = ({ categoryIds }: { categoryIds: string[] }) => {
 
   return (
     <div className="flex flex-wrap gap-1">
-      {categoryIds && categoryIds.length > 0 ? (
+      {categoryIds && categoryIds.length > 0 && categories ? (
         categoryIds.map((catId) => {
           const category = categories.find((c) => c.id === catId);
           return category ? (
@@ -74,7 +75,7 @@ export default function InventoryBooksPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const books = useStore((state: any) => state.books) as BookWithCategories[];
+  const [books, setBooks] = useState<BookWithCategories[]>([]);
   const categories = useStore((state: any) => state.categories) as Category[];
   const updateBook = useStore((state: any) => state.updateBook);
   const addBook = useStore((state: any) => state.addBook);
@@ -120,6 +121,17 @@ export default function InventoryBooksPage() {
       }
     }
   }, [status, session, router]);
+
+  useEffect(() => {
+    // Load dữ liệu từ bookData khi component mount
+    const initialBooks = getInitialBooks();
+    // Chuyển đổi từ Book sang BookWithCategories
+    const booksWithCategories = initialBooks.map((book) => ({
+      ...book,
+      categories: [book.category], // Chuyển category thành mảng categories
+    }));
+    setBooks(booksWithCategories);
+  }, []);
 
   // Lọc sách dựa trên tìm kiếm và các bộ lọc
   const filteredBooks = useMemo(() => {
@@ -269,11 +281,13 @@ export default function InventoryBooksPage() {
   // Handle book submission (add new)
   const handleAddBookSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addBook({
+    const newBook: BookWithCategories = {
       ...bookFormData,
+      id: Math.random().toString(36).substr(2, 9), // Tạo ID ngẫu nhiên
       category: bookFormData.categories[0] || "",
       categories: bookFormData.categories,
-    });
+    };
+    setBooks((prevBooks) => [...prevBooks, newBook]);
     setIsAddBookModalOpen(false);
   };
 
@@ -281,12 +295,17 @@ export default function InventoryBooksPage() {
   const handleEditBookSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedBook) {
-      updateBook({
+      const updatedBook: BookWithCategories = {
         ...selectedBook,
         ...bookFormData,
         category: bookFormData.categories[0] || selectedBook.category,
         categories: bookFormData.categories,
-      });
+      };
+      setBooks((prevBooks) =>
+        prevBooks.map((book) =>
+          book.id === selectedBook.id ? updatedBook : book,
+        ),
+      );
       setIsEditBookModalOpen(false);
       setSelectedBook(null);
     }
@@ -295,7 +314,9 @@ export default function InventoryBooksPage() {
   // Handle book deletion
   const handleDeleteBook = () => {
     if (selectedBook) {
-      deleteBook(selectedBook.id);
+      setBooks((prevBooks) =>
+        prevBooks.filter((book) => book.id !== selectedBook.id),
+      );
       setIsDeleteConfirmOpen(false);
       setSelectedBook(null);
     }
@@ -303,7 +324,7 @@ export default function InventoryBooksPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
         <div className="text-center">
           <div className="spinner h-12 w-12 border-4 border-t-blue-500 border-r-transparent border-b-blue-500 border-l-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-600">Đang tải dữ liệu sách...</p>
@@ -342,7 +363,6 @@ export default function InventoryBooksPage() {
           </button>
         </div>
       </div>
-
       {/* Thống kê sách */}
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -410,7 +430,6 @@ export default function InventoryBooksPage() {
           </div>
         </div>
       </div>
-
       {/* Filters and Search */}
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -725,10 +744,9 @@ export default function InventoryBooksPage() {
           )}
         </div>
       </div>
-
       {/* Book Detail Modal */}
       {selectedBook && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
           <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-start">
@@ -899,10 +917,9 @@ export default function InventoryBooksPage() {
           </div>
         </div>
       )}
-
-      {/* Add Book Modal */}
+      {/* Add Book Modal */}{" "}
       {isAddBookModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900/25 bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
@@ -944,6 +961,7 @@ export default function InventoryBooksPage() {
                       onChange={handleInputChange}
                       required
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập tên sách"
                     />
                   </div>
 
@@ -958,6 +976,7 @@ export default function InventoryBooksPage() {
                       onChange={handleInputChange}
                       required
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập tên tác giả"
                     />
                   </div>
 
@@ -972,6 +991,7 @@ export default function InventoryBooksPage() {
                       onChange={handleInputChange}
                       required
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập mã ISBN"
                     />
                   </div>
 
@@ -985,6 +1005,7 @@ export default function InventoryBooksPage() {
                       value={bookFormData.coverImage}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập URL hình ảnh bìa sách"
                       placeholder="https://example.com/book-cover.jpg"
                     />
                   </div>
@@ -1002,6 +1023,7 @@ export default function InventoryBooksPage() {
                       min="1900"
                       max={new Date().getFullYear()}
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập năm xuất bản"
                     />
                   </div>
 
@@ -1018,6 +1040,7 @@ export default function InventoryBooksPage() {
                       min="0"
                       step="1000"
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập giá sách"
                     />
                   </div>
 
@@ -1033,6 +1056,7 @@ export default function InventoryBooksPage() {
                       required
                       min="0"
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập số lượng trong kho"
                     />
                   </div>
 
@@ -1129,6 +1153,7 @@ export default function InventoryBooksPage() {
                       onChange={handleInputChange}
                       rows={4}
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập mô tả sách"
                     ></textarea>
                   </div>
                 </div>
@@ -1153,7 +1178,6 @@ export default function InventoryBooksPage() {
           </div>
         </div>
       )}
-
       {/* Edit Book Modal */}
       {isEditBookModalOpen && selectedBook && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1198,6 +1222,7 @@ export default function InventoryBooksPage() {
                       onChange={handleInputChange}
                       required
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập tên sách"
                     />
                   </div>
 
@@ -1212,6 +1237,7 @@ export default function InventoryBooksPage() {
                       onChange={handleInputChange}
                       required
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập tên tác giả"
                     />
                   </div>
 
@@ -1226,6 +1252,7 @@ export default function InventoryBooksPage() {
                       onChange={handleInputChange}
                       required
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập mã ISBN"
                     />
                   </div>
 
@@ -1239,6 +1266,7 @@ export default function InventoryBooksPage() {
                       value={bookFormData.coverImage}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập URL hình ảnh bìa sách"
                       placeholder="https://example.com/book-cover.jpg"
                     />
                   </div>
@@ -1256,6 +1284,7 @@ export default function InventoryBooksPage() {
                       min="1900"
                       max={new Date().getFullYear()}
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập năm xuất bản"
                     />
                   </div>
 
@@ -1272,6 +1301,7 @@ export default function InventoryBooksPage() {
                       min="0"
                       step="1000"
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập giá sách"
                     />
                   </div>
 
@@ -1287,6 +1317,7 @@ export default function InventoryBooksPage() {
                       required
                       min="0"
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập số lượng trong kho"
                     />
                   </div>
 
@@ -1383,6 +1414,7 @@ export default function InventoryBooksPage() {
                       onChange={handleInputChange}
                       rows={4}
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      title="Nhập mô tả sách"
                     ></textarea>
                   </div>
                 </div>
@@ -1407,7 +1439,6 @@ export default function InventoryBooksPage() {
           </div>
         </div>
       )}
-
       {/* Delete Confirmation Modal */}
       {isDeleteConfirmOpen && selectedBook && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

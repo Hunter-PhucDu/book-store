@@ -31,11 +31,11 @@ export default function StockAlertsModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
       <div className="bg-white rounded-lg w-full max-w-3xl">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">
-            Stock Alert Settings
+            Cài đặt cảnh báo tồn kho
           </h2>
           <button
             onClick={onClose}
@@ -49,12 +49,12 @@ export default function StockAlertsModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Alert Settings
+                Cài đặt cảnh báo
               </h3>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Low Stock Threshold
+                  Ngưỡng cảnh báo tồn kho thấp
                 </label>
                 <div className="flex items-center">
                   <input
@@ -64,13 +64,14 @@ export default function StockAlertsModal({
                     value={threshold}
                     onChange={(e) => setThreshold(parseInt(e.target.value))}
                     className="w-full mr-4"
+                    title="Ngưỡng cảnh báo tồn kho thấp"
                   />
                   <span className="w-8 text-center font-medium">
                     {threshold}
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-gray-500">
-                  Books with stock below this number will trigger alerts
+                  Sách có số lượng tồn kho dưới mức này sẽ kích hoạt cảnh báo
                 </p>
               </div>
 
@@ -87,7 +88,7 @@ export default function StockAlertsModal({
                     htmlFor="email-notifications"
                     className="ml-2 block text-sm text-gray-700"
                   >
-                    Email notifications
+                    Gửi email cảnh báo
                   </label>
                 </div>
 
@@ -105,7 +106,7 @@ export default function StockAlertsModal({
                     htmlFor="dashboard-notifications"
                     className="ml-2 block text-sm text-gray-700"
                   >
-                    Dashboard notifications
+                    Cảnh báo trên bảng điều khiển
                   </label>
                 </div>
 
@@ -121,7 +122,7 @@ export default function StockAlertsModal({
                     htmlFor="auto-reorder"
                     className="ml-2 block text-sm text-gray-700"
                   >
-                    Auto-reorder when stock is low
+                    Tự động đặt hàng khi tồn kho thấp
                   </label>
                 </div>
               </div>
@@ -130,10 +131,10 @@ export default function StockAlertsModal({
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-medium text-gray-900">
-                  Current Alerts
+                  Cảnh báo hiện tại
                 </h3>
                 <span className="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                  {lowStockBooks.length + outOfStockBooks.length} alerts
+                  {lowStockBooks.length + outOfStockBooks.length} cảnh báo
                 </span>
               </div>
 
@@ -144,7 +145,7 @@ export default function StockAlertsModal({
                       <div className="flex items-center">
                         <FiAlertTriangle className="text-red-600 mr-2" />
                         <h4 className="text-sm font-medium text-red-800">
-                          Out of Stock ({outOfStockBooks.length})
+                          Hết hàng ({outOfStockBooks.length})
                         </h4>
                       </div>
                       <ul className="mt-2 text-sm">
@@ -152,13 +153,13 @@ export default function StockAlertsModal({
                           <li key={book.id} className="py-1">
                             {book.title}{" "}
                             <span className="text-red-600 font-medium">
-                              ({book.stock} in stock)
+                              ({book.stock} trong kho)
                             </span>
                           </li>
                         ))}
                         {outOfStockBooks.length > 3 && (
                           <li className="py-1 text-gray-500">
-                            +{outOfStockBooks.length - 3} more books
+                            +{outOfStockBooks.length - 3} sách khác
                           </li>
                         )}
                       </ul>
@@ -170,7 +171,7 @@ export default function StockAlertsModal({
                       <div className="flex items-center">
                         <FiAlertTriangle className="text-yellow-600 mr-2" />
                         <h4 className="text-sm font-medium text-yellow-800">
-                          Low Stock ({lowStockBooks.length})
+                          Sắp hết hàng ({lowStockBooks.length})
                         </h4>
                       </div>
                       <ul className="mt-2 text-sm">
@@ -178,13 +179,13 @@ export default function StockAlertsModal({
                           <li key={book.id} className="py-1">
                             {book.title}{" "}
                             <span className="text-yellow-600 font-medium">
-                              ({book.stock} in stock)
+                              ({book.stock} trong kho)
                             </span>
                           </li>
                         ))}
                         {lowStockBooks.length > 3 && (
                           <li className="py-1 text-gray-500">
-                            +{lowStockBooks.length - 3} more books
+                            +{lowStockBooks.length - 3} sách khác
                           </li>
                         )}
                       </ul>
@@ -197,11 +198,11 @@ export default function StockAlertsModal({
                         <div className="flex items-center">
                           <FiAlertTriangle className="text-green-600 mr-2" />
                           <h4 className="text-sm font-medium text-green-800">
-                            No alerts
+                            Không có cảnh báo
                           </h4>
                         </div>
                         <p className="mt-2 text-sm text-green-600">
-                          All books have sufficient stock levels.
+                          Tất cả sách đều có tồn kho đủ.
                         </p>
                       </div>
                     )}
@@ -211,7 +212,7 @@ export default function StockAlertsModal({
               {(lowStockBooks.length > 0 || outOfStockBooks.length > 0) && (
                 <div className="mt-4 flex justify-end">
                   <button className="text-blue-600 hover:text-blue-500 text-sm font-medium flex items-center">
-                    <FiBell className="mr-1" /> Generate reorder report
+                    <FiBell className="mr-1" /> Tạo báo cáo đặt hàng lại
                   </button>
                 </div>
               )}
@@ -223,14 +224,14 @@ export default function StockAlertsModal({
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
             >
-              Cancel
+              Hủy
             </button>
             <button
               onClick={handleSaveSettings}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
             >
               <FiSettings className="mr-2" />
-              Save Settings
+              Lưu cài đặt
             </button>
           </div>
         </div>
