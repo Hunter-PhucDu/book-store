@@ -5,21 +5,16 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   FiSearch,
-  FiFilter,
-  FiBook,
   FiX,
   FiChevronDown,
   FiChevronUp,
-  FiEdit,
   FiEye,
   FiAlertCircle,
   FiArrowLeft,
 } from "react-icons/fi";
-import { useStore } from "@/store/index";
 import { UserRole } from "@/types/user";
 import { Book } from "@/types/book";
 import Image from "next/image";
-import Link from "next/link";
 import { getInitialBooks } from "@/store/bookData";
 
 export default function EmployeeBooksManagement() {

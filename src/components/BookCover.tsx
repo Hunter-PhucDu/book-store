@@ -13,7 +13,6 @@ export default function BookCover({
   alt,
   className = "bg-gray-100",
 }: BookCoverProps) {
-  // If src starts with /images/, ensure we have a fallback
   const imageSrc = src.startsWith("/images/")
     ? src
     : "/images/book-placeholder.jpg";

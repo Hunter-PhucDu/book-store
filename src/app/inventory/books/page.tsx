@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -19,21 +20,17 @@ import { useStore } from "@/store/index";
 import { UserRole } from "@/types/user";
 import { Book } from "@/types/book";
 import Image from "next/image";
-import Link from "next/link";
 import { getInitialBooks } from "@/store/bookData";
 
-// Interface mở rộng cho Book để hỗ trợ danh mục
 interface BookWithCategories extends Book {
   categories: string[];
 }
 
-// Interface cho Category
 interface Category {
   id: string;
   name: string;
 }
 
-// Interface mới cho dữ liệu form thêm/sửa sách
 interface BookFormData {
   title: string;
   author: string;
@@ -46,7 +43,6 @@ interface BookFormData {
   stock: number;
 }
 
-// Component hiển thị danh mục dạng thẻ
 const CategoryBadges = ({ categoryIds }: { categoryIds: string[] }) => {
   const categories = useStore((state: any) => state.categories) as Category[];
 
@@ -78,8 +74,6 @@ export default function InventoryBooksPage() {
   const [books, setBooks] = useState<BookWithCategories[]>([]);
   const categories = useStore((state: any) => state.categories) as Category[];
   const updateBook = useStore((state: any) => state.updateBook);
-  const addBook = useStore((state: any) => state.addBook);
-  const deleteBook = useStore((state: any) => state.deleteBook);
 
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -264,18 +258,6 @@ export default function InventoryBooksPage() {
         [name]: value,
       });
     }
-  };
-
-  // Handle category selection (multiple)
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value,
-    );
-    setBookFormData({
-      ...bookFormData,
-      categories: selectedOptions,
-    });
   };
 
   // Handle book submission (add new)
@@ -1447,8 +1429,8 @@ export default function InventoryBooksPage() {
               Xác nhận xóa sách
             </h2>
             <p className="text-gray-600 mb-6">
-              Bạn có chắc chắn muốn xóa sách "{selectedBook.title}"? Hành động
-              này không thể hoàn tác.
+              Bạn có chắc chắn muốn xóa sách &quot;{selectedBook.title}&quot;?
+              Hành động này không thể hoàn tác.
             </p>
             <div className="flex justify-end">
               <button

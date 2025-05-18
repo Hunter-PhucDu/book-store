@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
 
-export default function SignIn() {
+// Thành phần chứa form đăng nhập
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams?.get("callbackUrl") || "/";
@@ -343,5 +344,14 @@ export default function SignIn() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Thành phần chính với Suspense Boundary
+export default function SignIn() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   );
 }
