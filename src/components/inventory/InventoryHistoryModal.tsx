@@ -169,11 +169,11 @@ export default function InventoryHistoryModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
       <div className="bg-white rounded-lg w-full max-w-5xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">
-            Inventory Change History
+            Lịch sử thay đổi tồn kho
           </h2>
           <button
             onClick={onClose}
@@ -187,7 +187,7 @@ export default function InventoryHistoryModal({
           <div className="flex flex-wrap gap-4 mb-6 items-center">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Time Period
+                Khoảng thời gian
               </label>
               <div className="inline-flex shadow-sm rounded-md">
                 <button
@@ -198,7 +198,7 @@ export default function InventoryHistoryModal({
                   } border border-gray-300 rounded-l-md`}
                   onClick={() => setDateFilter("7days")}
                 >
-                  7 Days
+                  7 ngày
                 </button>
                 <button
                   className={`px-4 py-2 text-sm ${
@@ -208,7 +208,7 @@ export default function InventoryHistoryModal({
                   } border-t border-b border-gray-300`}
                   onClick={() => setDateFilter("30days")}
                 >
-                  30 Days
+                  30 ngày
                 </button>
                 <button
                   className={`px-4 py-2 text-sm ${
@@ -218,7 +218,7 @@ export default function InventoryHistoryModal({
                   } border-t border-b border-gray-300`}
                   onClick={() => setDateFilter("90days")}
                 >
-                  90 Days
+                  90 ngày
                 </button>
                 <button
                   className={`px-4 py-2 text-sm ${
@@ -228,7 +228,7 @@ export default function InventoryHistoryModal({
                   } border border-gray-300 rounded-r-md`}
                   onClick={() => setDateFilter("all")}
                 >
-                  All Time
+                  Tất cả
                 </button>
               </div>
             </div>
@@ -238,7 +238,7 @@ export default function InventoryHistoryModal({
                 htmlFor="book-filter"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Book
+                Sách
               </label>
               <select
                 id="book-filter"
@@ -246,7 +246,7 @@ export default function InventoryHistoryModal({
                 onChange={(e) => setBookFilter(e.target.value)}
                 className="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
               >
-                <option value="all">All Books</option>
+                <option value="all">Tất cả sách</option>
                 {books.map((book) => (
                   <option key={book.id} value={book.id}>
                     {book.title}
@@ -261,7 +261,7 @@ export default function InventoryHistoryModal({
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <FiDownload className="-ml-1 mr-2 h-5 w-5" />
-                Export to CSV
+                Xuất CSV
               </button>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function InventoryHistoryModal({
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("bookTitle")}
                   >
-                    Book
+                    Sách
                     {sortField === "bookTitle" &&
                       (sortDirection === "asc" ? (
                         <FiArrowUp className="inline-block ml-1" />
@@ -288,7 +288,7 @@ export default function InventoryHistoryModal({
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("change")}
                   >
-                    Stock Change
+                    Thay đổi tồn kho
                     {sortField === "change" &&
                       (sortDirection === "asc" ? (
                         <FiArrowUp className="inline-block ml-1" />
@@ -300,14 +300,14 @@ export default function InventoryHistoryModal({
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Stock Level
+                    Tồn kho
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("reason")}
                   >
-                    Reason
+                    Lý do
                     {sortField === "reason" &&
                       (sortDirection === "asc" ? (
                         <FiArrowUp className="inline-block ml-1" />
@@ -320,7 +320,7 @@ export default function InventoryHistoryModal({
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("timestamp")}
                   >
-                    Date
+                    Ngày
                     {sortField === "timestamp" &&
                       (sortDirection === "asc" ? (
                         <FiArrowUp className="inline-block ml-1" />
@@ -332,7 +332,7 @@ export default function InventoryHistoryModal({
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Updated By
+                    Người cập nhật
                   </th>
                 </tr>
               </thead>
@@ -380,7 +380,7 @@ export default function InventoryHistoryModal({
                       colSpan={6}
                       className="px-6 py-4 text-center text-sm text-gray-500"
                     >
-                      No inventory changes found matching your filters.
+                      Không có thay đổi tồn kho nào phù hợp với bộ lọc.
                     </td>
                   </tr>
                 )}
@@ -392,13 +392,13 @@ export default function InventoryHistoryModal({
         <div className="px-6 py-4 border-t">
           <div className="flex justify-between items-center">
             <div className="text-sm text-gray-500">
-              Showing {sortedHistory.length} inventory changes
+              Hiển thị {sortedHistory.length} thay đổi tồn kho
             </div>
             <button
               onClick={onClose}
               className="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              Close
+              Đóng
             </button>
           </div>
         </div>

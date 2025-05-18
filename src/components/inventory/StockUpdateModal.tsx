@@ -66,7 +66,7 @@ export default function StockUpdateModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
       <div className="bg-white rounded-lg w-full max-w-md">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">Update Stock</h2>
@@ -94,7 +94,9 @@ export default function StockUpdateModal({
               </h3>
               <p className="text-sm text-gray-500">{book.author}</p>
               <div className="mt-1">
-                <span className="text-sm text-gray-700">Current Stock: </span>
+                <span className="text-sm text-gray-700">
+                  Tồn kho hiện tại:{" "}
+                </span>
                 <span
                   className={`font-medium ${
                     book.stock > 10
@@ -120,7 +122,7 @@ export default function StockUpdateModal({
             {/* Operation selection */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Operation
+                Thao tác
               </label>
               <div className="flex space-x-4">
                 <label className="inline-flex items-center">
@@ -134,7 +136,7 @@ export default function StockUpdateModal({
                   />
                   <span className="ml-2">
                     <FiPlus className="inline mr-1 text-green-500" />
-                    Add Stock
+                    Nhập kho
                   </span>
                 </label>
                 <label className="inline-flex items-center">
@@ -148,7 +150,7 @@ export default function StockUpdateModal({
                   />
                   <span className="ml-2">
                     <FiMinus className="inline mr-1 text-red-500" />
-                    Remove Stock
+                    Xuất kho
                   </span>
                 </label>
               </div>
@@ -157,7 +159,7 @@ export default function StockUpdateModal({
             {/* Stock change amount */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Quantity to {operation === "add" ? "Add" : "Remove"}
+                Số lượng cần {operation === "add" ? "nhập" : "xuất"}
               </label>
               <input
                 type="number"
@@ -173,7 +175,7 @@ export default function StockUpdateModal({
             {/* New stock preview */}
             <div className="mb-4 p-3 bg-gray-50 rounded-md">
               <p className="text-sm text-gray-600">
-                New Stock Level:
+                Tồn kho mới:
                 <span className="ml-1 font-bold">
                   {operation === "add"
                     ? book.stock + stockChange
@@ -185,32 +187,33 @@ export default function StockUpdateModal({
             {/* Reason */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Reason
+                Lý do
               </label>
               <select
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-lg"
                 required
+                title="Lý do cập nhật tồn kho"
               >
-                <option value="">Select a reason...</option>
+                <option value="">Chọn lý do...</option>
                 {operation === "add" ? (
                   <>
-                    <option value="new-shipment">New Shipment</option>
+                    <option value="new-shipment">Nhập hàng mới</option>
                     <option value="inventory-correction">
-                      Inventory Correction
+                      Điều chỉnh tồn kho
                     </option>
-                    <option value="returned-items">Returned Items</option>
-                    <option value="other">Other</option>
+                    <option value="returned-items">Hàng trả về</option>
+                    <option value="other">Khác</option>
                   </>
                 ) : (
                   <>
-                    <option value="damaged">Damaged Books</option>
-                    <option value="quality-issues">Quality Issues</option>
+                    <option value="damaged">Sách hư hỏng</option>
+                    <option value="quality-issues">Lỗi chất lượng</option>
                     <option value="inventory-correction">
-                      Inventory Correction
+                      Điều chỉnh tồn kho
                     </option>
-                    <option value="other">Other</option>
+                    <option value="other">Khác</option>
                   </>
                 )}
               </select>
@@ -222,14 +225,14 @@ export default function StockUpdateModal({
                 onClick={onClose}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || stockChange <= 0 || !reason}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
               >
-                {isSubmitting ? "Updating..." : "Update Stock"}
+                {isSubmitting ? "Đang cập nhật..." : "Cập nhật tồn kho"}
               </button>
             </div>
           </form>

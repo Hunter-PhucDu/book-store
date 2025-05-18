@@ -99,7 +99,7 @@ export default function AdminBooksPage() {
           </div>
           <button
             onClick={handleAddNewBook}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
             aria-label="Thêm sách mới"
           >
             <FiPlus className="inline-block mr-1" /> Thêm sách mới

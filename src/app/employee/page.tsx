@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -7,11 +9,8 @@ import {
   FiPackage,
   FiTruck,
   FiClock,
-  FiCheckCircle,
-  FiAlertCircle,
   FiCalendar,
   FiUser,
-  FiBarChart2,
   FiTrendingUp,
   FiBook,
   FiShoppingCart,
@@ -114,15 +113,6 @@ export default function EmployeeDashboard() {
       return `${years} năm, ${months} tháng`;
     }
   };
-
-  // Dữ liệu giả cho đơn hàng
-  const fakeOrders = Array.from({ length: 20 }, (_, index) => ({
-    id: `order${index + 1}`,
-    userId: `user${(index % 5) + 1}`, // Giả định có 5 người dùng
-    createdAt: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(), // Ngày tạo đơn hàng
-    total: Math.floor(Math.random() * 100000) + 10000, // Tổng tiền ngẫu nhiên
-    status: index % 2 === 0 ? "DELIVERED" : "PROCESSING", // Trạng thái ngẫu nhiên
-  }));
 
   if (isLoading) {
     return (

@@ -12,14 +12,12 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl overflow-hidden flex flex-col transition-all duration-300 h-full border border-gray-100">
       <div className="relative">
-        {/* Category badge */}
         <div className="absolute top-2 left-2 z-10">
           <span className="bg-blue-600/90 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
             {book.category}
           </span>
         </div>
 
-        {/* Stock indicator */}
         {book.stock <= 5 && (
           <div className="absolute top-2 right-2 z-10">
             <span
@@ -34,7 +32,6 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
           </div>
         )}
 
-        {/* Book cover */}
         <div className="aspect-[2/3] w-full bg-gradient-to-b from-gray-100 to-gray-200 relative overflow-hidden">
           <Image
             src={book.coverImage}

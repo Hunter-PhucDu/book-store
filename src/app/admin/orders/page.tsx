@@ -11,6 +11,7 @@ import {
   FiX,
   FiEye,
   FiTruck,
+  FiArrowLeft,
 } from "react-icons/fi";
 import { useStore } from "@/store/index";
 import { UserRole } from "@/types/user";
@@ -165,14 +166,28 @@ export default function OrdersManagementPage() {
     <div className="min-h-screen bg-gray-100">
       {/* Page Header */}
       <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">Quản lý đơn hàng</h1>
-          <button
-            onClick={exportOrdersToCSV}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
-          >
-            <FiDownload className="mr-2" /> Xuất đơn hàng
-          </button>
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => router.back()}
+                className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center text-gray-600"
+                title="Quay lại trang trước"
+              >
+                <FiArrowLeft className="mr-2" /> Quay lại
+              </button>
+              <h1 className="text-3xl font-bold text-gray-800">
+                Quản lý đơn hàng
+              </h1>
+            </div>
+            <button
+              onClick={exportOrdersToCSV}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+              title="Xuất danh sách đơn hàng"
+            >
+              <FiDownload className="mr-2" /> Xuất đơn hàng
+            </button>
+          </div>
         </div>
       </div>
 
@@ -196,6 +211,7 @@ export default function OrdersManagementPage() {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 border rounded-lg min-w-[180px]"
+              title="Lọc theo trạng thái đơn hàng"
             >
               <option value="all">Tất cả trạng thái</option>
               <option value="PENDING">Chờ xử lý</option>
@@ -441,7 +457,7 @@ export default function OrdersManagementPage() {
 
       {/* Order Details Modal */}
       {isDetailsModalOpen && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto py-10">
+        <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
           <div className="bg-white rounded-lg w-full max-w-4xl mx-4">
             <div className="flex justify-between items-center p-6 border-b">
               <h2 className="text-xl font-bold text-gray-800">

@@ -5,28 +5,24 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   FiSearch,
-  FiFilter,
-  FiBook,
   FiX,
   FiChevronDown,
   FiChevronUp,
-  FiEdit,
   FiEye,
   FiAlertCircle,
+  FiArrowLeft,
 } from "react-icons/fi";
-import { useStore } from "@/store/index";
 import { UserRole } from "@/types/user";
 import { Book } from "@/types/book";
 import Image from "next/image";
-import Link from "next/link";
+import { getInitialBooks } from "@/store/bookData";
 
 export default function EmployeeBooksManagement() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Tối ưu cách sử dụng store để tránh re-render không cần thiết
-  const books = useStore((state) => state.books);
-
+  // Thay đổi từ useStore sang useState để sử dụng dữ liệu từ bookData
+  const [books, setBooks] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -42,6 +38,9 @@ export default function EmployeeBooksManagement() {
       if (session?.user?.role !== UserRole.EMPLOYEE) {
         router.push("/");
       } else {
+        // Load dữ liệu từ bookData
+        const initialBooks = getInitialBooks();
+        setBooks(initialBooks);
         setIsLoading(false);
       }
     }
@@ -50,7 +49,7 @@ export default function EmployeeBooksManagement() {
   // Lấy danh sách các danh mục sách duy nhất
   const categories = useMemo(() => {
     const uniqueCategories = [...new Set(books.map((book) => book.category))];
-    return ["all", ...uniqueCategories.sort()];
+    return ["all", ...uniqueCategories.sort((a, b) => a.localeCompare(b))];
   }, [books]);
 
   // Lọc và sắp xếp sách
@@ -87,15 +86,14 @@ export default function EmployeeBooksManagement() {
         sortField === "publishYear"
       ) {
         return sortDirection === "asc"
-          ? a[sortField] - b[sortField]
-          : b[sortField] - a[sortField];
-      } else {
-        const fieldA = String(a[sortField]).toLowerCase();
-        const fieldB = String(b[sortField]).toLowerCase();
-        return sortDirection === "asc"
-          ? fieldA.localeCompare(fieldB)
-          : fieldB.localeCompare(fieldA);
+          ? Number(a[sortField]) - Number(b[sortField])
+          : Number(b[sortField]) - Number(a[sortField]);
       }
+      const fieldA = String(a[sortField]).toLowerCase();
+      const fieldB = String(b[sortField]).toLowerCase();
+      return sortDirection === "asc"
+        ? fieldA.localeCompare(fieldB)
+        : fieldB.localeCompare(fieldA);
     });
 
     return results;
@@ -138,25 +136,14 @@ export default function EmployeeBooksManagement() {
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center">
             <button
               onClick={() => router.push("/employee")}
               className="mr-4 flex items-center text-gray-600 hover:text-blue-600"
               aria-label="Quay lại Dashboard"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-1"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <FiArrowLeft className="h-5 w-5 mr-1" />
               <span>Quay lại</span>
             </button>
             <h1 className="text-3xl font-bold text-gray-800">Quản lý sách</h1>
@@ -413,7 +400,7 @@ export default function EmployeeBooksManagement() {
 
         {/* Book Details Modal */}
         {selectedBook && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+          <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
             <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">

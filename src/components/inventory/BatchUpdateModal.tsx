@@ -37,7 +37,7 @@ export default function BatchUpdateModal({
       const lines = csvContent.trim().split("\n");
       const updatesArray: BookUpdate[] = [];
 
-      // Start from index 0 or 1 depending on if there's a header
+      // Bắt đầu từ index 0 hoặc 1 tùy thuộc vào việc có header hay không
       const startIndex = lines[0].toLowerCase().includes("isbn") ? 1 : 0;
 
       for (let i = startIndex; i < lines.length; i++) {
@@ -48,7 +48,7 @@ export default function BatchUpdateModal({
         const quantity = parseInt(quantityStr);
 
         if (!isbn || isNaN(quantity)) {
-          throw new Error(`Invalid data format in line ${i + 1}`);
+          throw new Error(`Dữ liệu không hợp lệ ở dòng ${i + 1}`);
         }
 
         // Check if book with ISBN exists in our inventory
@@ -64,16 +64,16 @@ export default function BatchUpdateModal({
       setUpdates(updatesArray);
       setStep("preview");
     } catch (error) {
-      console.error("Error parsing CSV:", error);
+      console.error("Lỗi khi đọc CSV:", error);
       setError(
-        `Error parsing CSV: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Lỗi khi đọc CSV: ${error instanceof Error ? error.message : "Lỗi không xác định"}`,
       );
     }
   };
 
   const handleSubmit = () => {
     if (!reason) {
-      setError("Please provide a reason for the stock update");
+      setError("Vui lòng nhập lý do cập nhật số lượng");
       return;
     }
 
@@ -104,11 +104,11 @@ export default function BatchUpdateModal({
           return book.title;
         });
 
-      setSuccess(`Successfully updated ${updatedBooks.length} books.`);
+      setSuccess(`Đã cập nhật thành công ${updatedBooks.length} sách.`);
       setStep("complete");
     } catch (error) {
-      console.error("Error updating stock:", error);
-      setError("An error occurred while updating the stock");
+      console.error("Lỗi khi cập nhật số lượng:", error);
+      setError("Đã xảy ra lỗi khi cập nhật số lượng");
     } finally {
       setIsSubmitting(false);
     }
@@ -123,15 +123,17 @@ export default function BatchUpdateModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
       <div className="bg-white rounded-lg w-full max-w-3xl">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">
-            Batch Update Stock
+            Cập nhật số lượng hàng loạt
           </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-500"
+            aria-label="Đóng"
+            title="Đóng"
           >
             <FiX className="h-6 w-6" />
           </button>
@@ -155,13 +157,14 @@ export default function BatchUpdateModal({
           {step === "input" && (
             <div>
               <p className="mb-4 text-gray-600">
-                Use this form to update multiple books at once. Upload a CSV
-                file or paste CSV content with book ISBN and quantity.
+                Sử dụng biểu mẫu này để cập nhật số lượng nhiều sách cùng lúc.
+                Tải lên tệp CSV hoặc dán nội dung CSV với mã ISBN và số lượng
+                sách.
               </p>
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Operation
+                  Thao tác
                 </label>
                 <select
                   value={operation}
@@ -169,38 +172,41 @@ export default function BatchUpdateModal({
                     setOperation(e.target.value as UpdateOperation)
                   }
                   className="w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                  title="Chọn thao tác"
                 >
-                  <option value="add">Add to current stock</option>
-                  <option value="subtract">Subtract from current stock</option>
-                  <option value="set">Set stock to exact value</option>
+                  <option value="add">Thêm vào số lượng hiện tại</option>
+                  <option value="subtract">Trừ từ số lượng hiện tại</option>
+                  <option value="set">Đặt số lượng chính xác</option>
                 </select>
               </div>
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  CSV Content (Format: ISBN,Quantity)
+                  Nội dung CSV (Định dạng: ISBN, Số lượng)
                 </label>
                 <textarea
                   value={csvContent}
                   onChange={(e) => setCsvContent(e.target.value)}
-                  placeholder="Enter CSV content or paste from Excel..."
+                  placeholder="Nhập nội dung CSV hoặc dán từ Excel..."
                   className="w-full h-60 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                  title="Nội dung CSV"
                 />
                 <p className="mt-2 text-sm text-gray-500">
-                  Example: 978-3-16-148410-0,5
+                  Ví dụ: 978-3-16-148410-0,5
                 </p>
               </div>
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Reason for Update
+                  Lý do cập nhật
                 </label>
                 <input
                   type="text"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  placeholder="e.g., New shipment received, Inventory correction"
+                  placeholder="VD: Nhập hàng mới, Điều chỉnh tồn kho"
                   className="w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                  title="Lý do cập nhật"
                 />
               </div>
 
@@ -209,14 +215,14 @@ export default function BatchUpdateModal({
                   onClick={onClose}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
-                  Cancel
+                  Hủy
                 </button>
                 <button
                   onClick={parseCSV}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
                 >
                   <FiUpload className="mr-2" />
-                  Preview Updates
+                  Xem trước thay đổi
                 </button>
               </div>
             </div>
@@ -226,28 +232,28 @@ export default function BatchUpdateModal({
             <div>
               <div className="mb-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Update Preview
+                  Xem trước thay đổi
                 </h3>
 
                 <div className="mb-4">
                   <div className="bg-gray-50 p-3 rounded-md">
                     <p className="font-medium">
-                      Operation:{" "}
+                      Thao tác:{" "}
                       <span className="font-normal">
                         {operation === "add"
-                          ? "Add to current stock"
+                          ? "Thêm vào số lượng hiện tại"
                           : operation === "subtract"
-                            ? "Subtract from current stock"
-                            : "Set stock to exact value"}
+                            ? "Trừ từ số lượng hiện tại"
+                            : "Đặt số lượng chính xác"}
                       </span>
                     </p>
                     <p className="font-medium">
-                      Reason: <span className="font-normal">{reason}</span>
+                      Lý do: <span className="font-normal">{reason}</span>
                     </p>
                     <p className="font-medium">
-                      Books to update:{" "}
+                      Số sách cập nhật:{" "}
                       <span className="font-normal">
-                        {updates.filter((u) => u.found).length} of{" "}
+                        {updates.filter((u) => u.found).length} trên{" "}
                         {updates.length}
                       </span>
                     </p>
@@ -262,19 +268,19 @@ export default function BatchUpdateModal({
                           ISBN
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Title
+                          Tên sách
                         </th>
                         <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Current
+                          Hiện tại
                         </th>
                         <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Change
+                          Thay đổi
                         </th>
                         <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          New
+                          Mới
                         </th>
                         <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Status
+                          Trạng thái
                         </th>
                       </tr>
                     </thead>
@@ -305,7 +311,9 @@ export default function BatchUpdateModal({
                               {book ? (
                                 book.title
                               ) : (
-                                <span className="text-red-500">Not found</span>
+                                <span className="text-red-500">
+                                  Không tìm thấy
+                                </span>
                               )}
                             </td>
                             <td className="px-4 py-3 text-sm text-right">
@@ -322,11 +330,11 @@ export default function BatchUpdateModal({
                             <td className="px-4 py-3 text-sm text-center">
                               {!update.found ? (
                                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                  Error
+                                  Lỗi
                                 </span>
                               ) : (
                                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                  Ready
+                                  Sẵn sàng
                                 </span>
                               )}
                             </td>
@@ -346,12 +354,12 @@ export default function BatchUpdateModal({
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-yellow-800">
-                        Some books were not found
+                        Một số sách không tìm thấy
                       </h3>
                       <p className="mt-2 text-sm text-yellow-700">
-                        {updates.filter((u) => !u.found).length} books with the
-                        provided ISBNs were not found in your inventory. Only
-                        found books will be updated.
+                        {updates.filter((u) => !u.found).length} sách với mã
+                        ISBN đã cung cấp không tìm thấy trong kho. Chỉ những
+                        sách tìm thấy mới được cập nhật.
                       </p>
                     </div>
                   </div>
@@ -363,7 +371,7 @@ export default function BatchUpdateModal({
                   onClick={handleReset}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
-                  Back
+                  Quay lại
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -376,7 +384,7 @@ export default function BatchUpdateModal({
                       : "bg-blue-600 hover:bg-blue-700"
                   }`}
                 >
-                  {isSubmitting ? "Processing..." : "Update Stock"}
+                  {isSubmitting ? "Đang xử lý..." : "Cập nhật số lượng"}
                 </button>
               </div>
             </div>
@@ -388,18 +396,18 @@ export default function BatchUpdateModal({
                 <FiCheck className="h-6 w-6 text-green-600" />
               </div>
               <h3 className="mt-3 text-lg font-medium text-gray-900">
-                Stock Updated Successfully
+                Cập nhật số lượng thành công
               </h3>
               <p className="mt-2 text-sm text-gray-500">
-                {updates.filter((u) => u.found).length} books have been updated
-                successfully.
+                Đã cập nhật thành công {updates.filter((u) => u.found).length}{" "}
+                sách.
               </p>
               <div className="mt-6">
                 <button
                   onClick={onClose}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
-                  Close
+                  Đóng
                 </button>
               </div>
             </div>

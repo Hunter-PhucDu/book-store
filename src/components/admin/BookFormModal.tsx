@@ -59,16 +59,17 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.title.trim()) newErrors.title = "Title is required";
-    if (!formData.author.trim()) newErrors.author = "Author is required";
+    if (!formData.title.trim()) newErrors.title = "Vui lòng nhập tên sách";
+    if (!formData.author.trim()) newErrors.author = "Vui lòng nhập tên tác giả";
     if (!formData.description.trim())
-      newErrors.description = "Description is required";
-    if (!formData.isbn.trim()) newErrors.isbn = "ISBN is required";
-    if (!formData.category.trim()) newErrors.category = "Category is required";
+      newErrors.description = "Vui lòng nhập mô tả sách";
+    if (!formData.isbn.trim()) newErrors.isbn = "Vui lòng nhập mã ISBN";
+    if (!formData.category.trim())
+      newErrors.category = "Vui lòng chọn thể loại";
     if (!formData.coverImage.trim())
-      newErrors.coverImage = "Cover image URL is required";
-    if (formData.price <= 0) newErrors.price = "Price must be greater than 0";
-    if (formData.stock < 0) newErrors.stock = "Stock cannot be negative";
+      newErrors.coverImage = "Vui lòng nhập đường dẫn ảnh bìa";
+    if (formData.price <= 0) newErrors.price = "Giá sách phải lớn hơn 0";
+    if (formData.stock < 0) newErrors.stock = "Số lượng không thể âm";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -91,18 +92,18 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
       }
       onClose();
     } catch (error) {
-      console.error("Error saving book:", error);
+      console.error("Lỗi khi lưu sách:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-gray-900/25 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto transition-all duration-300 animate-[fadeIn_0.3s_ease-in-out">
+      <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-lg">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">
-            {book ? "Edit Book" : "Add New Book"}
+            {book ? "Chỉnh sửa sách" : "Thêm sách mới"}
           </h2>
           <button
             onClick={onClose}
@@ -116,7 +117,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title
+                Tên sách
               </label>
               <input
                 type="text"
@@ -132,7 +133,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Author
+                Tác giả
               </label>
               <input
                 type="text"
@@ -148,7 +149,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
+                Mô tả
               </label>
               <textarea
                 name="description"
@@ -166,7 +167,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                ISBN
+                Mã ISBN
               </label>
               <input
                 type="text"
@@ -182,7 +183,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category
+                Thể loại
               </label>
               <input
                 type="text"
@@ -198,12 +199,12 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Price ($)
+                Giá (VNĐ)
               </label>
               <input
                 type="number"
                 name="price"
-                step="0.01"
+                step="1000"
                 min="0"
                 value={formData.price}
                 onChange={handleChange}
@@ -216,7 +217,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Stock
+                Số lượng
               </label>
               <input
                 type="number"
@@ -233,7 +234,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Publish Year
+                Năm xuất bản
               </label>
               <input
                 type="number"
@@ -248,7 +249,7 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Cover Image URL
+                Đường dẫn ảnh bìa
               </label>
               <input
                 type="text"
@@ -263,10 +264,10 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
 
               {formData.coverImage && (
                 <div className="mt-3">
-                  <p className="text-sm text-gray-500 mb-2">Preview:</p>
+                  <p className="text-sm text-gray-500 mb-2">Xem trước:</p>
                   <Image
                     src={formData.coverImage}
-                    alt="Cover preview"
+                    alt="Ảnh bìa xem trước"
                     className="h-40 object-cover rounded-lg border border-gray-300"
                     width={160}
                     height={240}
@@ -287,14 +288,18 @@ export default function BookFormModal({ book, onClose }: BookFormModalProps) {
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
             >
-              {isSubmitting ? "Saving..." : book ? "Update Book" : "Add Book"}
+              {isSubmitting
+                ? "Đang lưu..."
+                : book
+                  ? "Cập nhật sách"
+                  : "Thêm sách"}
             </button>
           </div>
         </form>

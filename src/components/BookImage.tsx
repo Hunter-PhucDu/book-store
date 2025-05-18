@@ -20,18 +20,11 @@ export default function BookImage({
   height = 450,
   hoverEffect = false,
 }: BookImageProps) {
-  // If src starts with /images/, ensure we have a fallback
   const imageSrc = src.startsWith("/images/")
     ? src
     : "/images/book-placeholder.jpg";
 
   const [isHovering, setIsHovering] = useState(false);
-
-  const imageStyle = {
-    objectFit: "cover" as "cover",
-    transform: hoverEffect && isHovering ? "scale(1.08)" : "none",
-    transition: "transform 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95)",
-  };
 
   return (
     <div
@@ -44,7 +37,11 @@ export default function BookImage({
         src={imageSrc}
         alt={alt}
         fill
-        style={imageStyle}
+        objectFit="cover"
+        style={{
+          transform: hoverEffect && isHovering ? "scale(1.08)" : "none",
+          transition: "transform 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95)",
+        }}
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.src = "/images/book-placeholder.jpg";

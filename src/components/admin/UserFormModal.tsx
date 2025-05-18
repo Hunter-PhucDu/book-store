@@ -138,11 +138,11 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
     const newErrors: Record<string, string> = {};
 
     // Common validations
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.email.trim()) newErrors.email = "Email is required";
+    if (!formData.name.trim()) newErrors.name = "Vui lòng nhập họ tên";
+    if (!formData.email.trim()) newErrors.email = "Vui lòng nhập email";
     if (!user) {
       // Only validate password for new users
-      if (!formData.password) newErrors.password = "Password is required";
+      if (!formData.password) newErrors.password = "Vui lòng nhập mật khẩu";
     }
 
     // Role-specific validations
@@ -151,10 +151,9 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
       formData.role === UserRole.INVENTORY_MANAGER
     ) {
       if (!formData.department.trim())
-        newErrors.department = "Department is required";
-      if (!formData.hireDate) newErrors.hireDate = "Hire date is required";
-      if (formData.salary <= 0)
-        newErrors.salary = "Salary must be greater than 0";
+        newErrors.department = "Vui lòng nhập phòng ban";
+      if (!formData.hireDate) newErrors.hireDate = "Vui lòng chọn ngày vào làm";
+      if (formData.salary <= 0) newErrors.salary = "Lương phải lớn hơn 0";
     }
 
     setErrors(newErrors);
@@ -279,10 +278,10 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
           <div>
             <p className="font-medium">
               {user
-                ? "User updated successfully!"
-                : "New user added successfully!"}
+                ? "Cập nhật nhân viên thành công!"
+                : "Thêm nhân viên mới thành công!"}
             </p>
-            <p className="text-sm text-green-100">Redirecting...</p>
+            <p className="text-sm text-green-100">Đang chuyển hướng...</p>
           </div>
         </div>
       )}
@@ -306,7 +305,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
                     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                   />
                 </svg>
-                <span>Edit User</span>
+                <span>Chỉnh sửa nhân viên</span>
               </>
             ) : (
               <>
@@ -324,13 +323,15 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
                     d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
                   />
                 </svg>
-                <span>Add New User</span>
+                <span>Thêm nhân viên mới</span>
               </>
             )}
           </h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-all duration-200"
+            aria-label="Đóng"
+            title="Đóng"
           >
             <FiX className="h-5 w-5" />
           </button>
@@ -340,13 +341,15 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name
+                Họ và tên
               </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                placeholder="Nhập họ và tên"
+                title="Họ và tên"
                 className={`w-full p-2 border rounded-lg ${errors.name ? "border-red-500" : "border-gray-300"}`}
               />
               {errors.name && (
@@ -363,6 +366,8 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                placeholder="Nhập địa chỉ email"
+                title="Email"
                 className={`w-full p-2 border rounded-lg ${errors.email ? "border-red-500" : "border-gray-300"}`}
               />
               {errors.email && (
@@ -372,19 +377,18 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Role
+                Vai trò
               </label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
+                title="Vai trò"
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
-                <option value={UserRole.EMPLOYEE}>Employee</option>
-                <option value={UserRole.INVENTORY_MANAGER}>
-                  Inventory Manager
-                </option>
-                <option value={UserRole.ADMIN}>Administrator</option>
+                <option value={UserRole.EMPLOYEE}>Nhân viên</option>
+                <option value={UserRole.INVENTORY_MANAGER}>Quản lý kho</option>
+                <option value={UserRole.ADMIN}>Quản trị viên</option>
               </select>
             </div>
 
@@ -392,15 +396,15 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {user
-                  ? "New Password (leave blank to keep current)"
-                  : "Password"}
+                {user ? "Mật khẩu mới (để trống nếu không đổi)" : "Mật khẩu"}
               </label>
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                placeholder="Nhập mật khẩu"
+                title="Mật khẩu"
                 className={`w-full p-2 border rounded-lg ${errors.password ? "border-red-500" : "border-gray-300"}`}
               />
               {errors.password && (
@@ -414,13 +418,15 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Department
+                    Phòng ban
                   </label>
                   <input
                     type="text"
                     name="department"
                     value={formData.department}
                     onChange={handleChange}
+                    placeholder="Nhập tên phòng ban"
+                    title="Phòng ban"
                     className={`w-full p-2 border rounded-lg ${errors.department ? "border-red-500" : "border-gray-300"}`}
                   />
                   {errors.department && (
@@ -432,13 +438,14 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Hire Date
+                    Ngày vào làm
                   </label>
                   <input
                     type="date"
                     name="hireDate"
                     value={formData.hireDate}
                     onChange={handleChange}
+                    title="Ngày vào làm"
                     className={`w-full p-2 border rounded-lg ${errors.hireDate ? "border-red-500" : "border-gray-300"}`}
                   />
                   {errors.hireDate && (
@@ -454,15 +461,17 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               formData.role === UserRole.INVENTORY_MANAGER) && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Salary
+                  Lương (VNĐ)
                 </label>
                 <input
                   type="number"
                   name="salary"
                   min="0"
-                  step="0.01"
+                  step="100000"
                   value={formData.salary}
                   onChange={handleChange}
+                  placeholder="Nhập mức lương"
+                  title="Lương"
                   className={`w-full p-2 border rounded-lg ${errors.salary ? "border-red-500" : "border-gray-300"}`}
                 />
                 {errors.salary && (
@@ -475,26 +484,30 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
+                    Địa chỉ
                   </label>
                   <input
                     type="text"
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
+                    placeholder="Nhập địa chỉ"
+                    title="Địa chỉ"
                     className="w-full p-2 border border-gray-300 rounded-lg"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
+                    Số điện thoại
                   </label>
                   <input
                     type="text"
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleChange}
+                    placeholder="Nhập số điện thoại"
+                    title="Số điện thoại"
                     className="w-full p-2 border border-gray-300 rounded-lg"
                   />
                 </div>
@@ -508,7 +521,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
               onClick={handleClose}
               className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-100 font-medium flex items-center transition-all duration-200"
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -537,7 +550,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Saving...
+                  Đang lưu...
                 </>
               ) : user ? (
                 <>
@@ -555,7 +568,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
                       d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
                     />
                   </svg>
-                  Update User
+                  Cập nhật
                 </>
               ) : (
                 <>
@@ -573,7 +586,7 @@ export default function UserFormModal({ user, onClose }: UserFormModalProps) {
                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                     />
                   </svg>
-                  Add User
+                  Thêm mới
                 </>
               )}
             </button>
